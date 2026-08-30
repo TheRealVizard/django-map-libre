@@ -1,11 +1,11 @@
-# .pre-commit-config.yaml
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0  # o la última estable
+    rev: v4.6.0
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+    exclude: ^vendor/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.6.9
@@ -15,6 +15,7 @@ repos:
         files: \.py$
       - id: ruff-format
         files: \.py$
+    exclude: ^vendor/
 
   - repo: https://github.com/oxc-project/mirrors-oxlint
     rev: v1.78.0
@@ -22,6 +23,7 @@ repos:
       - id: oxlint
         args: [--fix]
         files: \.(js|jsx|ts|tsx|mjs|cjs)$
+    exclude: ^vendor/
 
   - repo: https://github.com/oxc-project/mirrors-oxfmt
     rev: v0.65.0
@@ -29,3 +31,4 @@ repos:
       - id: oxfmt
         args: [--write]
         files: \.(js|jsx|ts|tsx|mjs|cjs|json|html|css|scss|less|vue|md)$
+    exclude: ^vendor/
