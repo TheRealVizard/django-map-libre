@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="importmap">
+    {
+        "imports": {
+        "maplibre-gl": "{% static "js/maplibre-gl.mjs" %}"
+        }
+    }
+    </script>
+    <link rel="stylesheet" href="{% static "css/maplibre-gl.css" %}">
+    <script type="module" src="{% static "js/maplibre-gl.mjs" %}"></script>
+    <script type="module" src="{% static "js/map-widget.js" %}"></script>
+</head>
+    <body>
+        <div id="map" style="height: 500px"></div>
+    </body>
+</html>
