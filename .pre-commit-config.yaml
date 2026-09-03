@@ -30,3 +30,4 @@ repos:
             args: [--write]
             files: \.(js|jsx|ts|tsx|mjs|cjs|json|html|css|scss|less|vue|md)$
             exclude: ^vendor/
+            additional_dependencies: ['oxlint-tsgolint']
