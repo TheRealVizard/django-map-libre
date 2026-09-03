@@ -6,6 +6,14 @@
   },
   "ignorePatterns": ["vendor/"],
   "rules": {
+    "no-unused-vars": [
+      "error",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
     "unicorn/prefer-set-has": "off",
     "no-unused-expressions": ["error", { "allowShortCircuit": true }],
     "eqeqeq": ["error", "always"],

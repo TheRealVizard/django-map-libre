@@ -3,7 +3,10 @@ repos:
       rev: v4.6.0
       hooks:
           - id: check-yaml
+          - id: check-merge-conflict
+          - id: debug-statements
           - id: end-of-file-fixer
+          - id: trailing-whitespace
           - id: trailing-whitespace
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -19,9 +22,11 @@ repos:
       rev: v1.78.0
       hooks:
           - id: oxlint
-            args: [--fix]
-            files: \.(js|jsx|ts|tsx|mjs|cjs)$
+            args:
+              - --fix
+            files: \.(js)$
             exclude: ^vendor/
+            additional_dependencies: ['oxlint','oxlint-tsgolint']
 
     - repo: https://github.com/oxc-project/mirrors-oxfmt
       rev: v0.65.0
@@ -30,4 +35,3 @@ repos:
             args: [--write]
             files: \.(js|jsx|ts|tsx|mjs|cjs|json|html|css|scss|less|vue|md)$
             exclude: ^vendor/
-            additional_dependencies: ['oxlint-tsgolint']

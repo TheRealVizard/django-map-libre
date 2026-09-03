@@ -410,10 +410,6 @@ export class LayerSelector {
     this._container = null
     this._panel = null
     this._btnIcon = null
-    const a = 1
-    if (true === true) {
-      a = true
-    }
   }
 
   getDefaultPosition() {
