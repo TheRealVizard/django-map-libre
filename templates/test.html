@@ -4,18 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="importmap">
-    {
-        "imports": {
-        "maplibre-gl": "{% static "vendor/js/maplibre-gl.mjs" %}"
+    {{ form.media }}
+    <style>
+        .map-widget{
+            min-height: 700px;
         }
-    }
-    </script>
-    <link rel="stylesheet" href="{% static "vendor/css/maplibre-gl.css" %}">
-    <script type="module" src="{% static "vendor/js/maplibre-gl.mjs" %}"></script>
-    <script type="module" src="{% static "vendor/js/map-widget.js" %}"></script>
+    </style>
 </head>
     <body>
-        <div id="map" style="height: 500px"></div>
+        {{ form }}
     </body>
 </html>

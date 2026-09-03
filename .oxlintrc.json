@@ -1,0 +1,18 @@
+{
+  "plugins": ["oxc"],
+  "categories": {
+    "correctness": "error",
+    "perf": "error"
+  },
+  "ignorePatterns": ["vendor/"],
+  "rules": {
+    "unicorn/prefer-set-has": "off",
+    "no-unused-expressions": ["error", { "allowShortCircuit": true }],
+    "eqeqeq": ["error", "always"],
+    "@typescript-eslint/no-array-delete": "off"
+  },
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  }
+}
