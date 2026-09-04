@@ -160,7 +160,7 @@ class MapWidget(Widget):
             Script("vendor/js/maplibre-gl.mjs", type="module"),
             Script("js/map-widget.js", type="module"),
         )
-        css = {"all": ("vendor/css/maplibre-gl.css",)}
+        css = {"all": ("vendor/css/maplibre-gl.css", "css/django-map-libre.css")}
 
     def __init__(
         self,

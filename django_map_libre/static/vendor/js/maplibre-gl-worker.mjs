@@ -49,7 +49,7 @@ import {
   xt as H,
   yn as U,
   zn as W,
-} from './maplibre-gl-shared.mjs'
+} from "./maplibre-gl-shared.mjs"
 var G = class {
     constructor(e, t) {
       ;((this.keyCache = {}), e && this.replace(e, t))
@@ -676,7 +676,7 @@ var ae = class {
       if (typeof e != `boolean` && !e?.length) return
       let n = D(e, `sources.${t}.filter`, {
         type: `boolean`,
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
         overridable: !1,
         transition: !1,
       })

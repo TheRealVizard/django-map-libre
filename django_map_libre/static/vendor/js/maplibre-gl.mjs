@@ -237,7 +237,7 @@ import {
   zn as Dr,
   zr as Or,
   zt as kr,
-} from './maplibre-gl-shared.mjs'
+} from "./maplibre-gl-shared.mjs"
 var Ar = `6.6.0`
 function jr() {
   var e = new Ge(4)
@@ -859,7 +859,7 @@ var oi = class extends nt {
       return ((this._imagesIds ??= Object.keys(this.images)), this._imagesIds)
     }
     _getSpriteImageId(e, t) {
-      return e === 'default' ? t : `${e}:${t}`
+      return e === "default" ? t : `${e}:${t}`
     }
     setSpriteImages(e, t) {
       let n = this._spriteImagesIds[e] ?? [],
@@ -1277,8 +1277,8 @@ var hi = class e {
     let t = {
         thin: 100,
         hairline: 100,
-        'extra light': 200,
-        'ultra light': 200,
+        "extra light": 200,
+        "ultra light": 200,
         light: 300,
         normal: 400,
         regular: 400,
@@ -1286,12 +1286,12 @@ var hi = class e {
         semibold: 600,
         demibold: 600,
         bold: 700,
-        'extra bold': 800,
-        'ultra bold': 800,
+        "extra bold": 800,
+        "ultra bold": 800,
         black: 900,
         heavy: 900,
-        'extra black': 950,
-        'ultra black': 950,
+        "extra black": 950,
+        "ultra black": 950,
       },
       n
     for (let [r, i] of Object.entries(t))
@@ -1359,19 +1359,19 @@ var vi = class extends nt {
 let yi
 const bi = () =>
   (yi ||= new r({
-    'sky-color': new Ue(Ze.sky[`sky-color`], `sky-color`),
-    'horizon-color': new Ue(Ze.sky[`horizon-color`], `horizon-color`),
-    'fog-color': new Ue(Ze.sky[`fog-color`], `fog-color`),
-    'fog-ground-blend': new Ue(Ze.sky[`fog-ground-blend`], `fog-ground-blend`),
-    'horizon-fog-blend': new Ue(
+    "sky-color": new Ue(Ze.sky[`sky-color`], `sky-color`),
+    "horizon-color": new Ue(Ze.sky[`horizon-color`], `horizon-color`),
+    "fog-color": new Ue(Ze.sky[`fog-color`], `fog-color`),
+    "fog-ground-blend": new Ue(Ze.sky[`fog-ground-blend`], `fog-ground-blend`),
+    "horizon-fog-blend": new Ue(
       Ze.sky[`horizon-fog-blend`],
       `horizon-fog-blend`
     ),
-    'sky-horizon-blend': new Ue(
+    "sky-horizon-blend": new Ue(
       Ze.sky[`sky-horizon-blend`],
       `sky-horizon-blend`
     ),
-    'atmosphere-blend': new Ue(Ze.sky[`atmosphere-blend`], `atmosphere-blend`),
+    "atmosphere-blend": new Ue(Ze.sky[`atmosphere-blend`], `atmosphere-blend`),
   }))
 var xi = class extends nt {
     constructor(e, t) {
@@ -1384,11 +1384,11 @@ var xi = class extends nt {
     setSky(e, t = {}) {
       if (!this._validate(rr.sky, e, t)) {
         e ||= {
-          'sky-color': `transparent`,
-          'horizon-color': `transparent`,
-          'fog-color': `transparent`,
-          'fog-ground-blend': 1,
-          'atmosphere-blend': 0,
+          "sky-color": `transparent`,
+          "horizon-color": `transparent`,
+          "fog-color": `transparent`,
+          "fog-ground-blend": 1,
+          "atmosphere-blend": 0,
         }
         for (let t in e) {
           let n = e[t]
@@ -21082,7 +21082,7 @@ const Pp = {
   line: !0,
   raster: !0,
   hillshade: !0,
-  'color-relief': !0,
+  "color-relief": !0,
 }
 var Fp = class {
   constructor(e, t) {
@@ -21181,31 +21181,31 @@ var Fp = class {
   }
 }
 const Ip = {
-    'AttributionControl.ToggleAttribution': `Toggle attribution`,
-    'AttributionControl.MapFeedback': `Map feedback`,
-    'FullscreenControl.Enter': `Enter fullscreen`,
-    'FullscreenControl.Exit': `Exit fullscreen`,
-    'GeolocateControl.FindMyLocation': `Find my location`,
-    'GeolocateControl.LocationNotAvailable': `Location not available`,
-    'LogoControl.Title': `MapLibre logo`,
-    'Map.Title': `Map`,
-    'Marker.Title': `Map marker`,
-    'NavigationControl.ResetBearing': `Drag to rotate map, click to reset north`,
-    'NavigationControl.ZoomIn': `Zoom in`,
-    'NavigationControl.ZoomOut': `Zoom out`,
-    'Popup.Close': `Close popup`,
-    'ScaleControl.Feet': `ft`,
-    'ScaleControl.Meters': `m`,
-    'ScaleControl.Kilometers': `km`,
-    'ScaleControl.Miles': `mi`,
-    'ScaleControl.NauticalMiles': `nm`,
-    'GlobeControl.Enable': `Enable globe`,
-    'GlobeControl.Disable': `Disable globe`,
-    'TerrainControl.Enable': `Enable terrain`,
-    'TerrainControl.Disable': `Disable terrain`,
-    'CooperativeGesturesHandler.WindowsHelpText': `Use Ctrl + scroll to zoom the map`,
-    'CooperativeGesturesHandler.MacHelpText': `Use ⌘ + scroll to zoom the map`,
-    'CooperativeGesturesHandler.MobileHelpText': `Use two fingers to move the map`,
+    "AttributionControl.ToggleAttribution": `Toggle attribution`,
+    "AttributionControl.MapFeedback": `Map feedback`,
+    "FullscreenControl.Enter": `Enter fullscreen`,
+    "FullscreenControl.Exit": `Exit fullscreen`,
+    "GeolocateControl.FindMyLocation": `Find my location`,
+    "GeolocateControl.LocationNotAvailable": `Location not available`,
+    "LogoControl.Title": `MapLibre logo`,
+    "Map.Title": `Map`,
+    "Marker.Title": `Map marker`,
+    "NavigationControl.ResetBearing": `Drag to rotate map, click to reset north`,
+    "NavigationControl.ZoomIn": `Zoom in`,
+    "NavigationControl.ZoomOut": `Zoom out`,
+    "Popup.Close": `Close popup`,
+    "ScaleControl.Feet": `ft`,
+    "ScaleControl.Meters": `m`,
+    "ScaleControl.Kilometers": `km`,
+    "ScaleControl.Miles": `mi`,
+    "ScaleControl.NauticalMiles": `nm`,
+    "GlobeControl.Enable": `Enable globe`,
+    "GlobeControl.Disable": `Disable globe`,
+    "TerrainControl.Enable": `Enable terrain`,
+    "TerrainControl.Disable": `Disable terrain`,
+    "CooperativeGesturesHandler.WindowsHelpText": `Use Ctrl + scroll to zoom the map`,
+    "CooperativeGesturesHandler.MacHelpText": `Use ⌘ + scroll to zoom the map`,
+    "CooperativeGesturesHandler.MobileHelpText": `Use two fingers to move the map`,
   },
   Lp = Ar,
   Rp = {
@@ -22283,7 +22283,7 @@ var zp = class extends nt {
         this.fire(
           new h(
             Error(
-              'Invalid arguments to map.addImage(). The second argument must be an `HTMLImageElement`, `ImageData`, `ImageBitmap`, or object with `width`, `height`, and `data` properties with the same format as `ImageData`'
+              "Invalid arguments to map.addImage(). The second argument must be an `HTMLImageElement`, `ImageData`, `ImageBitmap`, or object with `width`, `height`, and `data` properties with the same format as `ImageData`"
             )
           )
         ),
@@ -22316,7 +22316,7 @@ var zp = class extends nt {
       return this.fire(
         new h(
           Error(
-            'The map has no image with that id. If you are adding a new image use `map.addImage(...)` instead.'
+            "The map has no image with that id. If you are adding a new image use `map.addImage(...)` instead."
           )
         )
       )
@@ -22329,7 +22329,7 @@ var zp = class extends nt {
       return this.fire(
         new h(
           Error(
-            'Invalid arguments to map.updateImage(). The second argument must be an `HTMLImageElement`, `ImageData`, `ImageBitmap`, or object with `width`, `height`, and `data` properties with the same format as `ImageData`'
+            "Invalid arguments to map.updateImage(). The second argument must be an `HTMLImageElement`, `ImageData`, `ImageBitmap`, or object with `width`, `height`, and `data` properties with the same format as `ImageData`"
           )
         )
       )
@@ -23067,11 +23067,11 @@ function Gp(e, t, n, r = !1) {
 const Kp = {
   center: `translate(-50%,-50%)`,
   top: `translate(-50%,0)`,
-  'top-left': `translate(0,0)`,
-  'top-right': `translate(-100%,0)`,
+  "top-left": `translate(0,0)`,
+  "top-right": `translate(-100%,0)`,
   bottom: `translate(-50%,-100%)`,
-  'bottom-left': `translate(0,-100%)`,
-  'bottom-right': `translate(-100%,-100%)`,
+  "bottom-left": `translate(0,-100%)`,
+  "bottom-right": `translate(-100%,-100%)`,
   left: `translate(0,-50%)`,
   right: `translate(-100%,-50%)`,
 }
@@ -23404,11 +23404,11 @@ var Yp = class extends pr {},
           e.options.offset = this._defaultMarker
             ? {
                 top: [0, 0],
-                'top-left': [0, 0],
-                'top-right': [0, 0],
+                "top-left": [0, 0],
+                "top-right": [0, 0],
                 bottom: [0, -38.1],
-                'bottom-left': [t, (24.6 + t) * -1],
-                'bottom-right': [-t, (24.6 + t) * -1],
+                "bottom-left": [t, (24.6 + t) * -1],
+                "bottom-right": [-t, (24.6 + t) * -1],
                 left: [13.5, -24.6],
                 right: [-13.5, -24.6],
               }
@@ -24592,11 +24592,11 @@ function ym(e) {
     return {
       center: new I(0, 0),
       top: new I(0, e),
-      'top-left': new I(t, t),
-      'top-right': new I(-t, t),
+      "top-left": new I(t, t),
+      "top-right": new I(-t, t),
       bottom: new I(0, -e),
-      'bottom-left': new I(t, -t),
-      'bottom-right': new I(-t, -t),
+      "bottom-left": new I(t, -t),
+      "bottom-right": new I(-t, -t),
       left: new I(e, 0),
       right: new I(-e, 0),
     }
@@ -24606,11 +24606,11 @@ function ym(e) {
     return {
       center: t,
       top: t,
-      'top-left': t,
-      'top-right': t,
+      "top-left": t,
+      "top-right": t,
       bottom: t,
-      'bottom-left': t,
-      'bottom-right': t,
+      "bottom-left": t,
+      "bottom-right": t,
       left: t,
       right: t,
     }
@@ -24618,11 +24618,11 @@ function ym(e) {
   return {
     center: I.convert(e.center || [0, 0]),
     top: I.convert(e.top || [0, 0]),
-    'top-left': I.convert(e[`top-left`] || [0, 0]),
-    'top-right': I.convert(e[`top-right`] || [0, 0]),
+    "top-left": I.convert(e[`top-left`] || [0, 0]),
+    "top-right": I.convert(e[`top-right`] || [0, 0]),
     bottom: I.convert(e.bottom || [0, 0]),
-    'bottom-left': I.convert(e[`bottom-left`] || [0, 0]),
-    'bottom-right': I.convert(e[`bottom-right`] || [0, 0]),
+    "bottom-left": I.convert(e[`bottom-left`] || [0, 0]),
+    "bottom-right": I.convert(e[`bottom-right`] || [0, 0]),
     left: I.convert(e.left || [0, 0]),
     right: I.convert(e.right || [0, 0]),
   }

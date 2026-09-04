@@ -1,10 +1,10 @@
-import {LayerSelector} from 'map-controls'
+import {LayerSelector} from "map-controls"
 import {
   FullscreenControl,
   Map,
   NavigationControl,
   ScaleControl,
-} from 'maplibre-gl'
+} from "maplibre-gl"
 
 const parseTileLayers = rawData => {
   let config = []
@@ -12,15 +12,15 @@ const parseTileLayers = rawData => {
     try {
       config = JSON.parse(rawData)
     } catch (_e) {
-      console.warn('Invalid tileLayer config, using fallback.')
+      console.warn("Invalid tileLayer config, using fallback.")
     }
   }
   if (!config || config.length === 0) {
     config = [
       {
-        id: 'osm-layer',
-        label: 'OpenStreetMap',
-        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        id: "osm-layer",
+        label: "OpenStreetMap",
+        url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
         attribution:
           '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         selected: true,
@@ -46,20 +46,20 @@ const buildStyleFromTileLayers = tileLayers => {
   const sources = {}
   const layers = []
   tileLayers.forEach(cfg => {
-    const sourceId = cfg.id + '-source'
+    const sourceId = cfg.id + "-source"
     sources[sourceId] = {
-      type: 'raster',
+      type: "raster",
       tiles: [cfg.url],
       tileSize: 256,
-      attribution: cfg.attribution || '',
+      attribution: cfg.attribution || "",
     }
     layers.push({
       id: cfg.id,
       label: cfg.label || cfg.id,
-      type: 'raster',
+      type: "raster",
       source: sourceId,
       layout: {
-        visibility: cfg.selected ? 'visible' : 'none',
+        visibility: cfg.selected ? "visible" : "none",
       },
     })
   })
@@ -72,7 +72,7 @@ const buildStyleFromTileLayers = tileLayers => {
 
 const registerTileLayers = (selector, tileLayers) => {
   tileLayers.forEach(cfg => {
-    selector.addLayer(cfg.id, cfg.label || cfg.id, 'tile')
+    selector.addLayer(cfg.id, cfg.label || cfg.id, "tile")
   })
 }
 
@@ -81,7 +81,7 @@ const parseOverlayLayers = rawData => {
   try {
     return JSON.parse(rawData)
   } catch (_e) {
-    console.warn('Invalid overlayLayer config.')
+    console.warn("Invalid overlayLayer config.")
     return []
   }
 }
@@ -101,7 +101,7 @@ const addOverlayLayer = async (map, overlayConfig, selector) => {
   }
 
   // Only 'fixed' is implemented for now
-  if (activeLegend.type !== 'fixed') {
+  if (activeLegend.type !== "fixed") {
     console.warn(
       `Legend type '${activeLegend.type}' not yet implemented for overlay ${id}.`
     )
@@ -115,44 +115,44 @@ const addOverlayLayer = async (map, overlayConfig, selector) => {
     const geojson = await response.json()
 
     // 2. Detect geometry type (first feature)
-    let layerType = 'fill'
+    let layerType = "fill"
     if (geojson.features && geojson.features.length > 0) {
       const geomType = geojson.features[0].geometry.type
-      if (geomType === 'LineString' || geomType === 'MultiLineString') {
-        layerType = 'line'
-      } else if (geomType === 'Point' || geomType === 'MultiPoint') {
-        layerType = 'circle'
+      if (geomType === "LineString" || geomType === "MultiLineString") {
+        layerType = "line"
+      } else if (geomType === "Point" || geomType === "MultiPoint") {
+        layerType = "circle"
       }
     }
 
     // 3. Build paint properties for fixed color
-    const color = activeLegend.color || '#3388ff'
+    const color = activeLegend.color || "#3388ff"
     let paint = {}
-    if (layerType === 'fill') {
+    if (layerType === "fill") {
       paint = {
-        'fill-color': color,
-        'fill-opacity': 0.7,
-        'fill-outline-color': '#000000',
+        "fill-color": color,
+        "fill-opacity": 0.7,
+        "fill-outline-color": "#000000",
       }
-    } else if (layerType === 'line') {
+    } else if (layerType === "line") {
       paint = {
-        'line-color': color,
-        'line-width': 3,
-        'line-opacity': 0.8,
+        "line-color": color,
+        "line-width": 3,
+        "line-opacity": 0.8,
       }
-    } else if (layerType === 'circle') {
+    } else if (layerType === "circle") {
       paint = {
-        'circle-color': color,
-        'circle-radius': 6,
-        'circle-opacity': 0.8,
+        "circle-color": color,
+        "circle-radius": 6,
+        "circle-opacity": 0.8,
       }
     }
 
     // 4. Add source and layer
-    const sourceId = id + '-source'
+    const sourceId = id + "-source"
     if (!map.getSource(sourceId)) {
       map.addSource(sourceId, {
-        type: 'geojson',
+        type: "geojson",
         data: geojson,
       })
     }
@@ -164,13 +164,13 @@ const addOverlayLayer = async (map, overlayConfig, selector) => {
         source: sourceId,
         paint: paint,
         layout: {
-          visibility: selected ? 'visible' : 'none',
+          visibility: selected ? "visible" : "none",
         },
       })
     }
 
     // 5. Register in selector
-    selector.addLayer(id, label || id, 'overlay')
+    selector.addLayer(id, label || id, "overlay")
 
     console.log(`Overlay "${label}" added successfully.`)
   } catch (error) {
@@ -227,10 +227,11 @@ const initMap = mapContainer => {
 
   if (overlayLayers.length > 0) {
     // Wait for map to be ready before adding overlays
-    map.on('load', () => {
+    map.on("load", () => {
       overlayLayers.forEach(overlay => {
         addOverlayLayer(map, overlay, layerSelector)
       })
+      window.zzz = map
     })
   }
 }
@@ -239,16 +240,16 @@ const initMap = mapContainer => {
 // Auto-initialization
 // -----------------------------------------------------------------------------
 
-for (const mapContainer of document.querySelectorAll('.map-widget')) {
+for (const mapContainer of document.querySelectorAll(".map-widget")) {
   if (mapContainer.dataset.autoInit) {
     initMap(mapContainer)
   } else {
-    mapContainer.addEventListener('initMap', () => initMap(mapContainer))
+    mapContainer.addEventListener("initMap", () => initMap(mapContainer))
   }
 }
 
-document.addEventListener('initAllMaps', () => {
-  for (const mapContainer of document.querySelectorAll('.map-widget')) {
+document.addEventListener("initAllMaps", () => {
+  for (const mapContainer of document.querySelectorAll(".map-widget")) {
     initMap(mapContainer)
   }
 })

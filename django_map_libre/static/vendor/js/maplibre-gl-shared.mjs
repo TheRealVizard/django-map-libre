@@ -1997,11 +1997,11 @@ const M = {
       sources: {required: !0, type: `sources`},
       sprite: {type: `sprite`},
       glyphs: {type: `string`},
-      'font-faces': {type: `fontFaces`},
+      "font-faces": {type: `fontFaces`},
       transition: {type: `transition`},
       layers: {required: !0, type: `array`, value: `layer`},
     },
-    sources: {'*': {type: `source`}},
+    sources: {"*": {type: `source`}},
     source: [
       `source_vector`,
       `source_raster`,
@@ -2027,7 +2027,7 @@ const M = {
       promoteId: {type: `promoteId`},
       volatile: {type: `boolean`, default: !1},
       encoding: {type: `enum`, values: {mvt: {}, mlt: {}}, default: `mvt`},
-      '*': {type: `*`},
+      "*": {type: `*`},
     },
     source_raster: {
       type: {required: !0, type: `enum`, values: {raster: {}}},
@@ -2045,10 +2045,10 @@ const M = {
       scheme: {type: `enum`, values: {xyz: {}, tms: {}}, default: `xyz`},
       attribution: {type: `string`},
       volatile: {type: `boolean`, default: !1},
-      '*': {type: `*`},
+      "*": {type: `*`},
     },
     source_raster_dem: {
-      type: {required: !0, type: `enum`, values: {'raster-dem': {}}},
+      type: {required: !0, type: `enum`, values: {"raster-dem": {}}},
       url: {type: `string`},
       tiles: {type: `array`, value: `string`},
       bounds: {
@@ -2071,7 +2071,7 @@ const M = {
       greenFactor: {type: `number`, default: 1},
       baseShift: {type: `number`, default: 0},
       volatile: {type: `boolean`, default: !1},
-      '*': {type: `*`},
+      "*": {type: `*`},
     },
     source_geojson: {
       type: {required: !0, type: `enum`, values: {geojson: {}}},
@@ -2120,17 +2120,17 @@ const M = {
           symbol: {},
           circle: {},
           heatmap: {},
-          'fill-extrusion': {},
+          "fill-extrusion": {},
           raster: {},
           hillshade: {},
-          'color-relief': {},
+          "color-relief": {},
           background: {},
         },
         required: !0,
       },
       metadata: {type: `*`},
       source: {type: `string`},
-      'source-layer': {type: `string`},
+      "source-layer": {type: `string`},
       minzoom: {type: `number`, minimum: 0, maximum: 24},
       maxzoom: {type: `number`, minimum: 0, maximum: 24},
       filter: {type: `filter`},
@@ -2155,35 +2155,35 @@ const M = {
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     layout_fill: {
-      'fill-sort-key': {
+      "fill-sort-key": {
         type: `number`,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
       visibility: {
         type: `enum`,
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     layout_circle: {
-      'circle-sort-key': {
+      "circle-sort-key": {
         type: `number`,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
       visibility: {
         type: `enum`,
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     layout_heatmap: {
@@ -2192,156 +2192,156 @@ const M = {
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
-    'layout_fill-extrusion': {
+    "layout_fill-extrusion": {
       visibility: {
         type: `enum`,
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-extrusion-rounded-corner-distance': {
+      "fill-extrusion-rounded-corner-distance": {
         type: `number`,
         default: 0,
         minimum: 0,
         units: `meters`,
-        'property-type': `constant`,
+        "property-type": `constant`,
       },
     },
     layout_line: {
-      'line-cap': {
+      "line-cap": {
         type: `enum`,
         values: {butt: {}, round: {}, square: {}},
         default: `butt`,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-join': {
+      "line-join": {
         type: `enum`,
         values: {bevel: {}, round: {}, miter: {}},
         default: `miter`,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-miter-limit': {
+      "line-miter-limit": {
         type: `number`,
         default: 2,
-        requires: [{'line-join': `miter`}],
+        requires: [{"line-join": `miter`}],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-round-limit': {
+      "line-round-limit": {
         type: `number`,
         default: 1.05,
-        requires: [{'line-join': `round`}],
+        requires: [{"line-join": `round`}],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-sort-key': {
+      "line-sort-key": {
         type: `number`,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
       visibility: {
         type: `enum`,
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     layout_symbol: {
-      'symbol-placement': {
+      "symbol-placement": {
         type: `enum`,
-        values: {point: {}, line: {}, 'line-center': {}},
+        values: {point: {}, line: {}, "line-center": {}},
         default: `point`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'symbol-spacing': {
+      "symbol-spacing": {
         type: `number`,
         default: 250,
         minimum: 1,
         units: `pixels`,
-        requires: [{'symbol-placement': `line`}],
+        requires: [{"symbol-placement": `line`}],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'symbol-avoid-edges': {
+      "symbol-avoid-edges": {
         type: `boolean`,
         default: !1,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'symbol-sort-key': {
+      "symbol-sort-key": {
         type: `number`,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'symbol-z-order': {
+      "symbol-z-order": {
         type: `enum`,
-        values: {auto: {}, 'viewport-y': {}, source: {}},
+        values: {auto: {}, "viewport-y": {}, source: {}},
         default: `auto`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-allow-overlap': {
+      "icon-allow-overlap": {
         type: `boolean`,
         default: !1,
-        requires: [`icon-image`, {'!': `icon-overlap`}],
+        requires: [`icon-image`, {"!": `icon-overlap`}],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-overlap': {
+      "icon-overlap": {
         type: `enum`,
         values: {never: {}, always: {}, cooperative: {}},
         requires: [`icon-image`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-ignore-placement': {
+      "icon-ignore-placement": {
         type: `boolean`,
         default: !1,
         requires: [`icon-image`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-optional': {
+      "icon-optional": {
         type: `boolean`,
         default: !1,
         requires: [`icon-image`, `text-field`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-rotation-alignment': {
+      "icon-rotation-alignment": {
         type: `enum`,
         values: {map: {}, viewport: {}, auto: {}},
         default: `auto`,
         requires: [`icon-image`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-size': {
+      "icon-size": {
         type: `number`,
         default: 1,
         minimum: 0,
         units: `factor of the original icon size`,
         requires: [`icon-image`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-text-fit': {
+      "icon-text-fit": {
         type: `enum`,
         values: {none: {}, width: {}, height: {}, both: {}},
         default: `none`,
         requires: [`icon-image`, `text-field`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-text-fit-padding': {
+      "icon-text-fit-padding": {
         type: `array`,
         value: `number`,
         length: 4,
@@ -2350,55 +2350,55 @@ const M = {
         requires: [
           `icon-image`,
           `text-field`,
-          {'icon-text-fit': [`both`, `width`, `height`]},
+          {"icon-text-fit": [`both`, `width`, `height`]},
         ],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-image': {
+      "icon-image": {
         type: `resolvedImage`,
         tokens: !0,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-rotate': {
+      "icon-rotate": {
         type: `number`,
         default: 0,
         period: 360,
         units: `degrees`,
         requires: [`icon-image`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-padding': {
+      "icon-padding": {
         type: `padding`,
         default: [2],
         units: `pixels`,
         requires: [`icon-image`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-keep-upright': {
+      "icon-keep-upright": {
         type: `boolean`,
         default: !1,
         requires: [
           `icon-image`,
-          {'icon-rotation-alignment': `map`},
-          {'symbol-placement': [`line`, `line-center`]},
+          {"icon-rotation-alignment": `map`},
+          {"symbol-placement": [`line`, `line-center`]},
         ],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-offset': {
+      "icon-offset": {
         type: `array`,
         value: `number`,
         length: 2,
         default: [0, 0],
         requires: [`icon-image`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-anchor': {
+      "icon-anchor": {
         type: `enum`,
         values: {
           center: {},
@@ -2406,106 +2406,106 @@ const M = {
           right: {},
           top: {},
           bottom: {},
-          'top-left': {},
-          'top-right': {},
-          'bottom-left': {},
-          'bottom-right': {},
+          "top-left": {},
+          "top-right": {},
+          "bottom-left": {},
+          "bottom-right": {},
         },
         default: `center`,
         requires: [`icon-image`],
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-pitch-alignment': {
+      "icon-pitch-alignment": {
         type: `enum`,
         values: {map: {}, viewport: {}, auto: {}},
         default: `auto`,
         requires: [`icon-image`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-pitch-alignment': {
+      "text-pitch-alignment": {
         type: `enum`,
         values: {map: {}, viewport: {}, auto: {}},
         default: `auto`,
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-rotation-alignment': {
+      "text-rotation-alignment": {
         type: `enum`,
-        values: {map: {}, viewport: {}, 'viewport-glyph': {}, auto: {}},
+        values: {map: {}, viewport: {}, "viewport-glyph": {}, auto: {}},
         default: `auto`,
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-field': {
+      "text-field": {
         type: `formatted`,
         default: ``,
         tokens: !0,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-font': {
+      "text-font": {
         type: `array`,
         value: `string`,
         default: [`Open Sans Regular`, `Arial Unicode MS Regular`],
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-size': {
+      "text-size": {
         type: `number`,
         default: 16,
         minimum: 0,
         units: `pixels`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-max-width': {
+      "text-max-width": {
         type: `number`,
         default: 10,
         minimum: 0,
         units: `ems`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-line-height': {
+      "text-line-height": {
         type: `number`,
         default: 1.2,
         units: `ems`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-letter-spacing': {
+      "text-letter-spacing": {
         type: `number`,
         default: 0,
         units: `ems`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-justify': {
+      "text-justify": {
         type: `enum`,
         values: {auto: {}, left: {}, center: {}, right: {}},
         default: `center`,
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-radial-offset': {
+      "text-radial-offset": {
         type: `number`,
         units: `ems`,
         default: 0,
         requires: [`text-field`],
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
       },
-      'text-variable-anchor': {
+      "text-variable-anchor": {
         type: `array`,
         value: `enum`,
         values: {
@@ -2514,22 +2514,22 @@ const M = {
           right: {},
           top: {},
           bottom: {},
-          'top-left': {},
-          'top-right': {},
-          'bottom-left': {},
-          'bottom-right': {},
+          "top-left": {},
+          "top-right": {},
+          "bottom-left": {},
+          "bottom-right": {},
         },
-        requires: [`text-field`, {'symbol-placement': [`point`]}],
+        requires: [`text-field`, {"symbol-placement": [`point`]}],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-variable-anchor-offset': {
+      "text-variable-anchor-offset": {
         type: `variableAnchorOffsetCollection`,
-        requires: [`text-field`, {'symbol-placement': [`point`]}],
+        requires: [`text-field`, {"symbol-placement": [`point`]}],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-anchor': {
+      "text-anchor": {
         type: `enum`,
         values: {
           center: {},
@@ -2537,129 +2537,129 @@ const M = {
           right: {},
           top: {},
           bottom: {},
-          'top-left': {},
-          'top-right': {},
-          'bottom-left': {},
-          'bottom-right': {},
+          "top-left": {},
+          "top-right": {},
+          "bottom-left": {},
+          "bottom-right": {},
         },
         default: `center`,
-        requires: [`text-field`, {'!': `text-variable-anchor`}],
+        requires: [`text-field`, {"!": `text-variable-anchor`}],
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-max-angle': {
+      "text-max-angle": {
         type: `number`,
         default: 45,
         units: `degrees`,
-        requires: [`text-field`, {'symbol-placement': [`line`, `line-center`]}],
+        requires: [`text-field`, {"symbol-placement": [`line`, `line-center`]}],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-writing-mode': {
+      "text-writing-mode": {
         type: `array`,
         value: `enum`,
         values: {horizontal: {}, vertical: {}},
-        requires: [`text-field`, {'symbol-placement': [`point`]}],
+        requires: [`text-field`, {"symbol-placement": [`point`]}],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-rotate': {
+      "text-rotate": {
         type: `number`,
         default: 0,
         period: 360,
         units: `degrees`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-padding': {
+      "text-padding": {
         type: `number`,
         default: 2,
         minimum: 0,
         units: `pixels`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-keep-upright': {
+      "text-keep-upright": {
         type: `boolean`,
         default: !0,
         requires: [
           `text-field`,
-          {'text-rotation-alignment': `map`},
-          {'symbol-placement': [`line`, `line-center`]},
+          {"text-rotation-alignment": `map`},
+          {"symbol-placement": [`line`, `line-center`]},
         ],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-transform': {
+      "text-transform": {
         type: `enum`,
         values: {none: {}, uppercase: {}, lowercase: {}},
         default: `none`,
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-offset': {
+      "text-offset": {
         type: `array`,
         value: `number`,
         units: `ems`,
         length: 2,
         default: [0, 0],
-        requires: [`text-field`, {'!': `text-radial-offset`}],
+        requires: [`text-field`, {"!": `text-radial-offset`}],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-allow-overlap': {
+      "text-allow-overlap": {
         type: `boolean`,
         default: !1,
-        requires: [`text-field`, {'!': `text-overlap`}],
+        requires: [`text-field`, {"!": `text-overlap`}],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-overlap': {
+      "text-overlap": {
         type: `enum`,
         values: {never: {}, always: {}, cooperative: {}},
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-ignore-placement': {
+      "text-ignore-placement": {
         type: `boolean`,
         default: !1,
         requires: [`text-field`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-optional': {
+      "text-optional": {
         type: `boolean`,
         default: !1,
         requires: [`text-field`, `icon-image`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'symbol-height-offset': {
+      "symbol-height-offset": {
         type: `number`,
         default: 0,
         units: `meters`,
-        requires: [{'symbol-placement': [`point`]}],
+        requires: [{"symbol-placement": [`point`]}],
         expression: {interpolated: !0, parameters: [`zoom`, `feature`]},
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'symbol-height-anchor': {
+      "symbol-height-anchor": {
         type: `enum`,
         values: {ground: {}, absolute: {}},
         default: `ground`,
         requires: [`symbol-height-offset`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
       visibility: {
         type: `enum`,
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     layout_raster: {
@@ -2668,7 +2668,7 @@ const M = {
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     layout_hillshade: {
@@ -2677,39 +2677,39 @@ const M = {
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
-    'layout_color-relief': {
+    "layout_color-relief": {
       visibility: {
         type: `enum`,
         values: {visible: {}, none: {}},
         default: `visible`,
         expression: {interpolated: !1, parameters: [`global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     filter: {
       type: `boolean`,
       expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-      'property-type': `data-driven`,
+      "property-type": `data-driven`,
     },
     filter_operator: {
       type: `enum`,
       values: {
-        '==': {},
-        '!=': {},
-        '>': {},
-        '>=': {},
-        '<': {},
-        '<=': {},
+        "==": {},
+        "!=": {},
+        ">": {},
+        ">=": {},
+        "<": {},
+        "<=": {},
         in: {},
-        '!in': {},
+        "!in": {},
         all: {},
         any: {},
         none: {},
         has: {},
-        '!has': {},
+        "!has": {},
       },
     },
     geometry_type: {
@@ -2746,7 +2746,7 @@ const M = {
         type: `enum`,
         default: `viewport`,
         values: {map: {}, viewport: {}},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         transition: !1,
         expression: {interpolated: !1, parameters: [`zoom`]},
       },
@@ -2755,20 +2755,20 @@ const M = {
         default: [1.15, 210, 30],
         length: 3,
         value: `number`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
       },
       color: {
         type: `color`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: `#ffffff`,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
       intensity: {
         type: `number`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: 0.5,
         minimum: 0,
         maximum: 1,
@@ -2777,57 +2777,57 @@ const M = {
       },
     },
     sky: {
-      'sky-color': {
+      "sky-color": {
         type: `color`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: `#88C6FC`,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
-      'horizon-color': {
+      "horizon-color": {
         type: `color`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: `#ffffff`,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
-      'fog-color': {
+      "fog-color": {
         type: `color`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: `#ffffff`,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
-      'fog-ground-blend': {
+      "fog-ground-blend": {
         type: `number`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: 0.5,
         minimum: 0,
         maximum: 1,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
-      'horizon-fog-blend': {
+      "horizon-fog-blend": {
         type: `number`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: 0.8,
         minimum: 0,
         maximum: 1,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
-      'sky-horizon-blend': {
+      "sky-horizon-blend": {
         type: `number`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: 0.8,
         minimum: 0,
         maximum: 1,
         expression: {interpolated: !0, parameters: [`zoom`]},
         transition: !0,
       },
-      'atmosphere-blend': {
+      "atmosphere-blend": {
         type: `number`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         default: 0.8,
         minimum: 0,
         maximum: 1,
@@ -2843,7 +2843,7 @@ const M = {
       type: {
         type: `projectionDefinition`,
         default: `mercator`,
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
         transition: !1,
         expression: {interpolated: !0, parameters: [`zoom`]},
       },
@@ -2861,13 +2861,13 @@ const M = {
       `paint_background`,
     ],
     paint_fill: {
-      'fill-antialias': {
+      "fill-antialias": {
         type: `boolean`,
         default: !0,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-opacity': {
+      "fill-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -2877,18 +2877,18 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'fill-layer-opacity': {
+      "fill-layer-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`, `global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-color': {
+      "fill-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
@@ -2896,19 +2896,19 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'fill-outline-color': {
+      "fill-outline-color": {
         type: `color`,
         transition: !0,
-        requires: [{'!': `fill-pattern`}, {'fill-antialias': !0}],
+        requires: [{"!": `fill-pattern`}, {"fill-antialias": !0}],
         expression: {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'fill-translate': {
+      "fill-translate": {
         type: `array`,
         value: `number`,
         length: 2,
@@ -2916,45 +2916,45 @@ const M = {
         transition: !0,
         units: `pixels`,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-translate-anchor': {
+      "fill-translate-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         requires: [`fill-translate`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-pattern': {
+      "fill-pattern": {
         type: `resolvedImage`,
         transition: !0,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `cross-faded-data-driven`,
+        "property-type": `cross-faded-data-driven`,
       },
     },
-    'paint_fill-extrusion': {
-      'fill-extrusion-opacity': {
+    "paint_fill-extrusion": {
+      "fill-extrusion-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-extrusion-color': {
+      "fill-extrusion-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
-        requires: [{'!': `fill-extrusion-pattern`}],
+        requires: [{"!": `fill-extrusion-pattern`}],
         expression: {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'fill-extrusion-translate': {
+      "fill-extrusion-translate": {
         type: `array`,
         value: `number`,
         length: 2,
@@ -2962,23 +2962,23 @@ const M = {
         transition: !0,
         units: `pixels`,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-extrusion-translate-anchor': {
+      "fill-extrusion-translate-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         requires: [`fill-extrusion-translate`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'fill-extrusion-pattern': {
+      "fill-extrusion-pattern": {
         type: `resolvedImage`,
         transition: !0,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `cross-faded-data-driven`,
+        "property-type": `cross-faded-data-driven`,
       },
-      'fill-extrusion-height': {
+      "fill-extrusion-height": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -2988,9 +2988,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'fill-extrusion-base': {
+      "fill-extrusion-base": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3001,18 +3001,18 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'fill-extrusion-vertical-gradient': {
+      "fill-extrusion-vertical-gradient": {
         type: `boolean`,
         default: !0,
         transition: !1,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     paint_line: {
-      'line-opacity': {
+      "line-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3022,29 +3022,29 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-layer-opacity': {
+      "line-layer-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`, `global-state`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'line-color': {
+      "line-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
-        requires: [{'!': `line-pattern`}],
+        requires: [{"!": `line-pattern`}],
         expression: {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-translate': {
+      "line-translate": {
         type: `array`,
         value: `number`,
         length: 2,
@@ -3052,17 +3052,17 @@ const M = {
         transition: !0,
         units: `pixels`,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'line-translate-anchor': {
+      "line-translate-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         requires: [`line-translate`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'line-width': {
+      "line-width": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3072,9 +3072,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-gap-width': {
+      "line-gap-width": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3084,9 +3084,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-offset': {
+      "line-offset": {
         type: `number`,
         default: 0,
         transition: !0,
@@ -3095,9 +3095,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-blur': {
+      "line-blur": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3107,38 +3107,38 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'line-dasharray': {
+      "line-dasharray": {
         type: `array`,
         value: `number`,
         minimum: 0,
         transition: !0,
         units: `line widths`,
-        requires: [{'!': `line-pattern`}],
+        requires: [{"!": `line-pattern`}],
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `cross-faded-data-driven`,
+        "property-type": `cross-faded-data-driven`,
       },
-      'line-pattern': {
+      "line-pattern": {
         type: `resolvedImage`,
         transition: !0,
         expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
-        'property-type': `cross-faded-data-driven`,
+        "property-type": `cross-faded-data-driven`,
       },
-      'line-gradient': {
+      "line-gradient": {
         type: `color`,
         transition: !1,
         requires: [
-          {'!': `line-dasharray`},
-          {'!': `line-pattern`},
+          {"!": `line-dasharray`},
+          {"!": `line-pattern`},
           {source: `geojson`, has: {lineMetrics: !0}},
         ],
         expression: {interpolated: !0, parameters: [`line-progress`]},
-        'property-type': `color-ramp`,
+        "property-type": `color-ramp`,
       },
     },
     paint_circle: {
-      'circle-radius': {
+      "circle-radius": {
         type: `number`,
         default: 5,
         minimum: 0,
@@ -3148,9 +3148,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'circle-color': {
+      "circle-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
@@ -3158,9 +3158,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'circle-blur': {
+      "circle-blur": {
         type: `number`,
         default: 0,
         transition: !0,
@@ -3168,9 +3168,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'circle-opacity': {
+      "circle-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3180,9 +3180,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'circle-translate': {
+      "circle-translate": {
         type: `array`,
         value: `number`,
         length: 2,
@@ -3190,31 +3190,31 @@ const M = {
         transition: !0,
         units: `pixels`,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'circle-translate-anchor': {
+      "circle-translate-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         requires: [`circle-translate`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'circle-pitch-scale': {
+      "circle-pitch-scale": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'circle-pitch-alignment': {
+      "circle-pitch-alignment": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `viewport`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'circle-stroke-width': {
+      "circle-stroke-width": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3224,9 +3224,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'circle-stroke-color': {
+      "circle-stroke-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
@@ -3234,9 +3234,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'circle-stroke-opacity': {
+      "circle-stroke-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3246,11 +3246,11 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
     },
     paint_heatmap: {
-      'heatmap-radius': {
+      "heatmap-radius": {
         type: `number`,
         default: 30,
         minimum: 1,
@@ -3260,9 +3260,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'heatmap-weight': {
+      "heatmap-weight": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3271,17 +3271,17 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'heatmap-intensity': {
+      "heatmap-intensity": {
         type: `number`,
         default: 1,
         minimum: 0,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'heatmap-color': {
+      "heatmap-color": {
         type: `color`,
         default: [
           `interpolate`,
@@ -3302,20 +3302,20 @@ const M = {
         ],
         transition: !1,
         expression: {interpolated: !0, parameters: [`heatmap-density`]},
-        'property-type': `color-ramp`,
+        "property-type": `color-ramp`,
       },
-      'heatmap-opacity': {
+      "heatmap-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     paint_symbol: {
-      'icon-opacity': {
+      "icon-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3326,9 +3326,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-color': {
+      "icon-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
@@ -3337,9 +3337,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-halo-color': {
+      "icon-halo-color": {
         type: `color`,
         default: `rgba(0, 0, 0, 0)`,
         transition: !0,
@@ -3348,9 +3348,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-halo-width': {
+      "icon-halo-width": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3361,9 +3361,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-halo-blur': {
+      "icon-halo-blur": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3374,9 +3374,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'icon-translate': {
+      "icon-translate": {
         type: `array`,
         value: `number`,
         length: 2,
@@ -3385,17 +3385,17 @@ const M = {
         units: `pixels`,
         requires: [`icon-image`],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'icon-translate-anchor': {
+      "icon-translate-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         requires: [`icon-image`, `icon-translate`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-opacity': {
+      "text-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
@@ -3406,9 +3406,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-color': {
+      "text-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
@@ -3418,9 +3418,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-halo-color': {
+      "text-halo-color": {
         type: `color`,
         default: `rgba(0, 0, 0, 0)`,
         transition: !0,
@@ -3429,9 +3429,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-halo-width': {
+      "text-halo-width": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3442,9 +3442,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-halo-blur': {
+      "text-halo-blur": {
         type: `number`,
         default: 0,
         minimum: 0,
@@ -3455,9 +3455,9 @@ const M = {
           interpolated: !0,
           parameters: [`zoom`, `feature`, `feature-state`],
         },
-        'property-type': `data-driven`,
+        "property-type": `data-driven`,
       },
-      'text-translate': {
+      "text-translate": {
         type: `array`,
         value: `number`,
         length: 2,
@@ -3466,153 +3466,153 @@ const M = {
         units: `pixels`,
         requires: [`text-field`],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'text-translate-anchor': {
+      "text-translate-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `map`,
         requires: [`text-field`, `text-translate`],
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     paint_raster: {
-      'raster-opacity': {
+      "raster-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-hue-rotate': {
+      "raster-hue-rotate": {
         type: `number`,
         default: 0,
         period: 360,
         transition: !0,
         units: `degrees`,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-brightness-min': {
+      "raster-brightness-min": {
         type: `number`,
         default: 0,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-brightness-max': {
+      "raster-brightness-max": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-saturation': {
+      "raster-saturation": {
         type: `number`,
         default: 0,
         minimum: -1,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-contrast': {
+      "raster-contrast": {
         type: `number`,
         default: 0,
         minimum: -1,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
       resampling: {
         type: `enum`,
         values: {linear: {}, nearest: {}},
         default: `linear`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-resampling': {
+      "raster-resampling": {
         type: `enum`,
         values: {linear: {}, nearest: {}},
         default: `linear`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'raster-fade-duration': {
+      "raster-fade-duration": {
         type: `number`,
         default: 300,
         minimum: 0,
         transition: !1,
         units: `milliseconds`,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     paint_hillshade: {
-      'hillshade-illumination-direction': {
+      "hillshade-illumination-direction": {
         type: `numberArray`,
         default: 335,
         minimum: 0,
         maximum: 359,
         transition: !1,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-illumination-altitude': {
+      "hillshade-illumination-altitude": {
         type: `numberArray`,
         default: 45,
         minimum: 0,
         maximum: 90,
         transition: !1,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-illumination-anchor': {
+      "hillshade-illumination-anchor": {
         type: `enum`,
         values: {map: {}, viewport: {}},
         default: `viewport`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-exaggeration': {
+      "hillshade-exaggeration": {
         type: `number`,
         default: 0.5,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-shadow-color': {
+      "hillshade-shadow-color": {
         type: `colorArray`,
         default: `#000000`,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-highlight-color': {
+      "hillshade-highlight-color": {
         type: `colorArray`,
         default: `#FFFFFF`,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-accent-color': {
+      "hillshade-accent-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'hillshade-method': {
+      "hillshade-method": {
         type: `enum`,
         values: {
           standard: {},
@@ -3623,63 +3623,63 @@ const M = {
         },
         default: `standard`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
       resampling: {
         type: `enum`,
         values: {linear: {}, nearest: {}},
         default: `linear`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
-    'paint_color-relief': {
-      'color-relief-opacity': {
+    "paint_color-relief": {
+      "color-relief-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'color-relief-color': {
+      "color-relief-color": {
         type: `color`,
         transition: !1,
         expression: {interpolated: !0, parameters: [`elevation`]},
-        'property-type': `color-ramp`,
+        "property-type": `color-ramp`,
       },
       resampling: {
         type: `enum`,
         values: {linear: {}, nearest: {}},
         default: `linear`,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     paint_background: {
-      'background-color': {
+      "background-color": {
         type: `color`,
         default: `#000000`,
         transition: !0,
-        requires: [{'!': `background-pattern`}],
+        requires: [{"!": `background-pattern`}],
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
-      'background-pattern': {
+      "background-pattern": {
         type: `resolvedImage`,
         transition: !0,
         expression: {interpolated: !1, parameters: [`zoom`]},
-        'property-type': `cross-faded`,
+        "property-type": `cross-faded`,
       },
-      'background-opacity': {
+      "background-opacity": {
         type: `number`,
         default: 1,
         minimum: 0,
         maximum: 1,
         transition: !0,
         expression: {interpolated: !0, parameters: [`zoom`]},
-        'property-type': `data-constant`,
+        "property-type": `data-constant`,
       },
     },
     transition: {
@@ -3691,37 +3691,37 @@ const M = {
       },
       delay: {type: `number`, default: 0, minimum: 0, units: `milliseconds`},
     },
-    'property-type': {
-      'data-driven': {type: `property-type`},
-      'cross-faded': {type: `property-type`},
-      'cross-faded-data-driven': {type: `property-type`},
-      'color-ramp': {type: `property-type`},
-      'data-constant': {type: `property-type`},
+    "property-type": {
+      "data-driven": {type: `property-type`},
+      "cross-faded": {type: `property-type`},
+      "cross-faded-data-driven": {type: `property-type`},
+      "color-ramp": {type: `property-type`},
+      "data-constant": {type: `property-type`},
       constant: {type: `property-type`},
     },
-    promoteId: {'*': {type: `string`}},
+    promoteId: {"*": {type: `string`}},
     interpolation: {type: `array`, value: `interpolation_name`, minimum: 1},
     interpolation_name: {
       type: `enum`,
       values: {
         linear: {
           syntax: {
-            overloads: [{parameters: [], 'output-type': `interpolation`}],
+            overloads: [{parameters: [], "output-type": `interpolation`}],
             parameters: [],
           },
         },
         exponential: {
           syntax: {
-            overloads: [{parameters: [`base`], 'output-type': `interpolation`}],
+            overloads: [{parameters: [`base`], "output-type": `interpolation`}],
             parameters: [{name: `base`, type: `number literal`}],
           },
         },
-        'cubic-bezier': {
+        "cubic-bezier": {
           syntax: {
             overloads: [
               {
                 parameters: [`x1`, `y1`, `x2`, `y2`],
-                'output-type': `interpolation`,
+                "output-type": `interpolation`,
               },
             ],
             parameters: [
@@ -4875,7 +4875,7 @@ var ci = class e {
     return this.args.every(e => e.outputDefined())
   }
 }
-const li = {'to-boolean': L, 'to-color': er, 'to-number': F, 'to-string': I}
+const li = {"to-boolean": L, "to-color": er, "to-number": F, "to-string": I}
 var ui = class e {
   constructor(e, t, n) {
     ;((this.type = e), (this.args = t), (this.key = n))
@@ -6029,7 +6029,7 @@ var Yi = class e {
       if (i.unit && ((s = n.parse(i.unit, 1, I)), !s)) return null
       if (o && s)
         return n.error(
-          'NumberFormat options `currency` and `unit` are mutually exclusive'
+          "NumberFormat options `currency` and `unit` are mutually exclusive"
         )
       let c = null
       if (
@@ -7015,12 +7015,12 @@ var so = class e {
     }
   }
 const uo = {
-  '==': Ui,
-  '!=': Wi,
-  '>': Ki,
-  '<': Gi,
-  '>=': Ji,
-  '<=': qi,
+  "==": Ui,
+  "!=": Wi,
+  ">": Ki,
+  "<": Gi,
+  ">=": Ji,
+  "<=": qi,
   array: ci,
   at: gi,
   boolean: ci,
@@ -7030,29 +7030,29 @@ const uo = {
   format: Zi,
   image: Qi,
   in: _i,
-  'index-of': vi,
+  "index-of": vi,
   interpolate: Ti,
-  'interpolate-hcl': Ti,
-  'interpolate-lab': Ti,
+  "interpolate-hcl": Ti,
+  "interpolate-lab": Ti,
   length: $i,
   let: mi,
   literal: oi,
   match: yi,
   number: ci,
-  'number-format': Xi,
+  "number-format": Xi,
   object: ci,
   semiliteral: co,
   slice: xi,
   step: Ci,
   string: ci,
-  'to-boolean': ui,
-  'to-color': ui,
-  'to-number': ui,
-  'to-string': ui,
+  "to-boolean": ui,
+  "to-color": ui,
+  "to-number": ui,
+  "to-string": ui,
   var: hi,
   within: Da,
   distance: so,
-  'global-state': lo,
+  "global-state": lo,
 }
 var fo = class e {
   constructor(e, t, n, r, i) {
@@ -7166,7 +7166,7 @@ fo.register(uo, {
     },
   ],
   typeof: [I, [R], (e, [t]) => z(ii(t.evaluate(e)))],
-  'to-rgba': [
+  "to-rgba": [
     dr(F, 4),
     [er],
     (e, [t]) => {
@@ -7190,24 +7190,24 @@ fo.register(uo, {
       [[I, nr], (e, [t, n]) => ho(t.evaluate(e), n.evaluate(e))],
     ],
   },
-  'feature-state': [
+  "feature-state": [
     R,
     [I],
     (e, [t]) => ho(t.evaluate(e), e.featureState || {}),
   ],
   properties: [nr, [], e => e.properties()],
-  'geometry-type': [I, [], e => e.geometryType()],
+  "geometry-type": [I, [], e => e.geometryType()],
   id: [R, [], e => e.id()],
   zoom: [F, [], e => e.globals.zoom],
-  'heatmap-density': [F, [], e => e.globals.heatmapDensity || 0],
+  "heatmap-density": [F, [], e => e.globals.heatmapDensity || 0],
   elevation: [F, [], e => e.globals.elevation || 0],
-  'line-progress': [F, [], e => e.globals.lineProgress || 0],
+  "line-progress": [F, [], e => e.globals.lineProgress || 0],
   accumulated: [
     R,
     [],
     e => (e.globals.accumulated === void 0 ? null : e.globals.accumulated),
   ],
-  '+': [
+  "+": [
     F,
     _o(F),
     (e, t) => {
@@ -7216,7 +7216,7 @@ fo.register(uo, {
       return n
     },
   ],
-  '*': [
+  "*": [
     F,
     _o(F),
     (e, t) => {
@@ -7225,19 +7225,19 @@ fo.register(uo, {
       return n
     },
   ],
-  '-': {
+  "-": {
     type: F,
     overloads: [
       [[F, F], (e, [t, n]) => t.evaluate(e) - n.evaluate(e)],
       [[F], (e, [t]) => -t.evaluate(e)],
     ],
   },
-  '/': [F, [F, F], (e, [t, n]) => t.evaluate(e) / n.evaluate(e)],
-  '%': [F, [F, F], (e, [t, n]) => t.evaluate(e) % n.evaluate(e)],
+  "/": [F, [F, F], (e, [t, n]) => t.evaluate(e) / n.evaluate(e)],
+  "%": [F, [F, F], (e, [t, n]) => t.evaluate(e) % n.evaluate(e)],
   ln2: [F, [], () => Math.LN2],
   pi: [F, [], () => Math.PI],
   e: [F, [], () => Math.E],
-  '^': [F, [F, F], (e, [t, n]) => t.evaluate(e) ** +n.evaluate(e)],
+  "^": [F, [F, F], (e, [t, n]) => t.evaluate(e) ** +n.evaluate(e)],
   sqrt: [F, [F], (e, [t]) => Math.sqrt(t.evaluate(e))],
   log10: [F, [F], (e, [t]) => Math.log(t.evaluate(e)) / Math.LN10],
   ln: [F, [F], (e, [t]) => Math.log(t.evaluate(e))],
@@ -7261,10 +7261,10 @@ fo.register(uo, {
   ],
   floor: [F, [F], (e, [t]) => Math.floor(t.evaluate(e))],
   ceil: [F, [F], (e, [t]) => Math.ceil(t.evaluate(e))],
-  'filter-==': [L, [I, R], (e, [t, n]) => e.properties()[t.value] === n.value],
-  'filter-id-==': [L, [R], (e, [t]) => e.id() === t.value],
-  'filter-type-==': [L, [I], (e, [t]) => e.geometryType() === t.value],
-  'filter-<': [
+  "filter-==": [L, [I, R], (e, [t, n]) => e.properties()[t.value] === n.value],
+  "filter-id-==": [L, [R], (e, [t]) => e.id() === t.value],
+  "filter-type-==": [L, [I], (e, [t]) => e.geometryType() === t.value],
+  "filter-<": [
     L,
     [I, R],
     (e, [t, n]) => {
@@ -7273,7 +7273,7 @@ fo.register(uo, {
       return typeof r == typeof i && r < i
     },
   ],
-  'filter-id-<': [
+  "filter-id-<": [
     L,
     [R],
     (e, [t]) => {
@@ -7282,7 +7282,7 @@ fo.register(uo, {
       return typeof n == typeof r && n < r
     },
   ],
-  'filter->': [
+  "filter->": [
     L,
     [I, R],
     (e, [t, n]) => {
@@ -7291,7 +7291,7 @@ fo.register(uo, {
       return typeof r == typeof i && r > i
     },
   ],
-  'filter-id->': [
+  "filter-id->": [
     L,
     [R],
     (e, [t]) => {
@@ -7300,7 +7300,7 @@ fo.register(uo, {
       return typeof n == typeof r && n > r
     },
   ],
-  'filter-<=': [
+  "filter-<=": [
     L,
     [I, R],
     (e, [t, n]) => {
@@ -7309,7 +7309,7 @@ fo.register(uo, {
       return typeof r == typeof i && r <= i
     },
   ],
-  'filter-id-<=': [
+  "filter-id-<=": [
     L,
     [R],
     (e, [t]) => {
@@ -7318,7 +7318,7 @@ fo.register(uo, {
       return typeof n == typeof r && n <= r
     },
   ],
-  'filter->=': [
+  "filter->=": [
     L,
     [I, R],
     (e, [t, n]) => {
@@ -7327,7 +7327,7 @@ fo.register(uo, {
       return typeof r == typeof i && r >= i
     },
   ],
-  'filter-id->=': [
+  "filter-id->=": [
     L,
     [R],
     (e, [t]) => {
@@ -7336,7 +7336,7 @@ fo.register(uo, {
       return typeof n == typeof r && n >= r
     },
   ],
-  'filter-has': [
+  "filter-has": [
     L,
     [R],
     (e, [t]) => {
@@ -7345,19 +7345,19 @@ fo.register(uo, {
       return n in r && r[n] !== void 0
     },
   ],
-  'filter-has-id': [L, [], e => e.id() !== null && e.id() !== void 0],
-  'filter-type-in': [
+  "filter-has-id": [L, [], e => e.id() !== null && e.id() !== void 0],
+  "filter-type-in": [
     L,
     [dr(I)],
     (e, [t]) => t.value.indexOf(e.geometryType()) >= 0,
   ],
-  'filter-id-in': [L, [dr(R)], (e, [t]) => t.value.indexOf(e.id()) >= 0],
-  'filter-in-small': [
+  "filter-id-in": [L, [dr(R)], (e, [t]) => t.value.indexOf(e.id()) >= 0],
+  "filter-in-small": [
     L,
     [I, dr(R)],
     (e, [t, n]) => n.value.indexOf(e.properties()[t.value]) >= 0,
   ],
-  'filter-in-large': [
+  "filter-in-large": [
     L,
     [I, dr(R)],
     (e, [t, n]) => go(e.properties()[t.value], n.value, 0, n.value.length - 1),
@@ -7388,8 +7388,8 @@ fo.register(uo, {
       ],
     ],
   },
-  '!': [L, [L], (e, [t]) => !t.evaluate(e)],
-  'is-supported-script': [
+  "!": [L, [L], (e, [t]) => !t.evaluate(e)],
+  "is-supported-script": [
     L,
     [I],
     (e, [t]) => {
@@ -7402,7 +7402,7 @@ fo.register(uo, {
   concat: [I, _o(R), (e, t) => t.map(t => ai(t.evaluate(e))).join(``)],
   split: [dr(I), [I, I], (e, [t, n]) => t.evaluate(e).split(n.evaluate(e))],
   join: [I, [dr(I), I], (e, [t, n]) => t.evaluate(e).join(n.evaluate(e))],
-  'resolved-locale': [I, [ir], (e, [t]) => t.evaluate(e).resolvedLocale()],
+  "resolved-locale": [I, [ir], (e, [t]) => t.evaluate(e).resolvedLocale()],
 })
 function vo(e) {
   return Array.isArray(e) ? `(${e.map(z).join(`, `)})` : `(${z(e.type)}...)`
@@ -7445,7 +7445,7 @@ function bo(e) {
         e.name === `properties` ||
         e.name === `geometry-type` ||
         e.name === `id` ||
-        e.name.startsWith('filter-'))) ||
+        e.name.startsWith("filter-"))) ||
     e instanceof Da ||
     e instanceof so
   )
@@ -8169,7 +8169,7 @@ const ds = {
   type: `boolean`,
   default: !1,
   transition: !1,
-  'property-type': `data-driven`,
+  "property-type": `data-driven`,
   expression: {interpolated: !1, parameters: [`zoom`, `feature`]},
 }
 function fs(e, t, n) {
@@ -9019,7 +9019,7 @@ function Us(e) {
         styleSpec: e.styleSpec,
         validateSpec: e.validateSpec,
         objectElementValidators: {
-          '*'() {
+          "*"() {
             return []
           },
           type() {
@@ -9044,7 +9044,7 @@ function Us(e) {
               styleSpec: e.styleSpec,
               validateSpec: e.validateSpec,
               objectElementValidators: {
-                '*'(e) {
+                "*"(e) {
                   return Hs(Oo({layerType: o}, e))
                 },
               },
@@ -9059,7 +9059,7 @@ function Us(e) {
               styleSpec: e.styleSpec,
               validateSpec: e.validateSpec,
               objectElementValidators: {
-                '*'(e) {
+                "*"(e) {
                   return Vs(Oo({layerType: o}, e))
                 },
               },
@@ -9548,7 +9548,7 @@ function dc(e) {
     else if (c === `array`) {
       let n = {
         url: {type: `string`, required: !0},
-        'unicode-range': {type: `array`, value: `string`},
+        "unicode-range": {type: `array`, value: `string`},
       }
       for (let [c, l] of s.entries())
         o.push(
@@ -9566,7 +9566,7 @@ function dc(e) {
   return o
 }
 const fc = {
-  '*'() {
+  "*"() {
     return []
   },
   array: ks,
@@ -9636,7 +9636,7 @@ function hc(e, t = M) {
         validateSpec: pc,
         objectElementValidators: {
           glyphs: mc,
-          '*'() {
+          "*"() {
             return []
           },
         },
@@ -9681,7 +9681,7 @@ function vc(e) {
 }
 const yc = {
   type: `enum`,
-  'property-type': `data-constant`,
+  "property-type": `data-constant`,
   expression: {interpolated: !1, parameters: [`global-state`]},
   values: {visible: {}, none: {}},
   transition: !1,
@@ -9900,7 +9900,7 @@ var Oc = class e {
 const kc = {}
 function U(e, t, n = {}) {
   if (kc[e]) throw Error(`${e} is already registered.`)
-  ;(Object.defineProperty(t, '_classRegistryKey', {value: e, writeable: !1}),
+  ;(Object.defineProperty(t, "_classRegistryKey", {value: e, writeable: !1}),
     (kc[e] = {klass: t, omit: n.omit || [], shallow: n.shallow || []}))
 }
 ;(U(`Object`, Object),
@@ -10778,7 +10778,7 @@ var bl = class extends In {
       id: this.id,
       type: this.type,
       source: this.source,
-      'source-layer': this.sourceLayer,
+      "source-layer": this.sourceLayer,
       metadata: this.metadata,
       minzoom: this.minzoom,
       maxzoom: this.maxzoom,
@@ -10832,33 +10832,33 @@ var bl = class extends In {
 let xl
 const Sl = () =>
   (xl ||= new _l({
-    'raster-opacity': new G(M.paint_raster[`raster-opacity`], `raster-opacity`),
-    'raster-hue-rotate': new G(
+    "raster-opacity": new G(M.paint_raster[`raster-opacity`], `raster-opacity`),
+    "raster-hue-rotate": new G(
       M.paint_raster[`raster-hue-rotate`],
       `raster-hue-rotate`
     ),
-    'raster-brightness-min': new G(
+    "raster-brightness-min": new G(
       M.paint_raster[`raster-brightness-min`],
       `raster-brightness-min`
     ),
-    'raster-brightness-max': new G(
+    "raster-brightness-max": new G(
       M.paint_raster[`raster-brightness-max`],
       `raster-brightness-max`
     ),
-    'raster-saturation': new G(
+    "raster-saturation": new G(
       M.paint_raster[`raster-saturation`],
       `raster-saturation`
     ),
-    'raster-contrast': new G(
+    "raster-contrast": new G(
       M.paint_raster[`raster-contrast`],
       `raster-contrast`
     ),
     resampling: new G(M.paint_raster.resampling, `resampling`),
-    'raster-resampling': new G(
+    "raster-resampling": new G(
       M.paint_raster[`raster-resampling`],
       `raster-resampling`
     ),
-    'raster-fade-duration': new G(
+    "raster-fade-duration": new G(
       M.paint_raster[`raster-fade-duration`],
       `raster-fade-duration`
     ),
@@ -12779,31 +12779,31 @@ var id = class {
 function pd(e, t) {
   return (
     {
-      'text-opacity': [`opacity`],
-      'icon-opacity': [`opacity`],
-      'text-color': [`fill_color`],
-      'icon-color': [`fill_color`],
-      'text-halo-color': [`halo_color`],
-      'icon-halo-color': [`halo_color`],
-      'text-halo-blur': [`halo_blur`],
-      'icon-halo-blur': [`halo_blur`],
-      'text-halo-width': [`halo_width`],
-      'icon-halo-width': [`halo_width`],
-      'line-gap-width': [`gapwidth`],
-      'line-dasharray': [`dasharray_to`, `dasharray_from`],
-      'line-pattern': [
+      "text-opacity": [`opacity`],
+      "icon-opacity": [`opacity`],
+      "text-color": [`fill_color`],
+      "icon-color": [`fill_color`],
+      "text-halo-color": [`halo_color`],
+      "icon-halo-color": [`halo_color`],
+      "text-halo-blur": [`halo_blur`],
+      "icon-halo-blur": [`halo_blur`],
+      "text-halo-width": [`halo_width`],
+      "icon-halo-width": [`halo_width`],
+      "line-gap-width": [`gapwidth`],
+      "line-dasharray": [`dasharray_to`, `dasharray_from`],
+      "line-pattern": [
         `pattern_to`,
         `pattern_from`,
         `pixel_ratio_to`,
         `pixel_ratio_from`,
       ],
-      'fill-pattern': [
+      "fill-pattern": [
         `pattern_to`,
         `pattern_from`,
         `pixel_ratio_to`,
         `pixel_ratio_from`,
       ],
-      'fill-extrusion-pattern': [
+      "fill-extrusion-pattern": [
         `pattern_to`,
         `pattern_from`,
         `pixel_ratio_to`,
@@ -12814,10 +12814,10 @@ function pd(e, t) {
 }
 function md(e) {
   return {
-    'line-pattern': {source: xu, composite: xu},
-    'fill-pattern': {source: xu, composite: xu},
-    'fill-extrusion-pattern': {source: xu, composite: xu},
-    'line-dasharray': {source: Su, composite: Su},
+    "line-pattern": {source: xu, composite: xu},
+    "fill-pattern": {source: xu, composite: xu},
+    "fill-extrusion-pattern": {source: xu, composite: xu},
+    "line-dasharray": {source: Su, composite: Su},
   }[e]
 }
 function hd(e, t, n) {
@@ -13264,7 +13264,7 @@ function qd(e, t, n, r) {
 let Jd
 const Yd = () =>
   (Jd ||= new _l({
-    'circle-sort-key': new K(
+    "circle-sort-key": new K(
       M.layout_circle[`circle-sort-key`],
       `circle-sort-key`
     ),
@@ -13272,35 +13272,35 @@ const Yd = () =>
 let Xd
 const Zd = () =>
   (Xd ||= new _l({
-    'circle-radius': new K(M.paint_circle[`circle-radius`], `circle-radius`),
-    'circle-color': new K(M.paint_circle[`circle-color`], `circle-color`),
-    'circle-blur': new K(M.paint_circle[`circle-blur`], `circle-blur`),
-    'circle-opacity': new K(M.paint_circle[`circle-opacity`], `circle-opacity`),
-    'circle-translate': new G(
+    "circle-radius": new K(M.paint_circle[`circle-radius`], `circle-radius`),
+    "circle-color": new K(M.paint_circle[`circle-color`], `circle-color`),
+    "circle-blur": new K(M.paint_circle[`circle-blur`], `circle-blur`),
+    "circle-opacity": new K(M.paint_circle[`circle-opacity`], `circle-opacity`),
+    "circle-translate": new G(
       M.paint_circle[`circle-translate`],
       `circle-translate`
     ),
-    'circle-translate-anchor': new G(
+    "circle-translate-anchor": new G(
       M.paint_circle[`circle-translate-anchor`],
       `circle-translate-anchor`
     ),
-    'circle-pitch-scale': new G(
+    "circle-pitch-scale": new G(
       M.paint_circle[`circle-pitch-scale`],
       `circle-pitch-scale`
     ),
-    'circle-pitch-alignment': new G(
+    "circle-pitch-alignment": new G(
       M.paint_circle[`circle-pitch-alignment`],
       `circle-pitch-alignment`
     ),
-    'circle-stroke-width': new K(
+    "circle-stroke-width": new K(
       M.paint_circle[`circle-stroke-width`],
       `circle-stroke-width`
     ),
-    'circle-stroke-color': new K(
+    "circle-stroke-color": new K(
       M.paint_circle[`circle-stroke-color`],
       `circle-stroke-color`
     ),
-    'circle-stroke-opacity': new K(
+    "circle-stroke-opacity": new K(
       M.paint_circle[`circle-stroke-opacity`],
       `circle-stroke-opacity`
     ),
@@ -13375,20 +13375,20 @@ U(`HeatmapBucket`, tf, {omit: [`layers`]})
 let nf
 const rf = () =>
   (nf ||= new _l({
-    'heatmap-radius': new K(
+    "heatmap-radius": new K(
       M.paint_heatmap[`heatmap-radius`],
       `heatmap-radius`
     ),
-    'heatmap-weight': new K(
+    "heatmap-weight": new K(
       M.paint_heatmap[`heatmap-weight`],
       `heatmap-weight`
     ),
-    'heatmap-intensity': new G(
+    "heatmap-intensity": new G(
       M.paint_heatmap[`heatmap-intensity`],
       `heatmap-intensity`
     ),
-    'heatmap-color': new gl(M.paint_heatmap[`heatmap-color`], `heatmap-color`),
-    'heatmap-opacity': new G(
+    "heatmap-color": new gl(M.paint_heatmap[`heatmap-color`], `heatmap-color`),
+    "heatmap-opacity": new G(
       M.paint_heatmap[`heatmap-opacity`],
       `heatmap-opacity`
     ),
@@ -13588,35 +13588,35 @@ var hf = class extends bl {
 let gf
 const _f = () =>
   (gf ||= new _l({
-    'hillshade-illumination-direction': new G(
+    "hillshade-illumination-direction": new G(
       M.paint_hillshade[`hillshade-illumination-direction`],
       `hillshade-illumination-direction`
     ),
-    'hillshade-illumination-altitude': new G(
+    "hillshade-illumination-altitude": new G(
       M.paint_hillshade[`hillshade-illumination-altitude`],
       `hillshade-illumination-altitude`
     ),
-    'hillshade-illumination-anchor': new G(
+    "hillshade-illumination-anchor": new G(
       M.paint_hillshade[`hillshade-illumination-anchor`],
       `hillshade-illumination-anchor`
     ),
-    'hillshade-exaggeration': new G(
+    "hillshade-exaggeration": new G(
       M.paint_hillshade[`hillshade-exaggeration`],
       `hillshade-exaggeration`
     ),
-    'hillshade-shadow-color': new G(
+    "hillshade-shadow-color": new G(
       M.paint_hillshade[`hillshade-shadow-color`],
       `hillshade-shadow-color`
     ),
-    'hillshade-highlight-color': new G(
+    "hillshade-highlight-color": new G(
       M.paint_hillshade[`hillshade-highlight-color`],
       `hillshade-highlight-color`
     ),
-    'hillshade-accent-color': new G(
+    "hillshade-accent-color": new G(
       M.paint_hillshade[`hillshade-accent-color`],
       `hillshade-accent-color`
     ),
-    'hillshade-method': new G(
+    "hillshade-method": new G(
       M.paint_hillshade[`hillshade-method`],
       `hillshade-method`
     ),
@@ -13657,11 +13657,11 @@ var bf = class extends bl {
 let xf
 const Sf = () =>
   (xf ||= new _l({
-    'color-relief-opacity': new G(
+    "color-relief-opacity": new G(
       M[`paint_color-relief`][`color-relief-opacity`],
       `color-relief-opacity`
     ),
-    'color-relief-color': new gl(
+    "color-relief-color": new gl(
       M[`paint_color-relief`][`color-relief-color`],
       `color-relief-color`
     ),
@@ -15314,28 +15314,28 @@ U(`FillBucket`, Up, {omit: [`layers`, `patternFeatures`]})
 let Wp
 const Gp = () =>
   (Wp ||= new _l({
-    'fill-sort-key': new K(M.layout_fill[`fill-sort-key`], `fill-sort-key`),
+    "fill-sort-key": new K(M.layout_fill[`fill-sort-key`], `fill-sort-key`),
   }))
 let Kp
 const qp = () =>
   (Kp ||= new _l({
-    'fill-antialias': new G(M.paint_fill[`fill-antialias`], `fill-antialias`),
-    'fill-opacity': new K(M.paint_fill[`fill-opacity`], `fill-opacity`),
-    'fill-layer-opacity': new G(
+    "fill-antialias": new G(M.paint_fill[`fill-antialias`], `fill-antialias`),
+    "fill-opacity": new K(M.paint_fill[`fill-opacity`], `fill-opacity`),
+    "fill-layer-opacity": new G(
       M.paint_fill[`fill-layer-opacity`],
       `fill-layer-opacity`
     ),
-    'fill-color': new K(M.paint_fill[`fill-color`], `fill-color`),
-    'fill-outline-color': new K(
+    "fill-color": new K(M.paint_fill[`fill-color`], `fill-color`),
+    "fill-outline-color": new K(
       M.paint_fill[`fill-outline-color`],
       `fill-outline-color`
     ),
-    'fill-translate': new G(M.paint_fill[`fill-translate`], `fill-translate`),
-    'fill-translate-anchor': new G(
+    "fill-translate": new G(M.paint_fill[`fill-translate`], `fill-translate`),
+    "fill-translate-anchor": new G(
       M.paint_fill[`fill-translate-anchor`],
       `fill-translate-anchor`
     ),
-    'fill-pattern': new ml(M.paint_fill[`fill-pattern`], `fill-pattern`),
+    "fill-pattern": new ml(M.paint_fill[`fill-pattern`], `fill-pattern`),
   }))
 var Jp = {
   get paint() {
@@ -15757,7 +15757,7 @@ var dm = class e {
     if (!Array.isArray(t) && typeof t == `object` && t)
       return new e(Number(`lng` in t ? t.lng : t.lon), Number(t.lat))
     throw Error(
-      '`LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]'
+      "`LngLatLike` argument must be specified as a LngLat instance, an object {lng: <lng>, lat: <lat>}, an object {lon: <lng>, lat: <lat>}, or an array of [<lng>, <lat>]"
     )
   }
 }
@@ -16137,7 +16137,7 @@ U(`FillExtrusionBucket`, zm, {omit: [`layers`, `features`]})
 let Vm
 const Hm = () =>
   (Vm ||= new _l({
-    'fill-extrusion-rounded-corner-distance': new G(
+    "fill-extrusion-rounded-corner-distance": new G(
       M[`layout_fill-extrusion`][`fill-extrusion-rounded-corner-distance`],
       `fill-extrusion-rounded-corner-distance`
     ),
@@ -16145,35 +16145,35 @@ const Hm = () =>
 let Um
 const Wm = () =>
   (Um ||= new _l({
-    'fill-extrusion-opacity': new G(
+    "fill-extrusion-opacity": new G(
       M[`paint_fill-extrusion`][`fill-extrusion-opacity`],
       `fill-extrusion-opacity`
     ),
-    'fill-extrusion-color': new K(
+    "fill-extrusion-color": new K(
       M[`paint_fill-extrusion`][`fill-extrusion-color`],
       `fill-extrusion-color`
     ),
-    'fill-extrusion-translate': new G(
+    "fill-extrusion-translate": new G(
       M[`paint_fill-extrusion`][`fill-extrusion-translate`],
       `fill-extrusion-translate`
     ),
-    'fill-extrusion-translate-anchor': new G(
+    "fill-extrusion-translate-anchor": new G(
       M[`paint_fill-extrusion`][`fill-extrusion-translate-anchor`],
       `fill-extrusion-translate-anchor`
     ),
-    'fill-extrusion-pattern': new ml(
+    "fill-extrusion-pattern": new ml(
       M[`paint_fill-extrusion`][`fill-extrusion-pattern`],
       `fill-extrusion-pattern`
     ),
-    'fill-extrusion-height': new K(
+    "fill-extrusion-height": new K(
       M[`paint_fill-extrusion`][`fill-extrusion-height`],
       `fill-extrusion-height`
     ),
-    'fill-extrusion-base': new K(
+    "fill-extrusion-base": new K(
       M[`paint_fill-extrusion`][`fill-extrusion-base`],
       `fill-extrusion-base`
     ),
-    'fill-extrusion-vertical-gradient': new G(
+    "fill-extrusion-vertical-gradient": new G(
       M[`paint_fill-extrusion`][`fill-extrusion-vertical-gradient`],
       `fill-extrusion-vertical-gradient`
     ),
@@ -17753,7 +17753,7 @@ var xg = class {
     let n = this.options
     if (!n.updateable)
       throw Error(
-        'to update tile geojson `updateable` option must be set to true'
+        "to update tile geojson `updateable` option must be set to true"
       )
     let {affected: r, source: i} = Hh(this.source, e, n)
     ;(t && ({affected: r, source: i} = this.filterUpdate(i, r, t)),
@@ -17767,7 +17767,7 @@ var xg = class {
   getData() {
     if (!this.options.updateable)
       throw Error(
-        'to retrieve data the `updateable` option must be set to true'
+        "to retrieve data the `updateable` option must be set to true"
       )
     return vh(this.source)
   }
@@ -18154,39 +18154,39 @@ U(`LineBucket`, kg, {omit: [`layers`, `patternFeatures`]})
 let Ag
 const jg = () =>
   (Ag ||= new _l({
-    'line-cap': new K(M.layout_line[`line-cap`], `line-cap`),
-    'line-join': new K(M.layout_line[`line-join`], `line-join`),
-    'line-miter-limit': new K(
+    "line-cap": new K(M.layout_line[`line-cap`], `line-cap`),
+    "line-join": new K(M.layout_line[`line-join`], `line-join`),
+    "line-miter-limit": new K(
       M.layout_line[`line-miter-limit`],
       `line-miter-limit`
     ),
-    'line-round-limit': new K(
+    "line-round-limit": new K(
       M.layout_line[`line-round-limit`],
       `line-round-limit`
     ),
-    'line-sort-key': new K(M.layout_line[`line-sort-key`], `line-sort-key`),
+    "line-sort-key": new K(M.layout_line[`line-sort-key`], `line-sort-key`),
   }))
 let Mg
 const Ng = () =>
   (Mg ||= new _l({
-    'line-opacity': new K(M.paint_line[`line-opacity`], `line-opacity`),
-    'line-layer-opacity': new G(
+    "line-opacity": new K(M.paint_line[`line-opacity`], `line-opacity`),
+    "line-layer-opacity": new G(
       M.paint_line[`line-layer-opacity`],
       `line-layer-opacity`
     ),
-    'line-color': new K(M.paint_line[`line-color`], `line-color`),
-    'line-translate': new G(M.paint_line[`line-translate`], `line-translate`),
-    'line-translate-anchor': new G(
+    "line-color": new K(M.paint_line[`line-color`], `line-color`),
+    "line-translate": new G(M.paint_line[`line-translate`], `line-translate`),
+    "line-translate-anchor": new G(
       M.paint_line[`line-translate-anchor`],
       `line-translate-anchor`
     ),
-    'line-width': new K(M.paint_line[`line-width`], `line-width`),
-    'line-gap-width': new K(M.paint_line[`line-gap-width`], `line-gap-width`),
-    'line-offset': new K(M.paint_line[`line-offset`], `line-offset`),
-    'line-blur': new K(M.paint_line[`line-blur`], `line-blur`),
-    'line-dasharray': new ml(M.paint_line[`line-dasharray`], `line-dasharray`),
-    'line-pattern': new ml(M.paint_line[`line-pattern`], `line-pattern`),
-    'line-gradient': new gl(M.paint_line[`line-gradient`], `line-gradient`),
+    "line-width": new K(M.paint_line[`line-width`], `line-width`),
+    "line-gap-width": new K(M.paint_line[`line-gap-width`], `line-gap-width`),
+    "line-offset": new K(M.paint_line[`line-offset`], `line-offset`),
+    "line-blur": new K(M.paint_line[`line-blur`], `line-blur`),
+    "line-dasharray": new ml(M.paint_line[`line-dasharray`], `line-dasharray`),
+    "line-pattern": new ml(M.paint_line[`line-pattern`], `line-pattern`),
+    "line-gradient": new gl(M.paint_line[`line-gradient`], `line-gradient`),
   }))
 var Pg = {
     get paint() {
@@ -18464,90 +18464,90 @@ function qg(e) {
   return r.filter(e => e.geometry)
 }
 const Jg = {
-  '!': `︕`,
-  '#': `＃`,
+  "!": `︕`,
+  "#": `＃`,
   $: `＄`,
-  '%': `％`,
-  '&': `＆`,
-  '(': `︵`,
-  ')': `︶`,
-  '*': `＊`,
-  '+': `＋`,
-  ',': `︐`,
-  '-': `︲`,
-  '.': `・`,
-  '/': `／`,
-  ':': `︓`,
-  ';': `︔`,
-  '<': `︿`,
-  '=': `＝`,
-  '>': `﹀`,
-  '?': `︖`,
-  '@': `＠`,
-  '[': `﹇`,
-  '\\': `＼`,
-  ']': `﹈`,
-  '^': `＾`,
+  "%": `％`,
+  "&": `＆`,
+  "(": `︵`,
+  ")": `︶`,
+  "*": `＊`,
+  "+": `＋`,
+  ",": `︐`,
+  "-": `︲`,
+  ".": `・`,
+  "/": `／`,
+  ":": `︓`,
+  ";": `︔`,
+  "<": `︿`,
+  "=": `＝`,
+  ">": `﹀`,
+  "?": `︖`,
+  "@": `＠`,
+  "[": `﹇`,
+  "\\": `＼`,
+  "]": `﹈`,
+  "^": `＾`,
   _: `︳`,
-  '`': `｀`,
-  '{': `︷`,
-  '|': `―`,
-  '}': `︸`,
-  '~': `～`,
-  '¢': `￠`,
-  '£': `￡`,
-  '¥': `￥`,
-  '¦': `￤`,
-  '¬': `￢`,
-  '¯': `￣`,
-  '–': `︲`,
-  '—': `︱`,
-  '‘': `﹃`,
-  '’': `﹄`,
-  '“': `﹁`,
-  '”': `﹂`,
-  '…': `︙`,
-  '⋯': `︙`,
-  '‧': `・`,
-  '₩': `￦`,
-  '、': `︑`,
-  '。': `︒`,
-  '〈': `︿`,
-  '〉': `﹀`,
-  '《': `︽`,
-  '》': `︾`,
-  '「': `﹁`,
-  '」': `﹂`,
-  '『': `﹃`,
-  '』': `﹄`,
-  '【': `︻`,
-  '】': `︼`,
-  '〔': `︹`,
-  '〕': `︺`,
-  '〖': `︗`,
-  '〗': `︘`,
-  '！': `︕`,
-  '（': `︵`,
-  '）': `︶`,
-  '，': `︐`,
-  '－': `︲`,
-  '．': `・`,
-  '：': `︓`,
-  '；': `︔`,
-  '＜': `︿`,
-  '＞': `﹀`,
-  '？': `︖`,
-  '［': `﹇`,
-  '］': `﹈`,
-  '＿': `︳`,
-  '｛': `︷`,
-  '｜': `―`,
-  '｝': `︸`,
-  '｟': `︵`,
-  '｠': `︶`,
-  '｡': `︒`,
-  '｢': `﹁`,
-  '｣': `﹂`,
+  "`": `｀`,
+  "{": `︷`,
+  "|": `―`,
+  "}": `︸`,
+  "~": `～`,
+  "¢": `￠`,
+  "£": `￡`,
+  "¥": `￥`,
+  "¦": `￤`,
+  "¬": `￢`,
+  "¯": `￣`,
+  "–": `︲`,
+  "—": `︱`,
+  "‘": `﹃`,
+  "’": `﹄`,
+  "“": `﹁`,
+  "”": `﹂`,
+  "…": `︙`,
+  "⋯": `︙`,
+  "‧": `・`,
+  "₩": `￦`,
+  "、": `︑`,
+  "。": `︒`,
+  "〈": `︿`,
+  "〉": `﹀`,
+  "《": `︽`,
+  "》": `︾`,
+  "「": `﹁`,
+  "」": `﹂`,
+  "『": `﹃`,
+  "』": `﹄`,
+  "【": `︻`,
+  "】": `︼`,
+  "〔": `︹`,
+  "〕": `︺`,
+  "〖": `︗`,
+  "〗": `︘`,
+  "！": `︕`,
+  "（": `︵`,
+  "）": `︶`,
+  "，": `︐`,
+  "－": `︲`,
+  "．": `・`,
+  "：": `︓`,
+  "；": `︔`,
+  "＜": `︿`,
+  "＞": `﹀`,
+  "？": `︖`,
+  "［": `﹇`,
+  "］": `﹈`,
+  "＿": `︳`,
+  "｛": `︷`,
+  "｜": `―`,
+  "｝": `︸`,
+  "｟": `︵`,
+  "｠": `︶`,
+  "｡": `︒`,
+  "｢": `﹁`,
+  "｣": `﹂`,
 }
 function Yg(e) {
   let t = ``,
@@ -20534,130 +20534,130 @@ function mv(e, t) {
 let hv
 const gv = () =>
   (hv ||= new _l({
-    'symbol-placement': new G(
+    "symbol-placement": new G(
       M.layout_symbol[`symbol-placement`],
       `symbol-placement`
     ),
-    'symbol-spacing': new G(
+    "symbol-spacing": new G(
       M.layout_symbol[`symbol-spacing`],
       `symbol-spacing`
     ),
-    'symbol-avoid-edges': new G(
+    "symbol-avoid-edges": new G(
       M.layout_symbol[`symbol-avoid-edges`],
       `symbol-avoid-edges`
     ),
-    'symbol-sort-key': new K(
+    "symbol-sort-key": new K(
       M.layout_symbol[`symbol-sort-key`],
       `symbol-sort-key`
     ),
-    'symbol-z-order': new G(
+    "symbol-z-order": new G(
       M.layout_symbol[`symbol-z-order`],
       `symbol-z-order`
     ),
-    'icon-allow-overlap': new G(
+    "icon-allow-overlap": new G(
       M.layout_symbol[`icon-allow-overlap`],
       `icon-allow-overlap`
     ),
-    'icon-overlap': new G(M.layout_symbol[`icon-overlap`], `icon-overlap`),
-    'icon-ignore-placement': new G(
+    "icon-overlap": new G(M.layout_symbol[`icon-overlap`], `icon-overlap`),
+    "icon-ignore-placement": new G(
       M.layout_symbol[`icon-ignore-placement`],
       `icon-ignore-placement`
     ),
-    'icon-optional': new G(M.layout_symbol[`icon-optional`], `icon-optional`),
-    'icon-rotation-alignment': new G(
+    "icon-optional": new G(M.layout_symbol[`icon-optional`], `icon-optional`),
+    "icon-rotation-alignment": new G(
       M.layout_symbol[`icon-rotation-alignment`],
       `icon-rotation-alignment`
     ),
-    'icon-size': new K(M.layout_symbol[`icon-size`], `icon-size`),
-    'icon-text-fit': new G(M.layout_symbol[`icon-text-fit`], `icon-text-fit`),
-    'icon-text-fit-padding': new G(
+    "icon-size": new K(M.layout_symbol[`icon-size`], `icon-size`),
+    "icon-text-fit": new G(M.layout_symbol[`icon-text-fit`], `icon-text-fit`),
+    "icon-text-fit-padding": new G(
       M.layout_symbol[`icon-text-fit-padding`],
       `icon-text-fit-padding`
     ),
-    'icon-image': new K(M.layout_symbol[`icon-image`], `icon-image`),
-    'icon-rotate': new K(M.layout_symbol[`icon-rotate`], `icon-rotate`),
-    'icon-padding': new K(M.layout_symbol[`icon-padding`], `icon-padding`),
-    'icon-keep-upright': new G(
+    "icon-image": new K(M.layout_symbol[`icon-image`], `icon-image`),
+    "icon-rotate": new K(M.layout_symbol[`icon-rotate`], `icon-rotate`),
+    "icon-padding": new K(M.layout_symbol[`icon-padding`], `icon-padding`),
+    "icon-keep-upright": new G(
       M.layout_symbol[`icon-keep-upright`],
       `icon-keep-upright`
     ),
-    'icon-offset': new K(M.layout_symbol[`icon-offset`], `icon-offset`),
-    'icon-anchor': new K(M.layout_symbol[`icon-anchor`], `icon-anchor`),
-    'icon-pitch-alignment': new G(
+    "icon-offset": new K(M.layout_symbol[`icon-offset`], `icon-offset`),
+    "icon-anchor": new K(M.layout_symbol[`icon-anchor`], `icon-anchor`),
+    "icon-pitch-alignment": new G(
       M.layout_symbol[`icon-pitch-alignment`],
       `icon-pitch-alignment`
     ),
-    'text-pitch-alignment': new G(
+    "text-pitch-alignment": new G(
       M.layout_symbol[`text-pitch-alignment`],
       `text-pitch-alignment`
     ),
-    'text-rotation-alignment': new G(
+    "text-rotation-alignment": new G(
       M.layout_symbol[`text-rotation-alignment`],
       `text-rotation-alignment`
     ),
-    'text-field': new K(M.layout_symbol[`text-field`], `text-field`),
-    'text-font': new K(M.layout_symbol[`text-font`], `text-font`),
-    'text-size': new K(M.layout_symbol[`text-size`], `text-size`),
-    'text-max-width': new K(
+    "text-field": new K(M.layout_symbol[`text-field`], `text-field`),
+    "text-font": new K(M.layout_symbol[`text-font`], `text-font`),
+    "text-size": new K(M.layout_symbol[`text-size`], `text-size`),
+    "text-max-width": new K(
       M.layout_symbol[`text-max-width`],
       `text-max-width`
     ),
-    'text-line-height': new G(
+    "text-line-height": new G(
       M.layout_symbol[`text-line-height`],
       `text-line-height`
     ),
-    'text-letter-spacing': new K(
+    "text-letter-spacing": new K(
       M.layout_symbol[`text-letter-spacing`],
       `text-letter-spacing`
     ),
-    'text-justify': new K(M.layout_symbol[`text-justify`], `text-justify`),
-    'text-radial-offset': new K(
+    "text-justify": new K(M.layout_symbol[`text-justify`], `text-justify`),
+    "text-radial-offset": new K(
       M.layout_symbol[`text-radial-offset`],
       `text-radial-offset`
     ),
-    'text-variable-anchor': new G(
+    "text-variable-anchor": new G(
       M.layout_symbol[`text-variable-anchor`],
       `text-variable-anchor`
     ),
-    'text-variable-anchor-offset': new K(
+    "text-variable-anchor-offset": new K(
       M.layout_symbol[`text-variable-anchor-offset`],
       `text-variable-anchor-offset`
     ),
-    'text-anchor': new K(M.layout_symbol[`text-anchor`], `text-anchor`),
-    'text-max-angle': new G(
+    "text-anchor": new K(M.layout_symbol[`text-anchor`], `text-anchor`),
+    "text-max-angle": new G(
       M.layout_symbol[`text-max-angle`],
       `text-max-angle`
     ),
-    'text-writing-mode': new G(
+    "text-writing-mode": new G(
       M.layout_symbol[`text-writing-mode`],
       `text-writing-mode`
     ),
-    'text-rotate': new K(M.layout_symbol[`text-rotate`], `text-rotate`),
-    'text-padding': new G(M.layout_symbol[`text-padding`], `text-padding`),
-    'text-keep-upright': new G(
+    "text-rotate": new K(M.layout_symbol[`text-rotate`], `text-rotate`),
+    "text-padding": new G(M.layout_symbol[`text-padding`], `text-padding`),
+    "text-keep-upright": new G(
       M.layout_symbol[`text-keep-upright`],
       `text-keep-upright`
     ),
-    'text-transform': new K(
+    "text-transform": new K(
       M.layout_symbol[`text-transform`],
       `text-transform`
     ),
-    'text-offset': new K(M.layout_symbol[`text-offset`], `text-offset`),
-    'text-allow-overlap': new G(
+    "text-offset": new K(M.layout_symbol[`text-offset`], `text-offset`),
+    "text-allow-overlap": new G(
       M.layout_symbol[`text-allow-overlap`],
       `text-allow-overlap`
     ),
-    'text-overlap': new G(M.layout_symbol[`text-overlap`], `text-overlap`),
-    'text-ignore-placement': new G(
+    "text-overlap": new G(M.layout_symbol[`text-overlap`], `text-overlap`),
+    "text-ignore-placement": new G(
       M.layout_symbol[`text-ignore-placement`],
       `text-ignore-placement`
     ),
-    'text-optional': new G(M.layout_symbol[`text-optional`], `text-optional`),
-    'symbol-height-offset': new K(
+    "text-optional": new G(M.layout_symbol[`text-optional`], `text-optional`),
+    "symbol-height-offset": new K(
       M.layout_symbol[`symbol-height-offset`],
       `symbol-height-offset`
     ),
-    'symbol-height-anchor': new G(
+    "symbol-height-anchor": new G(
       M.layout_symbol[`symbol-height-anchor`],
       `symbol-height-anchor`
     ),
@@ -20665,39 +20665,39 @@ const gv = () =>
 let _v
 const vv = () =>
   (_v ||= new _l({
-    'icon-opacity': new K(M.paint_symbol[`icon-opacity`], `icon-opacity`),
-    'icon-color': new K(M.paint_symbol[`icon-color`], `icon-color`),
-    'icon-halo-color': new K(
+    "icon-opacity": new K(M.paint_symbol[`icon-opacity`], `icon-opacity`),
+    "icon-color": new K(M.paint_symbol[`icon-color`], `icon-color`),
+    "icon-halo-color": new K(
       M.paint_symbol[`icon-halo-color`],
       `icon-halo-color`
     ),
-    'icon-halo-width': new K(
+    "icon-halo-width": new K(
       M.paint_symbol[`icon-halo-width`],
       `icon-halo-width`
     ),
-    'icon-halo-blur': new K(M.paint_symbol[`icon-halo-blur`], `icon-halo-blur`),
-    'icon-translate': new G(M.paint_symbol[`icon-translate`], `icon-translate`),
-    'icon-translate-anchor': new G(
+    "icon-halo-blur": new K(M.paint_symbol[`icon-halo-blur`], `icon-halo-blur`),
+    "icon-translate": new G(M.paint_symbol[`icon-translate`], `icon-translate`),
+    "icon-translate-anchor": new G(
       M.paint_symbol[`icon-translate-anchor`],
       `icon-translate-anchor`
     ),
-    'text-opacity': new K(M.paint_symbol[`text-opacity`], `text-opacity`),
-    'text-color': new K(M.paint_symbol[`text-color`], `text-color`, {
+    "text-opacity": new K(M.paint_symbol[`text-opacity`], `text-opacity`),
+    "text-color": new K(M.paint_symbol[`text-color`], `text-color`, {
       runtimeType: er,
       getOverride: e => e.textColor,
       hasOverride: e => !!e.textColor,
     }),
-    'text-halo-color': new K(
+    "text-halo-color": new K(
       M.paint_symbol[`text-halo-color`],
       `text-halo-color`
     ),
-    'text-halo-width': new K(
+    "text-halo-width": new K(
       M.paint_symbol[`text-halo-width`],
       `text-halo-width`
     ),
-    'text-halo-blur': new K(M.paint_symbol[`text-halo-blur`], `text-halo-blur`),
-    'text-translate': new G(M.paint_symbol[`text-translate`], `text-translate`),
-    'text-translate-anchor': new G(
+    "text-halo-blur": new K(M.paint_symbol[`text-halo-blur`], `text-halo-blur`),
+    "text-translate": new G(M.paint_symbol[`text-translate`], `text-translate`),
+    "text-translate-anchor": new G(
       M.paint_symbol[`text-translate-anchor`],
       `text-translate-anchor`
     ),
@@ -20852,15 +20852,15 @@ function Cv(e, t, n, r = 1) {
 let wv
 const Tv = () =>
   (wv ||= new _l({
-    'background-color': new G(
+    "background-color": new G(
       M.paint_background[`background-color`],
       `background-color`
     ),
-    'background-pattern': new hl(
+    "background-pattern": new hl(
       M.paint_background[`background-pattern`],
       `background-pattern`
     ),
-    'background-opacity': new G(
+    "background-opacity": new G(
       M.paint_background[`background-opacity`],
       `background-opacity`
     ),
