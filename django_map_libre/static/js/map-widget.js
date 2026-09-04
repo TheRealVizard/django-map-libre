@@ -72,7 +72,7 @@ const buildStyleFromTileLayers = tileLayers => {
 
 const registerTileLayers = (selector, tileLayers) => {
   tileLayers.forEach(cfg => {
-    selector.addLayer(cfg.id, cfg.label || cfg.id, "tile")
+    selector.addTileLayer(cfg.id, cfg.label || cfg.id)
   })
 }
 
@@ -91,7 +91,7 @@ const parseOverlayLayers = rawData => {
  * Currently supports only 'fixed' legend type.
  */
 const addOverlayLayer = async (map, overlayConfig, selector) => {
-  const {id, label, url, legends, selected = false} = overlayConfig
+  const {id, label, _url, legends, selected = false} = overlayConfig
 
   // Find active legend (or first one)
   const activeLegend = legends.find(l => l.active) || legends[0]
@@ -108,77 +108,47 @@ const addOverlayLayer = async (map, overlayConfig, selector) => {
     return
   }
 
-  try {
-    // 1. Fetch GeoJSON
-    const response = await fetch(url)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const geojson = await response.json()
+  const sourceId = `overlay-${id}-source`
+  const geojson = {}
 
-    // 2. Detect geometry type (first feature)
-    let layerType = "fill"
-    if (geojson.features && geojson.features.length > 0) {
-      const geomType = geojson.features[0].geometry.type
-      if (geomType === "LineString" || geomType === "MultiLineString") {
-        layerType = "line"
-      } else if (geomType === "Point" || geomType === "MultiPoint") {
-        layerType = "circle"
-      }
-    }
-
-    // 3. Build paint properties for fixed color
-    const color = activeLegend.color || "#3388ff"
-    let paint = {}
-    if (layerType === "fill") {
-      paint = {
-        "fill-color": color,
-        "fill-opacity": 0.7,
-        "fill-outline-color": "#000000",
-      }
-    } else if (layerType === "line") {
-      paint = {
-        "line-color": color,
-        "line-width": 3,
-        "line-opacity": 0.8,
-      }
-    } else if (layerType === "circle") {
-      paint = {
-        "circle-color": color,
-        "circle-radius": 6,
-        "circle-opacity": 0.8,
-      }
-    }
-
-    // 4. Add source and layer
-    const sourceId = id + "-source"
-    if (!map.getSource(sourceId)) {
-      map.addSource(sourceId, {
-        type: "geojson",
-        data: geojson,
-      })
-    }
-
-    if (!map.getLayer(id)) {
-      map.addLayer({
-        id: id,
-        type: layerType,
-        source: sourceId,
-        paint: paint,
-        layout: {
-          visibility: selected ? "visible" : "none",
-        },
-      })
-    }
-
-    // 5. Register in selector
-    selector.addLayer(id, label || id, "overlay")
-
-    console.log(`Overlay "${label}" added successfully.`)
-  } catch (error) {
-    console.error(`Error adding overlay "${id}":`, error)
+  if (!map.getSource(sourceId)) {
+    map.addSource(sourceId, {
+      type: "geojson",
+      data: geojson,
+    })
   }
+
+  if (!map.getLayer(id)) {
+    map.addLayer({
+      id: id,
+      source: sourceId,
+      type: "fill",
+      layout: {
+        visibility: selected ? "visible" : "none",
+      },
+    })
+  }
+
+  selector.addOverlayLayer(id, label || id, selected)
 }
 
 const initMap = mapContainer => {
+  mapContainer.classList.add("django-map-libre-control-container")
+
+  const loadingOverlay = document.createElement("div")
+  loadingOverlay.className = "map-loading-overlay"
+
+  const spinner = document.createElement("div")
+  spinner.className = "map-loading-spinner"
+  loadingOverlay.appendChild(spinner)
+
+  const text = document.createElement("div")
+  text.className = "map-loading-text"
+  text.innerHTML = 'Loading map<span class="map-loading-dots"></span>'
+  loadingOverlay.appendChild(text)
+
+  mapContainer.appendChild(loadingOverlay)
+
   const centerConfig = JSON.parse(mapContainer.dataset.center)
   const center = centerConfig ? centerConfig : [0, 0]
 
@@ -228,10 +198,10 @@ const initMap = mapContainer => {
   if (overlayLayers.length > 0) {
     // Wait for map to be ready before adding overlays
     map.on("load", () => {
+      loadingOverlay.remove()
       overlayLayers.forEach(overlay => {
         addOverlayLayer(map, overlay, layerSelector)
       })
-      window.zzz = map
     })
   }
 }

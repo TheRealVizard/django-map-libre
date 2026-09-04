@@ -81,13 +81,13 @@ export class LayerSelector {
     return this._container
   }
 
-  addLayer(layerId, label, type = "overlay") {
+  _addLayer(layerId, label, type, visible) {
     if (this._trackedLayers.has(layerId)) return
     this._trackedLayers.set(layerId, {
       id: layerId,
       label: label || layerId,
       type: type,
-      visible: true,
+      visible: visible,
     })
     if (this._panelVisible) {
       this._populateLayerList()
@@ -96,6 +96,14 @@ export class LayerSelector {
         this._adjustHorizontalPosition()
       })
     }
+  }
+
+  addOverlayLayer(layerId, label, visible = true) {
+    this._addLayer(layerId, label, "overlay", visible)
+  }
+
+  addTileLayer(layerId, label) {
+    this._addLayer(layerId, label, "tile", true)
   }
 
   removeLayer(layerId) {
@@ -146,7 +154,6 @@ export class LayerSelector {
     const allLayers = this._map.getStyle().layers || []
     const trackedIds = new Set(this._trackedLayers.keys())
     const layersToShow = allLayers.filter(layer => trackedIds.has(layer.id))
-
     if (layersToShow.length === 0) {
       const emptyMsg = document.createElement("div")
       emptyMsg.textContent = "No layers added"

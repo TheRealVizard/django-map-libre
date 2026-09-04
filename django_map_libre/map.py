@@ -7,6 +7,7 @@ from django_map_libre.helpers import (
     ColorSchemeType,
     Coordinate,
     ImportMap,
+    LayerType,
     MetricSystem,
     Position,
 )
@@ -116,6 +117,7 @@ class OverlayLayer(Layer):
 
     url: str
     legends: list[Legend]
+    layer_type: LayerType = LayerType.FILL
 
     def __post_init__(self):
         """Ensure at least one scheme is active."""
@@ -135,7 +137,7 @@ class OverlayLayer(Layer):
             "label": self.label,
             "selected": self.selected,
             "url": self.url,
-            "type": "overlay",
+            "layer_type": self.layer_type.value,
             "legends": [legend.to_dict() for legend in self.legends],
         }
 

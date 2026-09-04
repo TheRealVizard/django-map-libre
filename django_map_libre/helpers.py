@@ -35,6 +35,15 @@ class ColorSchemeType(str, Enum):
     HEATMAP = "heatmap"
 
 
+class LayerType(str, Enum):
+    """Types of layers supported by MapLibre for overlays."""
+
+    FILL = "fill"  # Polygons (areas)
+    LINE = "line"
+    CIRCLE = "circle"
+    SYMBOL = "symbol"  # Points with icons
+
+
 class ImportMap(MediaAsset):
     def __init__(self, **attributes):
         super().__init__("", **attributes)
