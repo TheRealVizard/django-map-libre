@@ -166,7 +166,10 @@ class MapWidget(Widget):
             ImportMap(
                 **{
                     "map-controls": "js/map-controls.js",
+                    "map-helpers": "js/map-helpers.js",
+                    "map-worker": "js/map-worker.js",
                     "maplibre-gl": "vendor/js/maplibre-gl.mjs",
+                    "map-marker": "svg/map-marker.svg",
                 }
             ),
             Script("vendor/js/maplibre-gl.mjs", type="module"),
@@ -188,7 +191,7 @@ class MapWidget(Widget):
         scale_position: Position = Position.BottomLeft,
         layer_selector_position: Position = Position.TopRight,
         class_name: str = "map-widget",
-        loading_text: str | None = "Loading Text",
+        loading_text: str | None = "Loading Map",
     ):
         """
         Initialize the MapWidget with tile and overlay layer configurations.

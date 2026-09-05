@@ -6,6 +6,10 @@ import {
   ScaleControl,
 } from "maplibre-gl"
 
+import {DataLoader} from "map-helpers"
+
+const layerTypes = ["fill", "line", "circle", "icon"]
+
 const parseTileLayers = rawData => {
   let config = []
   if (rawData) {
@@ -90,12 +94,17 @@ const parseOverlayLayers = rawData => {
  * Adds a single overlay layer to the map.
  */
 const addOverlayLayer = async (map, overlayConfig, selector) => {
-  const {id, label, _url, legends, selected = false} = overlayConfig
+  const {id, label, layer_type, url, legends, selected = false} = overlayConfig
 
   // Find active legend (or first one)
   const activeLegend = legends.find(l => l.active) || legends[0]
   if (!activeLegend) {
     console.warn(`No legend found for overlay ${id}, skipping.`)
+    return
+  }
+
+  if (!layerTypes.includes(layer_type)) {
+    console.warn(`Invalid layer type for overlay ${id}, skipping.`)
     return
   }
 
@@ -108,27 +117,116 @@ const addOverlayLayer = async (map, overlayConfig, selector) => {
   }
 
   const sourceId = `overlay-${id}-source`
-  const geojson = {}
+
+  const mapType = layer_type === "icon" ? "symbol" : layer_type
 
   if (!map.getSource(sourceId)) {
     map.addSource(sourceId, {
       type: "geojson",
-      data: geojson,
+      data: {
+        type: "FeatureCollection",
+        features: [],
+      },
     })
+  }
+
+  let paint = {}
+  let layout = {
+    visibility: selected ? "visible" : "none",
+  }
+  // TODO: IMPLEMENT EXTRA STYLE
+  switch (mapType) {
+    case "fill":
+      paint = {
+        "fill-color": activeLegend.color,
+        "fill-opacity": 0.7,
+        "fill-outline-color": "black",
+        "fill-antialias": true,
+      }
+      break
+    case "line":
+      paint = {
+        "line-color": activeLegend.color,
+        "line-width": 3,
+        "line-opacity": 0.8,
+      }
+      break
+    case "circle":
+      paint = {
+        "circle-color": activeLegend.color,
+        "circle-radius": activeLegend.circle_radius || 6,
+        "circle-opacity": activeLegend.circle_opacity || 0.8,
+        "circle-stroke-color": activeLegend.circle_stroke_color,
+        "circle-stroke-width": activeLegend.circle_stroke_width || 2,
+      }
+      break
+    case "symbol":
+      paint = {
+        "text-color": activeLegend.text_color || "#333333",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 2,
+      }
+
+      let image = activeLegend.image
+      if (!activeLegend.image) {
+        const defaultMapMarker = map.loadImage(
+          import.meta.resolve("map-marker")
+        )
+        image = defaultMapMarker
+      }
+      layout = {
+        ...layout,
+        "icon-image": image,
+        // "text-field": activeLegend.text_field || "",
+        // "text-size": activeLegend.text_size || 12,
+        // "text-font": activeLegend.text_font || ["Open Sans Regular"],
+        // "icon-size": activeLegend.icon_size || 1.0,
+      }
   }
 
   if (!map.getLayer(id)) {
     map.addLayer({
       id: id,
       source: sourceId,
-      type: "fill",
-      layout: {
-        visibility: selected ? "visible" : "none",
-      },
+      type: mapType,
+      paint: paint,
+      layout: layout,
     })
   }
 
   selector.addOverlayLayer(id, label || id, selected)
+
+  const loader = new DataLoader(
+    url,
+    data => {
+      let newFeatures = []
+      if (data.type === "Feature") {
+        newFeatures = [data]
+      } else if (data.type === "FeatureCollection") {
+        newFeatures = data.features
+      } else if (Array.isArray(data)) {
+        newFeatures = data
+      } else {
+        return
+      }
+
+      const source = map.getSource(sourceId)
+      if (source) {
+        source.updateData({
+          add: newFeatures,
+        })
+      }
+    },
+    () => {
+      console.log(`[Overlay ${id}] Data loading complete.`)
+    },
+    error => {
+      console.error(`[Overlay ${id}] Error loading data:`, error)
+    },
+    import.meta.resolve("map-worker")
+  )
+
+  loader.load()
 }
 
 const initMap = mapContainer => {
@@ -200,7 +298,7 @@ const initMap = mapContainer => {
   if (overlayLayers.length > 0) {
     // Wait for map to be ready before adding overlays
     map.on("load", () => {
-      loadingOverlay.remove()
+      loadingOverlay?.remove()
       overlayLayers.forEach(overlay => {
         addOverlayLayer(map, overlay, layerSelector)
       })

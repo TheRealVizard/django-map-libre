@@ -15,12 +15,77 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import json
+import random
+import time
+
 from django.forms import CharField, Form
+from django.http import JsonResponse, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.urls import path
 
 from django_map_libre.helpers import ColorSchemeType
 from django_map_libre.map import Legend, MapWidget, OverlayLayer, TileLayer
+
+
+def json_parcels(request):
+    features = []
+    for i in range(300):
+        lat = random.uniform(37.708, 37.812)
+        lon = random.uniform(-122.527, -122.348)
+        half = 0.002 / 2
+        coords = [
+            [lon - half, lat - half],
+            [lon + half, lat - half],
+            [lon + half, lat + half],
+            [lon - half, lat + half],
+            [lon - half, lat - half],
+        ]
+        feature = {
+            "id": f"FID{i}",
+            "type": "Feature",
+            "geometry": {"type": "Polygon", "coordinates": [coords]},
+            "properties": {
+                "parcel_id": f"P{random.randint(10000, 99999)}",
+                "area_sqft": round(random.uniform(2000, 8000), 1),
+                "address": f"{random.randint(1, 999)} {random.choice(['Market St', 'Mission St', 'Valencia St', 'Dolores St', 'Castro St'])}",
+                "land_use": random.choice(["residential", "commercial", "mixed-use"]),
+            },
+        }
+        features.append(feature)
+    return JsonResponse({"type": "FeatureCollection", "features": features})
+
+
+def ndjson_parcels(request):
+    def generate():
+        for i in range(100000):
+            time.sleep(0.00005)  # Simulate some processing delay
+            lat = random.uniform(37.708, 37.812)
+            lon = random.uniform(-122.527, -122.348)
+            half = 0.002 / 2
+            coords = [
+                [lon - half, lat - half],
+                [lon + half, lat - half],
+                [lon + half, lat + half],
+                [lon - half, lat + half],
+                [lon - half, lat - half],
+            ]
+            feature = {
+                "id": f"FIDD{i}",
+                "type": "Feature",
+                "geometry": {"type": "Polygon", "coordinates": [coords]},
+                "properties": {
+                    "parcel_id": f"P{random.randint(10000, 99999)}",
+                    "area_sqft": round(random.uniform(2000, 8000), 1),
+                    "address": f"{random.randint(1, 999)} {random.choice(['Market St', 'Mission St', 'Valencia St', 'Dolores St', 'Castro St'])}",
+                    "land_use": random.choice(
+                        ["residential", "commercial", "mixed-use"]
+                    ),
+                },
+            }
+            yield json.dumps(feature) + "\n"
+
+    return StreamingHttpResponse(generate(), content_type="application/x-ndjson")
 
 
 class MapForm(Form):
@@ -45,9 +110,9 @@ class MapForm(Form):
             ],
             overlay_layers=[
                 OverlayLayer(
-                    id="sf-neighborhoods",
-                    label="San Francisco Neighborhoods",
-                    url="https://raw.githubusercontent.com/paulavidela/utdt_cienciadedatos/main/data/sf_neighborhoods.geojson",
+                    id="json",
+                    label="FULL JSON LAYER",
+                    url="http://127.0.0.1:8000/data/json-parcels/",
                     legends=[
                         # 1. FIXED COLOR - Clean blue outline with subtle fill
                         Legend(
@@ -55,6 +120,22 @@ class MapForm(Form):
                             label="Default View",
                             type=ColorSchemeType.FIXED,
                             color="#4A90D9",
+                            active=True,  # This is the default view
+                        ),
+                    ],
+                    selected=True,
+                ),
+                OverlayLayer(
+                    id="dnjson",
+                    label="NDJSON LAYER",
+                    url="http://127.0.0.1:8000/data/ndjson-parcels/",
+                    legends=[
+                        # 1. FIXED COLOR - Clean blue outline with subtle fill
+                        Legend(
+                            id="fixed-clean",
+                            label="Default View",
+                            type=ColorSchemeType.FIXED,
+                            color="#D94A4A",
                             active=True,  # This is the default view
                         ),
                     ],
@@ -71,4 +152,6 @@ def map(request):
 
 urlpatterns = [
     path("", map),
+    path("data/json-parcels/", json_parcels, name="json_parcels"),
+    path("data/ndjson-parcels/", ndjson_parcels, name="ndjson_parcels"),
 ]
