@@ -88,7 +88,6 @@ const parseOverlayLayers = rawData => {
 
 /**
  * Adds a single overlay layer to the map.
- * Currently supports only 'fixed' legend type.
  */
 const addOverlayLayer = async (map, overlayConfig, selector) => {
   const {id, label, _url, legends, selected = false} = overlayConfig
@@ -142,10 +141,13 @@ const initMap = mapContainer => {
   spinner.className = "map-loading-spinner"
   loadingOverlay.appendChild(spinner)
 
-  const text = document.createElement("div")
-  text.className = "map-loading-text"
-  text.innerHTML = 'Loading map<span class="map-loading-dots"></span>'
-  loadingOverlay.appendChild(text)
+  const loadingText = mapContainer.dataset.loadingText
+  if (loadingText) {
+    const text = document.createElement("div")
+    text.className = "map-loading-text"
+    text.innerHTML = `${loadingText}<span class="map-loading-dots"></span>`
+    loadingOverlay.appendChild(text)
+  }
 
   mapContainer.appendChild(loadingOverlay)
 

@@ -60,9 +60,14 @@ class Legend:
 
     def __post_init__(self):
         """Validate the scheme configuration."""
-        if self.type == ColorSchemeType.CATEGORICAL or self.type == ColorSchemeType.HEATMAP:
+        if (
+            self.type == ColorSchemeType.CATEGORICAL
+            or self.type == ColorSchemeType.HEATMAP
+        ):
             if not self.coloring_property:
-                raise ValueError("CATEGORICAL & HEATMAP schemes requires 'coloring_property'")
+                raise ValueError(
+                    "CATEGORICAL & HEATMAP schemes requires 'coloring_property'"
+                )
         elif self.type == ColorSchemeType.FIXED:
             if not self.color and not self.image:
                 raise ValueError("FIXED scheme requires 'color' or 'image'")
@@ -183,6 +188,7 @@ class MapWidget(Widget):
         scale_position: Position = Position.BottomLeft,
         layer_selector_position: Position = Position.TopRight,
         class_name: str = "map-widget",
+        loading_text: str | None = "Loading Text",
     ):
         """
         Initialize the MapWidget with tile and overlay layer configurations.
@@ -198,6 +204,7 @@ class MapWidget(Widget):
         :param scale_position: Position of the scale control.
         :param layer_selector_position: Position of the layer selector control.
         :param class_name: CSS class name for the widget container.
+        :param loading_text: Text for the map loading
         """
         if isinstance(center, tuple):
             if len(center) == 2:
@@ -228,5 +235,6 @@ class MapWidget(Widget):
             "data-metric-unit": metric_unit.value,
             "data-scale-position": scale_position.value,
             "data-layer-selector-position": layer_selector_position.value,
+            "data-loading-text": loading_text,
             "class": class_name,
         }
