@@ -58,9 +58,9 @@ class Legend:
         elif self.type == ColorSchemeType.FIXED:
             if not self.color:
                 raise ValueError("FIXED scheme requires 'color'")
-        elif self.type == ColorSchemeType.SEQUENTIAL:
+        elif self.type == ColorSchemeType.HEATMAP:
             if not self.coloring_property:
-                raise ValueError("SEQUENTIAL scheme requires 'coloring_property'")
+                raise ValueError("HEATMAP scheme requires 'coloring_property'")
 
     def to_dict(self) -> dict:
         """Serialize to dictionary for JSON output."""
