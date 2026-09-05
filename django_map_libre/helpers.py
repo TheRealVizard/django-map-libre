@@ -41,7 +41,7 @@ class LayerType(str, Enum):
     FILL = "fill"  # Polygons (areas)
     LINE = "line"
     CIRCLE = "circle"
-    SYMBOL = "symbol"  # Points with icons
+    ICON = "icon"  # Points with icons
 
 
 class ImportMap(MediaAsset):

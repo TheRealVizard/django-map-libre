@@ -34,16 +34,24 @@ class Legend:
 
     # For FIXED: a single color
     color: str | None = None
+    # For FIXED: a single image
+    image: str | None = None
 
     # For CATEGORICAL: mapping from coloring_property values to display info.
     # Can be:
-    #   - None: auto-generated from data
+    #   - None: auto-generated from data IF LAYER TYPE IS NOT ICON
+    #       any ICON layer without category_mapping will use a default marker Icon
     #   - str: URL to fetch the mapping from an API
     #   - dict: static mapping { "value1": {"label": "Name1", "color": "#FF0000"}, ... }
-    #         Each inner dict can contain 'label', 'color', or both.
+    #   - dict: static mapping { "value1": {"label": "Name1", "icon": "icon/house.svg"}, ... }
+    #         - If label is not provided for one of the values and display_property is provided t
+    #         the display_property will be used. If not the value will be set to TitleCase and used.
+    #         - If color is not provided a random one will be used
+    #         - If icon is not provided a default marker will be used
+
     category_mapping: dict[str, dict[str, str]] | str | None = None
 
-    # For SEQUENTIAL: color interpolation settings
+    # For HEATMAP: color interpolation settings # TODO: Increase settings
     min_value: float | None = None
     max_value: float | None = None
     color_ramp: list[str] | None = None  # e.g., ["#0000FF", "#00FF00", "#FF0000"]
@@ -52,15 +60,12 @@ class Legend:
 
     def __post_init__(self):
         """Validate the scheme configuration."""
-        if self.type == ColorSchemeType.CATEGORICAL:
+        if self.type == ColorSchemeType.CATEGORICAL or self.type == ColorSchemeType.HEATMAP:
             if not self.coloring_property:
-                raise ValueError("CATEGORICAL scheme requires 'coloring_property'")
+                raise ValueError("CATEGORICAL & HEATMAP schemes requires 'coloring_property'")
         elif self.type == ColorSchemeType.FIXED:
-            if not self.color:
-                raise ValueError("FIXED scheme requires 'color'")
-        elif self.type == ColorSchemeType.HEATMAP:
-            if not self.coloring_property:
-                raise ValueError("HEATMAP scheme requires 'coloring_property'")
+            if not self.color and not self.image:
+                raise ValueError("FIXED scheme requires 'color' or 'image'")
 
     def to_dict(self) -> dict:
         """Serialize to dictionary for JSON output."""
