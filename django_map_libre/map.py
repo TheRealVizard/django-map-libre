@@ -165,14 +165,11 @@ class MapWidget(Widget):
         js = (
             ImportMap(
                 **{
-                    "map-controls": "js/map-controls.js",
-                    "map-helpers": "js/map-helpers.js",
                     "map-worker": "js/map-worker.js",
-                    "maplibre-gl": "vendor/js/maplibre-gl.mjs",
+                    "maplibre-gl-worker": "vendor/js/maplibre-gl-worker.mjs",
                     "map-marker": "svg/map-marker.svg",
                 }
             ),
-            Script("vendor/js/maplibre-gl.mjs", type="module"),
             Script("js/map-widget.js", type="module"),
         )
         css = {"all": ("vendor/css/maplibre-gl.css", "css/django-map-libre.css")}

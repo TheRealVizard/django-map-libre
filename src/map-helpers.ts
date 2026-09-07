@@ -1,5 +1,20 @@
+import type {CompleteCallback, DataCallback, ErrorCallback} from "./map-types"
+
 export class DataLoader {
-  constructor(url, onData, onComplete, onError, workerUrl) {
+  private url: string
+  private onData: DataCallback
+  private onComplete: CompleteCallback
+  private onError: ErrorCallback
+  private workerUrl: string
+  private worker: Worker | null
+
+  constructor(
+    url: string,
+    onData: DataCallback,
+    onComplete: CompleteCallback,
+    onError: ErrorCallback,
+    workerUrl: string
+  ) {
     this.url = url
     this.onData = onData
     this.onComplete = onComplete
@@ -40,7 +55,7 @@ export class DataLoader {
       this.worker.postMessage({url: this.url})
     } catch (error) {
       console.error("[DataLoader] Failed to create worker:", error)
-      this.onError(error.message)
+      this.onError(error instanceof Error ? error.message : String(error))
     }
   }
 

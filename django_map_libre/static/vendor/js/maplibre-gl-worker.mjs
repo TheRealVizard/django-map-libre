@@ -1,908 +1,974 @@
 /**
  * MapLibre GL JS
- * @license 3-Clause BSD. Full text of license: https://github.com/maplibre/maplibre-gl-js/blob/v6.6.0/LICENSE.txt
+ * @license 3-Clause BSD. Full text of license: https://github.com/maplibre/maplibre-gl-js/blob/v6.7.0/LICENSE.txt
  */
 import {
-  B as e,
-  Br as t,
-  D as n,
-  Dt as r,
-  Ht as i,
-  I as a,
-  In as o,
-  K as s,
-  Mn as c,
-  On as l,
-  Ot as u,
-  P as d,
-  Pn as f,
-  S as p,
-  Sr as m,
-  U as h,
-  Vi as g,
-  Vn as _,
+  An as e,
+  B as t,
+  Bi as n,
+  D as r,
+  Dn as i,
+  En as a,
+  G as o,
+  Hr as s,
+  I as c,
+  Ln as l,
+  Mn as u,
+  Ot as d,
+  P as f,
+  Pn as p,
+  Rr as m,
+  S as h,
+  St as g,
+  Ut as _,
   W as v,
-  Wr as y,
-  ar as b,
-  bn as x,
-  br as S,
-  c as C,
-  d as w,
-  dt as T,
-  g as E,
-  hn as D,
-  hr as O,
-  ht as ee,
-  i as k,
-  kn as A,
-  l as j,
-  m as M,
-  n as N,
-  nn as P,
-  o as F,
-  on as I,
-  p as L,
-  pr as R,
-  rn as z,
-  sr as B,
-  x as V,
-  xt as H,
-  yn as U,
-  zn as W,
+  ar as y,
+  br as b,
+  c as x,
+  d as S,
+  dr as C,
+  ft as w,
+  g as T,
+  gt as ee,
+  i as E,
+  in as D,
+  kt as O,
+  l as k,
+  m as A,
+  mn as j,
+  n as te,
+  o as ne,
+  p as re,
+  pn as ie,
+  pr as M,
+  q as N,
+  rn as P,
+  rr as F,
+  sn as I,
+  vr as L,
+  x as R,
+  yn as z,
+  zn as B,
 } from "./maplibre-gl-shared.mjs"
-var G = class {
-    constructor(e, t) {
-      ;((this.keyCache = {}), e && this.replace(e, t))
+function V(e2) {
+  let t2 = typeof e2
+  if (t2 === `number` || t2 === `boolean` || t2 === `string` || e2 == null)
+    return JSON.stringify(e2)
+  if (Array.isArray(e2)) {
+    let t3 = `[`
+    for (let n3 of e2) t3 += `${V(n3)},`
+    return `${t3}]`
+  }
+  let n2 = Object.keys(e2).sort(),
+    r2 = `{`
+  for (let t3 = 0; t3 < n2.length; t3++)
+    r2 += `${JSON.stringify(n2[t3])}:${V(e2[n2[t3]])},`
+  return `${r2}}`
+}
+function H(e2) {
+  let t2 = ``
+  for (let n2 of z) t2 += `/${V(e2[n2])}`
+  return t2
+}
+function U(e2, t2) {
+  let n2 = {}
+  for (let r3 = 0; r3 < e2.length; r3++) {
+    let i2 = (t2 && t2[e2[r3].id]) || H(e2[r3])
+    t2 && (t2[e2[r3].id] = i2)
+    let a2 = n2[i2]
+    ;((a2 ||= n2[i2] = []), a2.push(e2[r3]))
+  }
+  let r2 = []
+  for (let e3 in n2) r2.push(n2[e3])
+  return r2
+}
+var W = class {
+    constructor(e2, t2) {
+      ;((this.keyCache = {}), e2 && this.replace(e2, t2))
     }
-    replace(e, t) {
-      ;((this._layerConfigs = {}), (this._layers = {}), this.update(e, [], t))
+    replace(e2, t2) {
+      ;((this._layerConfigs = {}), (this._layers = {}), this.update(e2, [], t2))
     }
-    update(e, t, n) {
-      for (let t of e) {
-        this._layerConfigs[t.id] = t
-        let e = (this._layers[t.id] = p(t, n))
-        ;((e._featureFilter = U(e.filter, `layers[${t.id}].filter`, n)),
-          this.keyCache[t.id] && delete this.keyCache[t.id])
+    update(e2, t2, n2) {
+      for (let t3 of e2) {
+        this._layerConfigs[t3.id] = t3
+        let e3 = (this._layers[t3.id] = h(t3, n2))
+        ;((e3._featureFilter = ie(e3.filter, `layers[${t3.id}].filter`, n2)),
+          this.keyCache[t3.id] && delete this.keyCache[t3.id])
       }
-      for (let e of t)
-        (delete this.keyCache[e],
-          delete this._layerConfigs[e],
-          delete this._layers[e])
+      for (let e3 of t2)
+        (delete this.keyCache[e3],
+          delete this._layerConfigs[e3],
+          delete this._layers[e3])
       this.familiesBySource = {}
-      let r = x(Object.values(this._layerConfigs), this.keyCache)
-      for (let e of r) {
-        let t = e.map(e => this._layers[e.id]),
-          n = t[0]
-        if (n.isHidden()) continue
-        let r = n.source || ``,
-          i = this.familiesBySource[r]
-        i ||= this.familiesBySource[r] = {}
-        let a = n.sourceLayer || `_geojsonTileLayer`,
-          o = i[a]
-        ;((o ||= i[a] = []), o.push(t))
+      let r2 = U(Object.values(this._layerConfigs), this.keyCache)
+      for (let e3 of r2) {
+        let t3 = e3.map(e4 => this._layers[e4.id]),
+          n3 = t3[0]
+        if (n3.isHidden()) continue
+        let r3 = n3.source || ``,
+          i2 = this.familiesBySource[r3]
+        i2 ||= this.familiesBySource[r3] = {}
+        let a2 = n3.sourceLayer || `_geojsonTileLayer`,
+          o2 = i2[a2]
+        ;((o2 ||= i2[a2] = []), o2.push(t3))
       }
     }
   },
-  K = class {
-    constructor(e) {
-      let t = {},
-        n = []
-      for (let r in e) {
-        let i = e[r],
-          a = (t[r] = {})
-        for (let e in i) {
-          let t = i[+e]
-          if (!t || t.bitmap.width === 0 || t.bitmap.height === 0) continue
-          let r = {x: 0, y: 0, w: t.bitmap.width + 2, h: t.bitmap.height + 2}
-          ;(n.push(r), (a[e] = {rect: r, metrics: t.metrics}))
+  G = class {
+    constructor(e2) {
+      let t2 = {},
+        n2 = []
+      for (let r3 in e2) {
+        let i3 = e2[r3],
+          a3 = (t2[r3] = {})
+        for (let e3 in i3) {
+          let t3 = i3[e3]
+          if (!t3 || t3.bitmap.width === 0 || t3.bitmap.height === 0) continue
+          let r4 = {x: 0, y: 0, w: t3.bitmap.width + 2, h: t3.bitmap.height + 2}
+          ;(n2.push(r4), (a3[e3] = {rect: r4, metrics: t3.metrics}))
         }
       }
-      let {w: i, h: o} = a(n),
-        s = new r({width: i || 1, height: o || 1})
-      for (let n in e) {
-        let i = e[n]
-        for (let e in i) {
-          let a = i[+e]
-          if (!a || a.bitmap.width === 0 || a.bitmap.height === 0) continue
-          let o = t[n][e].rect
-          r.copy(a.bitmap, s, {x: 0, y: 0}, {x: o.x + 1, y: o.y + 1}, a.bitmap)
+      let {w: r2, h: i2} = c(n2),
+        a2 = new d({width: r2 || 1, height: i2 || 1})
+      for (let n3 in e2) {
+        let r3 = e2[n3]
+        for (let e3 in r3) {
+          let i3 = r3[e3]
+          if (!i3 || i3.bitmap.width === 0 || i3.bitmap.height === 0) continue
+          let o2 = t2[n3][e3].rect
+          d.copy(
+            i3.bitmap,
+            a2,
+            {x: 0, y: 0},
+            {x: o2.x + 1, y: o2.y + 1},
+            i3.bitmap
+          )
         }
       }
-      ;((this.image = s), (this.positions = t))
+      ;((this.image = a2), (this.positions = t2))
     }
   }
-I(`GlyphAtlas`, K)
-var q = class {
-  constructor(e) {
-    ;((this.tileID = new E(
-      e.tileID.overscaledZ,
-      e.tileID.wrap,
-      e.tileID.canonical.z,
-      e.tileID.canonical.x,
-      e.tileID.canonical.y
+I(`GlyphAtlas`, G)
+var K = class {
+  constructor(e2) {
+    ;((this.tileID = new T(
+      e2.tileID.overscaledZ,
+      e2.tileID.wrap,
+      e2.tileID.canonical.z,
+      e2.tileID.canonical.x,
+      e2.tileID.canonical.y
     )),
-      (this.uid = e.uid),
-      (this.zoom = e.zoom),
-      (this.pixelRatio = e.pixelRatio),
-      (this.tileSize = e.tileSize),
-      (this.source = e.source),
+      (this.uid = e2.uid),
+      (this.zoom = e2.zoom),
+      (this.pixelRatio = e2.pixelRatio),
+      (this.tileSize = e2.tileSize),
+      (this.source = e2.source),
       (this.overscaling = this.tileID.overscaleFactor()),
-      (this.showCollisionBoxes = e.showCollisionBoxes),
-      (this.collectResourceTiming = !!e.collectResourceTiming),
-      (this.returnDependencies = !!e.returnDependencies),
-      (this.promoteId = e.promoteId),
+      (this.showCollisionBoxes = e2.showCollisionBoxes),
+      (this.collectResourceTiming = !!e2.collectResourceTiming),
+      (this.returnDependencies = !!e2.returnDependencies),
+      (this.promoteId = e2.promoteId),
       (this.inFlightDependencies = []))
   }
-  async parse(e, r, a, o, c) {
-    ;((this.data = e), (this.collisionBoxArray = new i()))
-    let l = new w(Object.keys(e.layers).sort()),
-      u = new C(this.tileID, this.promoteId)
-    u.bucketLayerIDs = []
-    let f = {},
-      p = {
-        featureIndex: u,
+  async parse(e2, t2, n2, i2, a2) {
+    ;((this.data = e2), (this.collisionBoxArray = new _()))
+    let o2 = new S(Object.keys(e2.layers).sort()),
+      s2 = new x(this.tileID, this.promoteId)
+    s2.bucketLayerIDs = []
+    let c2 = {},
+      l2 = {
+        featureIndex: s2,
         iconDependencies: {},
         patternDependencies: {},
         glyphDependencies: {},
         dashDependencies: {},
-        availableImages: a,
-        subdivisionGranularity: c,
+        availableImages: n2,
+        subdivisionGranularity: a2,
       },
-      g = r.familiesBySource[this.source]
-    for (let n in g) {
-      let r = e.layers[n]
-      if (!r) continue
-      r.version === 1 &&
-        t(
-          `Vector tile source "${this.source}" layer "${n}" does not use vector tile spec v2 and therefore may have some rendering errors.`
+      u2 = t2.familiesBySource[this.source]
+    for (let t3 in u2) {
+      let r2 = e2.layers[t3]
+      if (!r2) continue
+      r2.version === 1 &&
+        m(
+          `Vector tile source "${this.source}" layer "${t3}" does not use vector tile spec v2 and therefore may have some rendering errors.`
         )
-      let i = l.encode(n),
-        o = []
-      for (let e = 0; e < r.length; e++) {
-        let t = r.feature(e),
-          a = u.getId(t, n)
-        o.push({feature: t, id: a, index: e, sourceLayerIndex: i})
+      let i3 = o2.encode(t3),
+        a3 = []
+      for (let e3 = 0; e3 < r2.length; e3++) {
+        let n3 = r2.feature(e3),
+          o3 = s2.getId(n3, t3)
+        a3.push({feature: n3, id: o3, index: e3, sourceLayerIndex: i3})
       }
-      for (let e of g[n]) {
-        let n = e[0]
-        ;(n.source !== this.source &&
-          t(
-            `layer.source = ${n.source} does not equal this.source = ${this.source}`
+      for (let e3 of u2[t3]) {
+        let t4 = e3[0]
+        ;(t4.source !== this.source &&
+          m(
+            `layer.source = ${t4.source} does not equal this.source = ${this.source}`
           ),
-          !n.isHidden(this.zoom, !0) &&
-            (J(e, this.zoom, a),
-            (f[n.id] = n.createBucket({
-              index: u.bucketLayerIDs.length,
-              layers: e,
+          !t4.isHidden(this.zoom, true) &&
+            (q(e3, this.zoom, n2),
+            (c2[t4.id] = t4.createBucket({
+              index: s2.bucketLayerIDs.length,
+              layers: e3,
               zoom: this.zoom,
               pixelRatio: this.pixelRatio,
               overscaling: this.overscaling,
               collisionBoxArray: this.collisionBoxArray,
-              sourceLayerIndex: i,
+              sourceLayerIndex: i3,
               sourceID: this.source,
-            })).populate(o, p, this.tileID.canonical),
-            u.bucketLayerIDs.push(e.map(e => e.id))))
+            })).populate(a3, l2, this.tileID.canonical),
+            s2.bucketLayerIDs.push(e3.map(e4 => e4.id))))
       }
     }
-    let _ = m(p.glyphDependencies, e => Object.keys(e).map(Number))
-    for (let e of this.inFlightDependencies) e?.abort()
+    let d2 = b(l2.glyphDependencies, e3 => Object.keys(e3))
+    for (let e3 of this.inFlightDependencies) e3?.abort()
     this.inFlightDependencies = []
-    let v = Promise.resolve({})
-    if (Object.keys(_).length) {
-      let e = new AbortController()
-      ;(this.inFlightDependencies.push(e),
-        (v = o.sendAsync(
+    let p2 = Promise.resolve({})
+    if (Object.keys(d2).length) {
+      let e3 = new AbortController()
+      ;(this.inFlightDependencies.push(e3),
+        (p2 = i2.sendAsync(
           {
             type: `GG`,
             data: {
-              stacks: _,
+              stacks: d2,
               source: this.source,
               tileID: this.tileID,
               type: `glyphs`,
             },
           },
-          e
+          e3
         )))
     }
-    let y = Object.keys(p.iconDependencies),
-      b = Promise.resolve({})
-    if (y.length) {
-      let e = new AbortController()
-      ;(this.inFlightDependencies.push(e),
-        (b = o.sendAsync(
+    let h2 = Object.keys(l2.iconDependencies),
+      g2 = Promise.resolve({})
+    if (h2.length) {
+      let e3 = new AbortController()
+      ;(this.inFlightDependencies.push(e3),
+        (g2 = i2.sendAsync(
           {
             type: `GI`,
             data: {
-              icons: y,
+              icons: h2,
               source: this.source,
               tileID: this.tileID,
               type: `icons`,
             },
           },
-          e
+          e3
         )))
     }
-    let x = Object.keys(p.patternDependencies),
-      S = Promise.resolve({})
-    if (x.length) {
-      let e = new AbortController()
-      ;(this.inFlightDependencies.push(e),
-        (S = o.sendAsync(
+    let y2 = Object.keys(l2.patternDependencies),
+      C2 = Promise.resolve({})
+    if (y2.length) {
+      let e3 = new AbortController()
+      ;(this.inFlightDependencies.push(e3),
+        (C2 = i2.sendAsync(
           {
             type: `GI`,
             data: {
-              icons: x,
+              icons: y2,
               source: this.source,
               tileID: this.tileID,
               type: `patterns`,
             },
           },
-          e
+          e3
         )))
     }
-    let T = p.dashDependencies,
-      E = Promise.resolve({})
-    if (Object.keys(T).length) {
-      let e = new AbortController()
-      ;(this.inFlightDependencies.push(e),
-        (E = o.sendAsync({type: `GDA`, data: {dashes: T}}, e)))
+    let w2 = l2.dashDependencies,
+      T2 = Promise.resolve({})
+    if (Object.keys(w2).length) {
+      let e3 = new AbortController()
+      ;(this.inFlightDependencies.push(e3),
+        (T2 = i2.sendAsync({type: `GDA`, data: {dashes: w2}}, e3)))
     }
-    let [D, O, k, A] = await Promise.all([v, b, S, E]),
-      j = new K(D),
-      M = new d(O, k)
-    for (let e in f) {
-      let t = f[e]
-      t instanceof n
-        ? (J(t.layers, this.zoom, a),
-          N({
-            bucket: t,
-            glyphMap: D,
-            glyphPositions: j.positions,
-            imageMap: O,
-            imagePositions: M.iconPositions,
+    let [E2, D2, O2, k2] = await Promise.all([p2, g2, C2, T2]),
+      A2 = new G(E2),
+      j2 = new f(D2, O2)
+    for (let e3 in c2) {
+      let t3 = c2[e3]
+      t3 instanceof r
+        ? (q(t3.layers, this.zoom, n2),
+          te({
+            bucket: t3,
+            glyphMap: E2,
+            glyphPositions: A2.positions,
+            imageMap: D2,
+            imagePositions: j2.iconPositions,
             showCollisionBoxes: this.showCollisionBoxes,
             canonical: this.tileID.canonical,
-            subdivisionGranularity: p.subdivisionGranularity,
+            subdivisionGranularity: l2.subdivisionGranularity,
           }))
-        : t.hasDependencies &&
-          (t instanceof ee || t instanceof s || t instanceof h) &&
-          (J(t.layers, this.zoom, a),
-          t.addFeatures(p, this.tileID.canonical, M.patternPositions, A))
+        : t3.hasDependencies &&
+          (t3 instanceof ee || t3 instanceof N || t3 instanceof v) &&
+          (q(t3.layers, this.zoom, n2),
+          t3.addFeatures(l2, this.tileID.canonical, j2.patternPositions, k2))
     }
     return {
-      buckets: Object.values(f).filter(e => !e.isEmpty()),
-      featureIndex: u,
+      buckets: Object.values(c2).filter(e3 => !e3.isEmpty()),
+      featureIndex: s2,
       collisionBoxArray: this.collisionBoxArray,
-      glyphAtlasImage: j.image,
-      imageAtlas: M,
-      dashPositions: A,
-      glyphMap: this.returnDependencies ? D : null,
-      iconMap: this.returnDependencies ? O : null,
-      glyphPositions: this.returnDependencies ? j.positions : null,
+      glyphAtlasImage: A2.image,
+      imageAtlas: j2,
+      dashPositions: k2,
+      glyphMap: this.returnDependencies ? E2 : null,
+      iconMap: this.returnDependencies ? D2 : null,
+      glyphPositions: this.returnDependencies ? A2.positions : null,
     }
   }
 }
-function J(e, t, n) {
-  let r = new P(t)
-  for (let t of e) t.recalculate(r, n)
+function q(e2, t2, n2) {
+  let r2 = new P(t2)
+  for (let t3 of e2) t3.recalculate(r2, n2)
 }
-var Y = class {
+var J = class {
     constructor() {
       ;((this.loading = {}), (this.loaded = {}), (this.parsing = {}))
     }
-    startLoading(e, t) {
-      this.loading[e] = t
+    startLoading(e2, t2) {
+      this.loading[e2] = t2
     }
-    finishLoading(e) {
-      delete this.loading[e]
+    finishLoading(e2) {
+      delete this.loading[e2]
     }
-    abort(e) {
-      let t = this.loading[e]
-      t?.abort && (t.abort.abort(), delete this.loading[e])
+    abort(e2) {
+      let t2 = this.loading[e2]
+      t2?.abort && (t2.abort.abort(), delete this.loading[e2])
     }
-    getParsing(e) {
-      return this.parsing[e]
+    getParsing(e2) {
+      return this.parsing[e2]
     }
-    setParsing(e, t) {
-      this.parsing[e] = t
+    setParsing(e2, t2) {
+      this.parsing[e2] = t2
     }
-    removeParsing(e) {
-      delete this.parsing[e]
+    removeParsing(e2) {
+      delete this.parsing[e2]
     }
-    markLoaded(e, t) {
-      this.loaded[e] = t
+    markLoaded(e2, t2) {
+      this.loaded[e2] = t2
     }
-    getLoaded(e) {
-      let t = this.loaded[e]
-      if (t) return t
+    getLoaded(e2) {
+      let t2 = this.loaded[e2]
+      if (t2) return t2
     }
-    removeLoaded(e) {
-      delete this.loaded[e]
+    removeLoaded(e2) {
+      delete this.loaded[e2]
     }
     clearLoaded() {
       this.loaded = {}
     }
   },
-  X = class {
-    constructor(e) {
-      ;((this.start = `${e}#start`),
-        (this.end = `${e}#end`),
-        (this.measure = e),
+  Y = class {
+    constructor(e2) {
+      ;((this.start = `${e2}#start`),
+        (this.end = `${e2}#end`),
+        (this.measure = e2),
         performance.mark(this.start))
     }
     finish() {
       performance.mark(this.end)
-      let e = performance.getEntriesByName(this.measure)
+      let e2 = performance.getEntriesByName(this.measure)
       return (
-        e.length === 0 &&
+        e2.length === 0 &&
           (performance.measure(this.measure, this.start, this.end),
-          (e = performance.getEntriesByName(this.measure)),
+          (e2 = performance.getEntriesByName(this.measure)),
           performance.clearMarks(this.start),
           performance.clearMarks(this.end),
           performance.clearMeasures(this.measure)),
-        e
+        e2
       )
     }
   },
-  te = class {
-    constructor(e, t, n, r, i) {
-      ;((this.type = e),
-        (this.properties = n || {}),
-        (this.extent = i),
-        (this.pointsArray = t),
-        (this.id = r))
+  ae = class {
+    constructor(e2, t2, n2, r2, i2) {
+      ;((this.type = e2),
+        (this.properties = n2 || {}),
+        (this.extent = i2),
+        (this.pointsArray = t2),
+        (this.id = r2))
     }
     loadGeometry() {
-      return this.pointsArray.map(e => e.map(e => new g(e.x, e.y)))
-    }
-  },
-  ne = class {
-    constructor(e, t, n) {
-      ;((this.version = 2),
-        (this._myFeatures = e),
-        (this.name = t),
-        (this.length = e.length),
-        (this.extent = n))
-    }
-    feature(e) {
-      return this._myFeatures[e]
-    }
-  },
-  re = class {
-    constructor() {
-      this.layers = {}
-    }
-    addLayer(e) {
-      this.layers[e.name] = e
-    }
-  }
-function ie(e, t, n) {
-  let {extent: r} = e,
-    i = 2 ** (n.z - t.z),
-    a = (n.x - t.x * i) * r,
-    o = (n.y - t.y * i) * r,
-    s = []
-  for (let t = 0; t < e.length; t++) {
-    let n = e.feature(t),
-      c = n.loadGeometry()
-    for (let e of c) for (let t of e) ((t.x = t.x * i - a), (t.y = t.y * i - o))
-    ;((c = k(c, n.type, -128, -128, r + 128, r + 128)),
-      c.length !== 0 && s.push(new te(n.type, c, n.properties, n.id, r)))
-  }
-  return new ne(s, e.name, r)
-}
-var ae = class {
-    constructor(e, t, n) {
-      ;((this.actor = e),
-        (this.layerIndex = t),
-        (this.availableImages = n),
-        (this.tileState = new Y()),
-        (this.overzoomedTileResultCache = new F(1e3)))
-    }
-    loadVectorTile(t, n) {
-      try {
-        return {
-          vectorTile: t.encoding === `mlt` ? new j(n) : new T(new e(n)),
-          rawData: n,
-        }
-      } catch (e) {
-        let r = new Uint8Array(n),
-          i = r[0] === 31 && r[1] === 139,
-          a = `Unable to parse the tile at ${t.request.url}, `
-        throw (
-          (a += i
-            ? `please make sure the data is not gzipped and that you have configured the relevant header in the server`
-            : `got error: ${b(e).message}`),
-          Error(a)
-        )
-      }
-    }
-    async loadTile(e) {
-      let {uid: t, overzoomParameters: n} = e
-      n && (e.request = n.overzoomRequest)
-      let r = this._startRequestTiming(e),
-        i = new q(e)
-      this.tileState.startLoading(t, i)
-      let a = new AbortController()
-      i.abort = a
-      try {
-        let o = await l(e.request, a)
-        if (e.etag && e.etag === o.etag)
-          return (
-            this.tileState.finishLoading(t), this._getEtagUnmodifiedResult(o, r)
-          )
-        let s = this.loadVectorTile(e, o.data)
-        if ((this.tileState.finishLoading(t), !s)) return null
-        let {vectorTile: c, rawData: u} = s
-        n && ({vectorTile: c, rawData: u} = this._getOverzoomTile(e, c))
-        let d = this._getExpiryData(o),
-          f = this._finishRequestTiming(r)
-        ;((i.vectorTile = c), this.tileState.markLoaded(t, i))
-        let p = {rawData: u, cacheControl: d, resourceTiming: f}
-        return (
-          this.tileState.setParsing(t, p), await this._parseWorkerTile(i, e)
-        )
-      } catch (e) {
-        throw (
-          this.tileState.finishLoading(t), this.tileState.markLoaded(t, i), e
-        )
-      }
-    }
-    _getEtagUnmodifiedResult(e, t) {
-      let n = this._getExpiryData(e),
-        r = this._finishRequestTiming(t)
-      return B({etagUnmodified: !0}, n, r)
-    }
-    async _parseWorkerTile(e, t) {
-      let n = this.tileState.getParsing(e.uid),
-        r = await e.parse(
-          e.vectorTile,
-          this.layerIndex,
-          this.availableImages,
-          this.actor,
-          t.subdivisionGranularity
-        )
-      if (n) {
-        let {rawData: i, cacheControl: a, resourceTiming: o} = n,
-          s = t.overzoomParameters ? `mvt` : t.encoding
-        ;((r = B({rawTileData: i.slice(0), encoding: s}, r, a, o)),
-          this.tileState.removeParsing(e.uid))
-      }
-      return r
-    }
-    _getExpiryData({expires: e, cacheControl: t, etag: n}) {
-      let r = {}
-      return (
-        e && (r.expires = e), t && (r.cacheControl = t), n && (r.etag = n), r
-      )
-    }
-    _startRequestTiming(e) {
-      if (e.request?.collectResourceTiming) return new X(e.request.url)
-    }
-    _finishRequestTiming(e) {
-      let t = e?.finish()
-      return t ? {resourceTiming: JSON.parse(JSON.stringify(t))} : {}
-    }
-    _getOverzoomTile(e, t) {
-      let {tileID: n, source: r, overzoomParameters: i} = e,
-        {maxZoomTileID: a} = i,
-        o = `${a.key}_${n.key}_${e.request?.url}`,
-        s = this.overzoomedTileResultCache.get(o)
-      if (s) return s
-      let c = new re(),
-        l = this.layerIndex.familiesBySource[r]
-      for (let e in l) {
-        let r = t.layers[e]
-        if (!r) continue
-        let i = ie(r, a, n.canonical)
-        i.length > 0 && c.addLayer(i)
-      }
-      let u = {vectorTile: c, rawData: M(c).buffer}
-      return (this.overzoomedTileResultCache.set(o, u), u)
-    }
-    async reloadTile(e) {
-      let t = e.uid,
-        n = this.tileState.getLoaded(t)
-      if (!n)
-        throw Error(
-          `Should not be trying to reload a tile that was never loaded or has been removed`
-        )
-      if (n.vectorTile)
-        return (
-          (n.showCollisionBoxes = e.showCollisionBoxes),
-          await this._parseWorkerTile(n, e)
-        )
-    }
-    async abortTile(e) {
-      this.tileState.abort(e.uid)
-    }
-    async removeTile(e) {
-      this.tileState.removeLoaded(e.uid)
+      return this.pointsArray.map(e2 => e2.map(e3 => new n(e3.x, e3.y)))
     }
   },
   oe = class {
-    constructor() {
-      this.loaded = {}
+    constructor(e2, t2, n2) {
+      ;((this.version = 2),
+        (this._myFeatures = e2),
+        (this.name = t2),
+        (this.length = e2.length),
+        (this.extent = n2))
     }
-    async loadTile(e) {
-      let {
-          uid: t,
-          encoding: n,
-          rawImageData: r,
-          redFactor: i,
-          greenFactor: a,
-          blueFactor: o,
-          baseShift: s,
-        } = e,
-        c = r.width + 2,
-        l = r.height + 2,
-        d = O(r) ? new u({width: c, height: l}, await R(r, -1, -1, c, l)) : r,
-        f = new H(t, d, n, i, a, o, s)
-      return ((this.loaded ||= {}), (this.loaded[t] = f), f)
-    }
-    removeTile(e) {
-      let t = this.loaded,
-        n = e.uid
-      t?.[n] && delete t[n]
+    feature(e2) {
+      return this._myFeatures[e2]
     }
   },
   se = class {
-    constructor(e, t, n, r = ce) {
-      ;((this.actor = e),
-        (this.layerIndex = t),
-        (this.availableImages = n),
-        (this.tileState = new Y()),
-        (this._createGeoJSONIndex = r))
+    constructor() {
+      this.layers = {}
     }
-    loadVectorTile(e) {
-      if (!this._geoJSONIndex)
-        throw Error(`Unable to parse the data into a cluster or geojson`)
-      let {z: t, x: n, y: r} = e.tileID.canonical,
-        i = this._geoJSONIndex.getTile(t, n, r)
-      if (!i) return null
-      let a = new L(i.features, {version: 2, extent: y})
-      return {vectorTile: a, rawData: M(a, _).buffer}
+    addLayer(e2) {
+      this.layers[e2.name] = e2
     }
-    async loadTile(e) {
-      let {uid: t} = e,
-        n = new q(e)
-      n.abort = new AbortController()
+  }
+function ce(e2, t2, n2) {
+  let {extent: r2} = e2,
+    i2 = 2 ** (n2.z - t2.z),
+    a2 = (n2.x - t2.x * i2) * r2,
+    o2 = (n2.y - t2.y * i2) * r2,
+    s2 = []
+  for (let t3 = 0; t3 < e2.length; t3++) {
+    let n3 = e2.feature(t3),
+      c2 = n3.loadGeometry()
+    for (let e3 of c2)
+      for (let t4 of e3) ((t4.x = t4.x * i2 - a2), (t4.y = t4.y * i2 - o2))
+    ;((c2 = E(c2, n3.type, -128, -128, r2 + 128, r2 + 128)),
+      c2.length !== 0 && s2.push(new ae(n3.type, c2, n3.properties, n3.id, r2)))
+  }
+  return new oe(s2, e2.name, r2)
+}
+var le = class {
+    constructor(e2, t2, n2) {
+      ;((this.actor = e2),
+        (this.layerIndex = t2),
+        (this.availableImages = n2),
+        (this.tileState = new J()),
+        (this.overzoomedTileResultCache = new ne(1e3)))
+    }
+    loadVectorTile(e2, n2) {
       try {
-        let r = this.loadVectorTile(e)
-        if (!r) return null
-        let {vectorTile: i, rawData: a} = r
-        ;((n.vectorTile = i), this.tileState.markLoaded(t, n))
-        let o = {rawData: a}
-        return (
-          this.tileState.setParsing(t, o), await this._parseWorkerTile(n, e)
+        return {
+          vectorTile: e2.encoding === `mlt` ? new k(n2) : new w(new t(n2)),
+          rawData: n2,
+        }
+      } catch (t2) {
+        let r2 = new Uint8Array(n2),
+          i2 = r2[0] === 31 && r2[1] === 139,
+          a2 = `Unable to parse the tile at ${e2.request.url}, `
+        throw (
+          (a2 += i2
+            ? `please make sure the data is not gzipped and that you have configured the relevant header in the server`
+            : `got error: ${F(t2).message}`),
+          Error(a2)
         )
-      } catch (e) {
-        throw (this.tileState.markLoaded(t, n), e)
       }
     }
-    async _parseWorkerTile(e, t) {
-      let n = this.tileState.getParsing(e.uid),
-        r = await e.parse(
-          e.vectorTile,
+    async loadTile(e2) {
+      let {uid: t2, overzoomParameters: n2} = e2
+      n2 && (e2.request = n2.overzoomRequest)
+      let r2 = this._startRequestTiming(e2),
+        i2 = new K(e2)
+      this.tileState.startLoading(t2, i2)
+      let o2 = new AbortController()
+      i2.abort = o2
+      try {
+        let s2 = await a(e2.request, o2)
+        if (e2.etag && e2.etag === s2.etag)
+          return (
+            this.tileState.finishLoading(t2),
+            this._getEtagUnmodifiedResult(s2, r2)
+          )
+        let c2 = this.loadVectorTile(e2, s2.data)
+        if ((this.tileState.finishLoading(t2), !c2)) return null
+        let {vectorTile: l2, rawData: u2} = c2
+        n2 && ({vectorTile: l2, rawData: u2} = this._getOverzoomTile(e2, l2))
+        let d2 = this._getExpiryData(s2),
+          f2 = this._finishRequestTiming(r2)
+        ;((i2.vectorTile = l2),
+          (i2.etag = s2.etag),
+          this.tileState.markLoaded(t2, i2))
+        let p2 = {rawData: u2, cacheControl: d2, resourceTiming: f2}
+        return (
+          this.tileState.setParsing(t2, p2), await this._parseWorkerTile(i2, e2)
+        )
+      } catch (e3) {
+        throw (
+          this.tileState.finishLoading(t2),
+          this.tileState.markLoaded(t2, i2),
+          e3
+        )
+      }
+    }
+    _getEtagUnmodifiedResult(e2, t2) {
+      let n2 = this._getExpiryData(e2),
+        r2 = this._finishRequestTiming(t2)
+      return y({etagUnmodified: true}, n2, r2)
+    }
+    async _parseWorkerTile(e2, t2) {
+      let n2 = this.tileState.getParsing(e2.uid),
+        r2 = await e2.parse(
+          e2.vectorTile,
           this.layerIndex,
           this.availableImages,
           this.actor,
-          t.subdivisionGranularity
+          t2.subdivisionGranularity
         )
-      if (n) {
-        let {rawData: t} = n
-        ;((r = B({rawTileData: t.slice(0), encoding: `mvt`}, r)),
-          this.tileState.removeParsing(e.uid))
+      if (n2) {
+        let {rawData: i2, cacheControl: a2, resourceTiming: o2} = n2,
+          s2 = t2.overzoomParameters ? `mvt` : t2.encoding
+        ;((r2 = y({rawTileData: i2.slice(0), encoding: s2}, r2, a2, o2)),
+          this.tileState.removeParsing(e2.uid))
+      } else e2.etag && (r2 = y(r2, {etag: e2.etag}))
+      return r2
+    }
+    _getExpiryData({expires: e2, cacheControl: t2, etag: n2}) {
+      let r2 = {}
+      return (
+        e2 && (r2.expires = e2),
+        t2 && (r2.cacheControl = t2),
+        n2 && (r2.etag = n2),
+        r2
+      )
+    }
+    _startRequestTiming(e2) {
+      if (e2.request?.collectResourceTiming) return new Y(e2.request.url)
+    }
+    _finishRequestTiming(e2) {
+      let t2 = e2?.finish()
+      return t2 ? {resourceTiming: JSON.parse(JSON.stringify(t2))} : {}
+    }
+    _getOverzoomTile(e2, t2) {
+      let {tileID: n2, source: r2, overzoomParameters: i2} = e2,
+        {maxZoomTileID: a2} = i2,
+        o2 = `${a2.key}_${n2.key}_${e2.request?.url}`,
+        s2 = this.overzoomedTileResultCache.get(o2)
+      if (s2) return s2
+      let c2 = new se(),
+        l2 = this.layerIndex.familiesBySource[r2]
+      for (let e3 in l2) {
+        let r3 = t2.layers[e3]
+        if (!r3) continue
+        let i3 = ce(r3, a2, n2.canonical)
+        i3.length > 0 && c2.addLayer(i3)
       }
-      return r
+      let u2 = {vectorTile: c2, rawData: A(c2).buffer}
+      return (this.overzoomedTileResultCache.set(o2, u2), u2)
     }
-    async abortTile(e) {
-      this.tileState.abort(e.uid)
+    async reloadTile(e2) {
+      let t2 = e2.uid,
+        n2 = this.tileState.getLoaded(t2)
+      if (!n2)
+        throw Error(
+          `Should not be trying to reload a tile that was never loaded or has been removed`
+        )
+      if (n2.vectorTile)
+        return (
+          (n2.showCollisionBoxes = e2.showCollisionBoxes),
+          await this._parseWorkerTile(n2, e2)
+        )
     }
-    async removeTile(e) {
-      this.tileState.removeLoaded(e.uid)
+    async abortTile(e2) {
+      this.tileState.abort(e2.uid)
     }
-    async loadData(e) {
+    async removeTile(e2) {
+      this.tileState.removeLoaded(e2.uid)
+    }
+  },
+  X = class {
+    constructor() {
+      this.loaded = {}
+    }
+    async loadTile(e2) {
+      let {
+          uid: t2,
+          encoding: n2,
+          rawImageData: r2,
+          redFactor: i2,
+          greenFactor: a2,
+          blueFactor: o2,
+          baseShift: s2,
+        } = e2,
+        c2 = r2.width + 2,
+        l2 = r2.height + 2,
+        u2 = M(r2)
+          ? new O({width: c2, height: l2}, await C(r2, -1, -1, c2, l2))
+          : r2,
+        d2 = new g(t2, u2, n2, i2, a2, o2, s2)
+      return ((this.loaded ||= {}), (this.loaded[t2] = d2), d2)
+    }
+    removeTile(e2) {
+      let t2 = this.loaded,
+        n2 = e2.uid
+      t2?.[n2] && delete t2[n2]
+    }
+  },
+  ue = class {
+    constructor(e2, t2, n2, r2 = de) {
+      ;((this.actor = e2),
+        (this.layerIndex = t2),
+        (this.availableImages = n2),
+        (this.tileState = new J()),
+        (this._createGeoJSONIndex = r2))
+    }
+    loadVectorTile(e2) {
+      if (!this._geoJSONIndex)
+        throw Error(`Unable to parse the data into a cluster or geojson`)
+      let {z: t2, x: n2, y: r2} = e2.tileID.canonical,
+        i2 = this._geoJSONIndex.getTile(t2, n2, r2)
+      if (!i2) return null
+      let a2 = new re(i2.features, {version: 2, extent: s})
+      return {vectorTile: a2, rawData: A(a2, B).buffer}
+    }
+    async loadTile(e2) {
+      let {uid: t2} = e2,
+        n2 = new K(e2)
+      n2.abort = new AbortController()
+      try {
+        let r2 = this.loadVectorTile(e2)
+        if (!r2) return null
+        let {vectorTile: i2, rawData: a2} = r2
+        ;((n2.vectorTile = i2), this.tileState.markLoaded(t2, n2))
+        let o2 = {rawData: a2}
+        return (
+          this.tileState.setParsing(t2, o2), await this._parseWorkerTile(n2, e2)
+        )
+      } catch (e3) {
+        throw (this.tileState.markLoaded(t2, n2), e3)
+      }
+    }
+    async _parseWorkerTile(e2, t2) {
+      let n2 = this.tileState.getParsing(e2.uid),
+        r2 = await e2.parse(
+          e2.vectorTile,
+          this.layerIndex,
+          this.availableImages,
+          this.actor,
+          t2.subdivisionGranularity
+        )
+      if (n2) {
+        let {rawData: t3} = n2
+        ;((r2 = y({rawTileData: t3.slice(0), encoding: `mvt`}, r2)),
+          this.tileState.removeParsing(e2.uid))
+      }
+      return r2
+    }
+    async abortTile(e2) {
+      this.tileState.abort(e2.uid)
+    }
+    async removeTile(e2) {
+      this.tileState.removeLoaded(e2.uid)
+    }
+    async loadData(e2) {
       this._pendingRequest?.abort()
-      let t = this._startRequestTiming(e)
+      let t2 = this._startRequestTiming(e2)
       this._pendingRequest = new AbortController()
       try {
-        ;(await this.loadAndProcessGeoJSON(e, this._pendingRequest),
+        ;(await this.loadAndProcessGeoJSON(e2, this._pendingRequest),
           delete this._pendingRequest,
           this.tileState.clearLoaded())
-        let n = {}
+        let n2 = {}
         return (
-          e.request && (n.data = e.data), this._finishRequestTiming(t, e, n), n
+          e2.request && (n2.data = e2.data),
+          this._finishRequestTiming(t2, e2, n2),
+          n2
         )
-      } catch (e) {
-        if ((delete this._pendingRequest, !W(e))) throw e
-        return {abandoned: !0}
+      } catch (e3) {
+        if ((delete this._pendingRequest, !l(e3))) throw e3
+        return {abandoned: true}
       }
     }
-    _startRequestTiming(e) {
-      if (e.request?.collectResourceTiming) return new X(e.request.url)
+    _startRequestTiming(e2) {
+      if (e2.request?.collectResourceTiming) return new Y(e2.request.url)
     }
-    _finishRequestTiming(e, t, n) {
-      let r = e?.finish()
-      r && (n.resourceTiming = {[t.source]: JSON.parse(JSON.stringify(r))})
+    _finishRequestTiming(e2, t2, n2) {
+      let r2 = e2?.finish()
+      r2 && (n2.resourceTiming = {[t2.source]: JSON.parse(JSON.stringify(r2))})
     }
-    async reloadTile(e) {
-      let t = e.uid,
-        n = this.tileState.getLoaded(t)
-      if (!n) return await this.loadTile(e)
-      if (n.vectorTile)
+    async reloadTile(e2) {
+      let t2 = e2.uid,
+        n2 = this.tileState.getLoaded(t2)
+      if (!n2) return await this.loadTile(e2)
+      if (n2.vectorTile)
         return (
-          (n.showCollisionBoxes = e.showCollisionBoxes),
-          await this._parseWorkerTile(n, e)
+          (n2.showCollisionBoxes = e2.showCollisionBoxes),
+          await this._parseWorkerTile(n2, e2)
         )
     }
-    async loadAndProcessGeoJSON(e, t) {
-      if ((e.request && (e.data = (await A(e.request, t)).data), e.data)) {
-        ;((e.data = this._filterGeoJSON(e.data, e.filter, e.source)),
-          (this._geoJSONIndex = this._createGeoJSONIndex(e.data, e)))
+    async loadAndProcessGeoJSON(e2, t2) {
+      if ((e2.request && (e2.data = (await i(e2.request, t2)).data), e2.data)) {
+        ;((e2.data = this._filterGeoJSON(e2.data, e2.filter, e2.source)),
+          (this._geoJSONIndex = this._createGeoJSONIndex(e2.data, e2)))
         return
       }
-      if (e.dataDiff) {
+      if (e2.dataDiff) {
         ;((this._geoJSONIndex ??= this._createGeoJSONIndex(
           {type: `FeatureCollection`, features: []},
-          e
+          e2
         )),
           this._geoJSONIndex.updateData(
-            e.dataDiff,
-            this._getFilterPredicate(e.filter, e.source)
+            e2.dataDiff,
+            this._getFilterPredicate(e2.filter, e2.source)
           ))
         return
       }
       if (
-        (e.updateCluster &&
+        (e2.updateCluster &&
           this._geoJSONIndex.updateClusterOptions(
-            e.geojsonVtOptions.cluster,
-            Z(e)
+            e2.geojsonVtOptions.cluster,
+            Z(e2)
           ),
         this._geoJSONIndex == null)
       )
         throw Error(
-          `Input data given to '${e.source}' is not a valid GeoJSON object.`
+          `Input data given to '${e2.source}' is not a valid GeoJSON object.`
         )
     }
-    _filterGeoJSON(e, t, n) {
-      if (e.type !== `FeatureCollection`) return e
-      let r = this._getFilterPredicate(t, n)
-      return r
-        ? {type: `FeatureCollection`, features: e.features.filter(e => r(e))}
-        : e
+    _filterGeoJSON(e2, t2, n2) {
+      if (e2.type !== `FeatureCollection`) return e2
+      let r2 = this._getFilterPredicate(t2, n2)
+      return r2
+        ? {
+            type: `FeatureCollection`,
+            features: e2.features.filter(e3 => r2(e3)),
+          }
+        : e2
     }
-    _getFilterPredicate(e, t) {
-      if (typeof e != `boolean` && !e?.length) return
-      let n = D(e, `sources.${t}.filter`, {
+    _getFilterPredicate(e2, t2) {
+      if (typeof e2 != `boolean` && !e2?.length) return
+      let n2 = j(e2, `sources.${t2}.filter`, {
         type: `boolean`,
         "property-type": `data-driven`,
-        overridable: !1,
-        transition: !1,
+        overridable: false,
+        transition: false,
       })
-      if (n.result === `error`)
-        throw Error(n.value.map(e => `${e.key}: ${e.message}`).join(`, `))
-      return e => n.value.evaluate({zoom: 0}, e)
+      if (n2.result === `error`)
+        throw Error(n2.value.map(e3 => `${e3.key}: ${e3.message}`).join(`, `))
+      return e3 => n2.value.evaluate({zoom: 0}, e3)
     }
-    async removeSource(e) {
+    async removeSource(e2) {
       this._pendingRequest?.abort()
     }
-    getClusterExpansionZoom(e) {
-      return this._geoJSONIndex.getClusterExpansionZoom(e.clusterId)
+    getClusterExpansionZoom(e2) {
+      return this._geoJSONIndex.getClusterExpansionZoom(e2.clusterId)
     }
-    getClusterChildren(e) {
-      return this._geoJSONIndex.getClusterChildren(e.clusterId)
+    getClusterChildren(e2) {
+      return this._geoJSONIndex.getClusterChildren(e2.clusterId)
     }
-    getClusterLeaves(e) {
-      return this._geoJSONIndex.getClusterLeaves(e.clusterId, e.limit, e.offset)
+    getClusterLeaves(e2) {
+      return this._geoJSONIndex.getClusterLeaves(
+        e2.clusterId,
+        e2.limit,
+        e2.offset
+      )
     }
   }
-function ce(e, t) {
-  let n = B(t.geojsonVtOptions || {}, {updateable: !0, clusterOptions: Z(t)})
-  return new v(e, n)
+function de(e2, t2) {
+  let n2 = y(t2.geojsonVtOptions || {}, {
+    updateable: true,
+    clusterOptions: Z(t2),
+  })
+  return new o(e2, n2)
 }
-function Z({geojsonVtOptions: e, clusterProperties: t, source: n}) {
-  if (!t || !e.clusterOptions) return e.clusterOptions
-  let r = {},
-    i = {},
-    a = {accumulated: null, zoom: 0},
-    o = {properties: null},
-    s = Object.keys(t)
-  for (let e of s) {
-    let [a, o] = t[e],
-      s = D(o, `sources.${n}.clusterProperties.${e}[1]`),
-      c = D(
-        typeof a == `string` ? [a, [`accumulated`], [`get`, e]] : a,
-        `sources.${n}.clusterProperties.${e}[0]`
+function Z({geojsonVtOptions: e2, clusterProperties: t2, source: n2}) {
+  if (!t2 || !e2.clusterOptions) return e2.clusterOptions
+  let r2 = {},
+    i2 = {},
+    a2 = {accumulated: null, zoom: 0},
+    o2 = {properties: null},
+    s2 = Object.keys(t2)
+  for (let e3 of s2) {
+    let [a3, o3] = t2[e3],
+      s3 = j(o3, `sources.${n2}.clusterProperties.${e3}[1]`),
+      c2 = j(
+        typeof a3 == `string` ? [a3, [`accumulated`], [`get`, e3]] : a3,
+        `sources.${n2}.clusterProperties.${e3}[0]`
       )
-    ;((r[e] = s.value), (i[e] = c.value))
+    ;((r2[e3] = s3.value), (i2[e3] = c2.value))
   }
   return (
-    (e.clusterOptions.map = e => {
-      o.properties = e
-      let t = {}
-      for (let e of s) t[e] = r[e].evaluate(a, o)
-      return t
+    (e2.clusterOptions.map = e3 => {
+      o2.properties = e3
+      let t3 = {}
+      for (let e4 of s2) t3[e4] = r2[e4].evaluate(a2, o2)
+      return t3
     }),
-    (e.clusterOptions.reduce = (e, t) => {
-      o.properties = t
-      for (let t of s) ((a.accumulated = e[t]), (e[t] = i[t].evaluate(a, o)))
+    (e2.clusterOptions.reduce = (e3, t3) => {
+      o2.properties = t3
+      for (let t4 of s2)
+        ((a2.accumulated = e3[t4]), (e3[t4] = i2[t4].evaluate(a2, o2)))
     }),
-    e.clusterOptions
+    e2.clusterOptions
   )
 }
-async function Q(e) {
-  if (e.endsWith(`.mjs`)) {
-    await import(e)
+async function Q(e2) {
+  if (e2.endsWith(`.mjs`)) {
+    await import(e2)
     return
   }
-  let t = await fetch(e, {credentials: `same-origin`})
-  if (!t.ok) throw Error(`Failed to load ${e}: ${t.status}`)
-  let n = await t.text()
-  if (/^[ \t]*(import|export)\s/m.test(n)) {
-    let e = URL.createObjectURL(new Blob([n], {type: `text/javascript`}))
+  let t2 = await fetch(e2, {credentials: `same-origin`})
+  if (!t2.ok) throw Error(`Failed to load ${e2}: ${t2.status}`)
+  let n2 = await t2.text()
+  if (/^[ \t]*(import|export)\s/m.test(n2)) {
+    let e3 = URL.createObjectURL(new Blob([n2], {type: `text/javascript`}))
     try {
-      await import(e)
+      await import(e3)
     } finally {
-      URL.revokeObjectURL(e)
+      URL.revokeObjectURL(e3)
     }
     return
   }
-  globalThis.eval(n)
+  globalThis.eval(n2)
 }
 var $ = class {
-  constructor(e) {
-    ;((this.self = e),
-      (this.actor = new V(e)),
+  constructor(t2) {
+    ;((this.self = t2),
+      (this.actor = new R(t2)),
       (this.layerIndexes = {}),
       (this.availableImages = {}),
       (this.workerSources = {}),
       (this.demWorkerSources = {}),
       (this.externalWorkerSourceTypes = {}),
-      (this.globalStates = new Map()),
-      (this.self.registerWorkerSource = (e, t) => {
-        if (this.externalWorkerSourceTypes[e])
-          throw Error(`Worker source with name "${e}" already registered.`)
-        this.externalWorkerSourceTypes[e] = t
+      (this.globalStates = /* @__PURE__ */ new Map()),
+      (this.self.registerWorkerSource = (e2, t3) => {
+        if (this.externalWorkerSourceTypes[e2])
+          throw Error(`Worker source with name "${e2}" already registered.`)
+        this.externalWorkerSourceTypes[e2] = t3
       }),
-      (this.self.addProtocol = f),
-      (this.self.removeProtocol = o),
-      (this.self.registerRTLTextPlugin = e => {
-        z.setMethods(e)
+      (this.self.addProtocol = u),
+      (this.self.removeProtocol = p),
+      (this.self.registerRTLTextPlugin = e2 => {
+        D.setMethods(e2)
       }),
-      (this.self.makeRequest = c),
-      this.actor.registerMessageHandler(`LDT`, (e, t) =>
-        this._getDEMWorkerSource(e, t.source).loadTile(t)
+      (this.self.makeRequest = e),
+      this.actor.registerMessageHandler(`LDT`, (e2, t3) =>
+        this._getDEMWorkerSource(e2, t3.source).loadTile(t3)
       ),
-      this.actor.registerMessageHandler(`RDT`, async (e, t) => {
-        this._getDEMWorkerSource(e, t.source).removeTile(t)
+      this.actor.registerMessageHandler(`RDT`, async (e2, t3) => {
+        this._getDEMWorkerSource(e2, t3.source).removeTile(t3)
       }),
-      this.actor.registerMessageHandler(`GCEZ`, async (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).getClusterExpansionZoom(t)
+      this.actor.registerMessageHandler(`GCEZ`, async (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).getClusterExpansionZoom(
+          t3
+        )
       ),
-      this.actor.registerMessageHandler(`GCC`, async (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).getClusterChildren(t)
+      this.actor.registerMessageHandler(`GCC`, async (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).getClusterChildren(t3)
       ),
-      this.actor.registerMessageHandler(`GCL`, async (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).getClusterLeaves(t)
+      this.actor.registerMessageHandler(`GCL`, async (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).getClusterLeaves(t3)
       ),
-      this.actor.registerMessageHandler(`LD`, (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).loadData(t)
+      this.actor.registerMessageHandler(`LD`, (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).loadData(t3)
       ),
-      this.actor.registerMessageHandler(`LT`, (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).loadTile(t)
+      this.actor.registerMessageHandler(`LT`, (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).loadTile(t3)
       ),
-      this.actor.registerMessageHandler(`RT`, (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).reloadTile(t)
+      this.actor.registerMessageHandler(`RT`, (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).reloadTile(t3)
       ),
-      this.actor.registerMessageHandler(`AT`, (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).abortTile(t)
+      this.actor.registerMessageHandler(`AT`, (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).abortTile(t3)
       ),
-      this.actor.registerMessageHandler(`RMT`, (e, t) =>
-        this._getWorkerSource(e, t.type, t.source).removeTile(t)
+      this.actor.registerMessageHandler(`RMT`, (e2, t3) =>
+        this._getWorkerSource(e2, t3.type, t3.source).removeTile(t3)
       ),
-      this.actor.registerMessageHandler(`RS`, async (e, t) => {
-        if (!this.workerSources[e]?.[t.type]?.[t.source]) return
-        let n = this.workerSources[e][t.type][t.source]
-        ;(delete this.workerSources[e][t.type][t.source],
-          n.removeSource !== void 0 && n.removeSource(t))
+      this.actor.registerMessageHandler(`RS`, async (e2, t3) => {
+        if (!this.workerSources[e2]?.[t3.type]?.[t3.source]) return
+        let n2 = this.workerSources[e2][t3.type][t3.source]
+        ;(delete this.workerSources[e2][t3.type][t3.source],
+          n2.removeSource !== void 0 && n2.removeSource(t3))
       }),
-      this.actor.registerMessageHandler(`RM`, async e => {
-        ;(delete this.layerIndexes[e],
-          delete this.availableImages[e],
-          delete this.workerSources[e],
-          delete this.demWorkerSources[e],
-          this.globalStates.delete(e))
+      this.actor.registerMessageHandler(`RM`, async e2 => {
+        ;(delete this.layerIndexes[e2],
+          delete this.availableImages[e2],
+          delete this.workerSources[e2],
+          delete this.demWorkerSources[e2],
+          this.globalStates.delete(e2))
       }),
-      this.actor.registerMessageHandler(`SR`, async (e, t) => {
-        this.referrer = t
+      this.actor.registerMessageHandler(`SR`, async (e2, t3) => {
+        this.referrer = t3
       }),
-      this.actor.registerMessageHandler(`SRPS`, (e, t) =>
-        this._syncRTLPluginState(e, t)
+      this.actor.registerMessageHandler(`SRPS`, (e2, t3) =>
+        this._syncRTLPluginState(e2, t3)
       ),
-      this.actor.registerMessageHandler(`IS`, async (e, t) => {
-        await Q(t)
+      this.actor.registerMessageHandler(`IS`, async (e2, t3) => {
+        await Q(t3)
       }),
-      this.actor.registerMessageHandler(`SI`, (e, t) => this._setImages(e, t)),
-      this.actor.registerMessageHandler(`UL`, async (e, t) => {
-        this._getLayerIndex(e).update(
-          t.layers,
-          t.removedIds,
-          this._getGlobalState(e)
+      this.actor.registerMessageHandler(`SI`, (e2, t3) =>
+        this._setImages(e2, t3)
+      ),
+      this.actor.registerMessageHandler(`UL`, async (e2, t3) => {
+        this._getLayerIndex(e2).update(
+          t3.layers,
+          t3.removedIds,
+          this._getGlobalState(e2)
         )
       }),
-      this.actor.registerMessageHandler(`UGS`, async (e, t) => {
-        let n = this._getGlobalState(e)
-        for (let e in t) n[e] = t[e]
+      this.actor.registerMessageHandler(`UGS`, async (e2, t3) => {
+        let n2 = this._getGlobalState(e2)
+        for (let e3 in t3) n2[e3] = t3[e3]
       }),
-      this.actor.registerMessageHandler(`SL`, async (e, t) => {
-        this._getLayerIndex(e).replace(t, this._getGlobalState(e))
+      this.actor.registerMessageHandler(`SL`, async (e2, t3) => {
+        this._getLayerIndex(e2).replace(t3, this._getGlobalState(e2))
       }))
   }
-  _getGlobalState(e) {
-    let t = this.globalStates.get(e)
-    return (t || ((t = {}), this.globalStates.set(e, t)), t)
+  _getGlobalState(e2) {
+    let t2 = this.globalStates.get(e2)
+    return (t2 || ((t2 = {}), this.globalStates.set(e2, t2)), t2)
   }
-  async _setImages(e, t) {
-    this.availableImages[e] = t
-    for (let n in this.workerSources[e]) {
-      let r = this.workerSources[e][n]
-      for (let e in r) r[e].availableImages = t
+  async _setImages(e2, t2) {
+    this.availableImages[e2] = t2
+    for (let n2 in this.workerSources[e2]) {
+      let r2 = this.workerSources[e2][n2]
+      for (let e3 in r2) r2[e3].availableImages = t2
     }
   }
-  async _syncRTLPluginState(e, t) {
-    return await z.syncState(t, Q)
+  async _syncRTLPluginState(e2, t2) {
+    return await D.syncState(t2, Q)
   }
-  _getAvailableImages(e) {
-    let t = this.availableImages[e]
-    return ((t ||= []), t)
+  _getAvailableImages(e2) {
+    let t2 = this.availableImages[e2]
+    return ((t2 ||= []), t2)
   }
-  _getLayerIndex(e) {
-    let t = this.layerIndexes[e]
-    return ((t ||= this.layerIndexes[e] = new G()), t)
+  _getLayerIndex(e2) {
+    let t2 = this.layerIndexes[e2]
+    return ((t2 ||= this.layerIndexes[e2] = new W()), t2)
   }
-  _getWorkerSource(e, t, n) {
+  _getWorkerSource(e2, t2, n2) {
     if (
-      ((this.workerSources[e] ||= {}),
-      (this.workerSources[e][t] ||= {}),
-      !this.workerSources[e][t][n])
+      ((this.workerSources[e2] ||= {}),
+      (this.workerSources[e2][t2] ||= {}),
+      !this.workerSources[e2][t2][n2])
     ) {
-      let r = {
-        sendAsync: (t, n) => ((t.targetMapId = e), this.actor.sendAsync(t, n)),
+      let r2 = {
+        sendAsync: (t3, n3) => (
+          (t3.targetMapId = e2),
+          this.actor.sendAsync(t3, n3)
+        ),
       }
-      switch (t) {
+      switch (t2) {
         case `vector`:
-          this.workerSources[e][t][n] = new ae(
-            r,
-            this._getLayerIndex(e),
-            this._getAvailableImages(e)
+          this.workerSources[e2][t2][n2] = new le(
+            r2,
+            this._getLayerIndex(e2),
+            this._getAvailableImages(e2)
           )
           break
         case `geojson`:
-          this.workerSources[e][t][n] = new se(
-            r,
-            this._getLayerIndex(e),
-            this._getAvailableImages(e)
+          this.workerSources[e2][t2][n2] = new ue(
+            r2,
+            this._getLayerIndex(e2),
+            this._getAvailableImages(e2)
           )
           break
         default:
-          this.workerSources[e][t][n] = new this.externalWorkerSourceTypes[t](
-            r,
-            this._getLayerIndex(e),
-            this._getAvailableImages(e)
-          )
+          this.workerSources[e2][t2][n2] = new this.externalWorkerSourceTypes[
+            t2
+          ](r2, this._getLayerIndex(e2), this._getAvailableImages(e2))
       }
     }
-    return this.workerSources[e][t][n]
+    return this.workerSources[e2][t2][n2]
   }
-  _getDEMWorkerSource(e, t) {
+  _getDEMWorkerSource(e2, t2) {
     return (
-      (this.demWorkerSources[e] ||= {}),
-      (this.demWorkerSources[e][t] ||= new oe()),
-      this.demWorkerSources[e][t]
+      (this.demWorkerSources[e2] ||= {}),
+      (this.demWorkerSources[e2][t2] ||= new X()),
+      this.demWorkerSources[e2][t2]
     )
   }
 }
-S(self) && (self.worker = new $(self))
+L(self) && (self.worker = new $(self))
 export {$ as default}
-//# sourceMappingURL=maplibre-gl-worker.mjs.map

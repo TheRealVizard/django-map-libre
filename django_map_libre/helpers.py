@@ -27,6 +27,7 @@ class Position(Enum):
 class MetricSystem(Enum):
     Imperial = "imperial"
     Metric = "metric"
+    Nautical = "nautical"
 
 
 class ColorSchemeType(str, Enum):

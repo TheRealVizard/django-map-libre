@@ -1,14 +1,17 @@
-export class LayerSelector {
-  _map = null
-  _container = null
-  _panelVisible = false
-  _timeout = null
-  _isPinned = false
-  _panel = null
-  _btnIcon = null
-  _trackedLayers = new Map()
+import type {ControlPosition, IControl, Map as MapLibre} from "maplibre-gl"
+import type {TrackedLayer} from "./map-types"
 
-  constructor(initialLayers = []) {
+export class LayerSelector implements IControl {
+  _map: MapLibre | null = null
+  _container: HTMLDivElement | null = null
+  _panelVisible = false
+  _timeout: ReturnType<typeof setTimeout> | undefined = undefined
+  _isPinned = false
+  _panel: HTMLDivElement | null = null
+  _btnIcon: HTMLButtonElement | null = null
+  _trackedLayers = new Map<string, TrackedLayer>()
+
+  constructor(initialLayers: TrackedLayer[] = []) {
     initialLayers.forEach(item => {
       const id = typeof item === "string" ? item : item.id
       const label = typeof item === "string" ? item : item.label || item.id
@@ -17,7 +20,7 @@ export class LayerSelector {
     })
   }
 
-  onAdd(map) {
+  onAdd(map: MapLibre): HTMLElement {
     this._map = map
 
     this._container = document.createElement("div")
@@ -42,8 +45,8 @@ export class LayerSelector {
 
     this._container.addEventListener("mouseleave", e => {
       if (this._isPinned) return
-      const relatedTarget = e.relatedTarget
-      if (this._container.contains(relatedTarget)) return
+      const relatedTarget = e.relatedTarget as Node
+      if (this._container?.contains(relatedTarget)) return
       this._timeout = setTimeout(() => this._closePanel(), 150)
     })
 
@@ -61,7 +64,7 @@ export class LayerSelector {
 
     document.addEventListener("click", e => {
       if (this._isPinned) return
-      if (this._container && !this._container.contains(e.target)) {
+      if (this._container && !this._container.contains(e.target as Node)) {
         this._closePanel()
       }
     })
@@ -81,7 +84,12 @@ export class LayerSelector {
     return this._container
   }
 
-  _addLayer(layerId, label, type, visible) {
+  _addLayer(
+    layerId: string,
+    label: string,
+    type: "tile" | "overlay",
+    visible: boolean
+  ) {
     if (this._trackedLayers.has(layerId)) return
     this._trackedLayers.set(layerId, {
       id: layerId,
@@ -98,15 +106,15 @@ export class LayerSelector {
     }
   }
 
-  addOverlayLayer(layerId, label, visible = true) {
+  addOverlayLayer(layerId: string, label: string, visible: boolean = true) {
     this._addLayer(layerId, label, "overlay", visible)
   }
 
-  addTileLayer(layerId, label) {
+  addTileLayer(layerId: string, label: string) {
     this._addLayer(layerId, label, "tile", true)
   }
 
-  removeLayer(layerId) {
+  removeLayer(layerId: string) {
     if (!this._trackedLayers.has(layerId)) return
     this._trackedLayers.delete(layerId)
     if (this._panelVisible) {
@@ -131,7 +139,7 @@ export class LayerSelector {
 
   _openPanel() {
     this._panelVisible = true
-    this._panel.classList.add("panel-open")
+    this._panel?.classList.add("panel-open")
     this._populateLayerList()
     requestAnimationFrame(() => {
       this._adjustVerticalPosition()
@@ -141,12 +149,14 @@ export class LayerSelector {
 
   _closePanel() {
     this._panelVisible = false
-    this._panel.classList.remove("panel-open")
-    this._btnIcon.classList.remove("pinned")
+    this._panel?.classList.remove("panel-open")
+    this._btnIcon?.classList.remove("pinned")
   }
 
   _populateLayerList() {
     const panel = this._panel
+
+    if (!panel) return
     panel.innerHTML = ""
 
     if (!this._map) return
@@ -199,7 +209,7 @@ export class LayerSelector {
     }
   }
 
-  _createLayerItem(layer, isTile) {
+  _createLayerItem(layer: any, isTile: boolean): HTMLDivElement {
     const item = document.createElement("div")
     const layerInfo = this._trackedLayers.get(layer.id)
     const label = layerInfo?.label || layer.id
@@ -211,7 +221,7 @@ export class LayerSelector {
     input.name = isTile ? "tile-layer" : ""
     input.classList.add("layer-input-control")
 
-    const visibility = this._map.getLayoutProperty(layer.id, "visibility")
+    const visibility = this._map?.getLayoutProperty(layer.id, "visibility")
     const isVisible = visibility !== "none"
     input.checked = isVisible
 
@@ -237,10 +247,10 @@ export class LayerSelector {
 
     input.addEventListener("change", () => {
       const newVisibility = input.checked ? "visible" : "none"
-      this._map.setLayoutProperty(layer.id, "visibility", newVisibility)
+      this._map?.setLayoutProperty(layer.id, "visibility", newVisibility)
 
       if (isTile && input.checked) {
-        const allLayers = this._map.getStyle().layers || []
+        const allLayers = this._map?.getStyle().layers || []
         const trackedIds = new Set(this._trackedLayers.keys())
         const otherTileLayers = allLayers.filter(
           l =>
@@ -249,10 +259,10 @@ export class LayerSelector {
             this._trackedLayers.get(l.id)?.type === "tile"
         )
         otherTileLayers.forEach(other => {
-          this._map.setLayoutProperty(other.id, "visibility", "none")
-          const otherInput = this._panel.querySelector(
+          this._map?.setLayoutProperty(other.id, "visibility", "none")
+          const otherInput = this._panel?.querySelector(
             `input[data-layer-id="${other.id}"]`
-          )
+          ) as HTMLInputElement
           if (otherInput) otherInput.checked = false
         })
       }
@@ -265,18 +275,21 @@ export class LayerSelector {
 
   _adjustVerticalPosition() {
     const panel = this._panel
-    const btnIcon = this._btnIcon
-    const mapContainer = this._map.getContainer()
-    const btnRect = btnIcon.getBoundingClientRect()
-    const containerRect = mapContainer.getBoundingClientRect()
+    if (!panel) return
 
-    const naturalHeight = panel.scrollHeight || 200
-    const maxAllowedHeight = Math.min(300, containerRect.height * 0.5)
+    const btnIcon = this._btnIcon
+    const mapContainer = this._map?.getContainer()
+    const btnRect = btnIcon?.getBoundingClientRect()
+    const containerRect = mapContainer?.getBoundingClientRect()
+
+    const naturalHeight = panel?.scrollHeight || 200
+    const maxAllowedHeight = Math.min(300, (containerRect?.height || 0) * 0.5)
     const panelHeight = Math.min(naturalHeight, maxAllowedHeight)
 
     const margin = 10
-    const spaceBelow = containerRect.bottom - btnRect.bottom - margin
-    const spaceAbove = btnRect.top - containerRect.top - margin
+    const spaceBelow =
+      (containerRect?.bottom || 0) - (btnRect?.bottom || 0) - margin
+    const spaceAbove = (btnRect?.top || 0) - (containerRect?.top || 0) - margin
 
     panel.style.top = ""
     panel.style.bottom = ""
@@ -302,18 +315,22 @@ export class LayerSelector {
 
   _adjustHorizontalPosition() {
     const panel = this._panel
-    const btnIcon = this._btnIcon
-    const mapContainer = this._map.getContainer()
-    const btnRect = btnIcon.getBoundingClientRect()
-    const containerRect = mapContainer.getBoundingClientRect()
 
-    const naturalWidth = panel.scrollWidth || 150
-    const maxAllowedWidth = Math.min(300, containerRect.width * 0.7)
+    if (!panel) return
+
+    const btnIcon = this._btnIcon
+    const mapContainer = this._map?.getContainer()
+    const btnRect = btnIcon?.getBoundingClientRect()
+    const containerRect = mapContainer?.getBoundingClientRect()
+
+    const naturalWidth = panel?.scrollWidth || 150
+    const maxAllowedWidth = Math.min(300, (containerRect?.width || 0) * 0.7)
     const panelWidth = Math.min(naturalWidth, maxAllowedWidth)
 
     const margin = 10
-    const spaceRight = containerRect.right - btnRect.right - margin
-    const spaceLeft = btnRect.left - containerRect.left - margin
+    const spaceRight =
+      (containerRect?.right || 0) - (btnRect?.right || 0) - margin
+    const spaceLeft = (btnRect?.left || 0) - (containerRect?.left || 0) - margin
 
     panel.style.left = ""
     panel.style.right = ""
@@ -341,8 +358,8 @@ export class LayerSelector {
 
   onRemove() {
     clearTimeout(this._timeout)
-    if (this._container.parentNode) {
-      this._container.parentNode.removeChild(this._container)
+    if (this._container?.parentNode) {
+      this._container?.parentNode.removeChild(this._container)
     }
     this._map = null
     this._container = null
@@ -350,7 +367,7 @@ export class LayerSelector {
     this._btnIcon = null
   }
 
-  getDefaultPosition() {
+  getDefaultPosition(): ControlPosition {
     return "top-right"
   }
 }

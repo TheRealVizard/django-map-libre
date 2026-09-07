@@ -24,7 +24,7 @@ repos:
           - id: oxlint
             args:
               - --fix
-            files: \.(js)$
+            files: \.(ts)$
             exclude: ^vendor/
             additional_dependencies: ['oxlint','oxlint-tsgolint']
 
