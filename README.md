@@ -23,38 +23,32 @@
 
 ## 🛠️ Development Setup
 
-1. Clone the repository
+1. Clone the repository.
 
 ```bash
 git clone git@github.com:TheRealVizard/django-map-libre.git
 cd django-map-libre
 ```
 
-2. Set up Python environment with `uv`
-We use [uv](https://github.com/astral-sh/uv) for fast Python dependency management.
+2. Set up Python environment with [uv](https://github.com/astral-sh/uv).
 
 ```bash
 # Install uv if you don't have it
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Create a virtual environment and install dependencies
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv sync
 ```
-3. Set up frontend tooling with Corepack
 
-We use Yarn (via Corepack) to manage JavaScript dependencies linters.
+3. Set up frontend tooling with Corepack and Yarn.
+
 ```bash
-# Enable Corepack (Node.js >= 20)
 corepack enable
-
-# Install Yarn dependencies
+corepack prepare yarn@stable --activate
 yarn install
 ```
 
-4. Install pre-commit hooks
-We use [pre-commit](https://pre-commit.com/) to enforce code quality before each commit.
+4. Install [pre-commit](https://pre-commit.com/) hooks.
 
 ```bash
 # Install pre-commit hooks
@@ -63,3 +57,18 @@ pre-commit install
 # (Optional) Run against all files
 pre-commit run --all-files
 ```
+
+5. Run the development server
+
+```bash
+make run
+```
+
+## 🧰 Available Make commands
+
+| Command      | Description                          |
+| :----------- | :----------------------------------- |
+| `make help`  | Show this help message               |
+| `make build` | Build frontend assets (`yarn build`) |
+| `make pc`    | Run pre-commit hooks on all files    |
+| `make run`   | Build assets and start Django server |
