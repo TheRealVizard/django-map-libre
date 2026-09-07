@@ -220,3 +220,11 @@ __marimo__/
 # Node
 node_modules/
 .yarn/
+
+# Vendor
+django_map_libre/static/vendor/
+django_map_libre/static/vendor/css/
+django_map_libre/static/vendor/js/
+
+# Dist
+django_map_libre/static/js/
