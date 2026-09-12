@@ -7,7 +7,11 @@ repos:
           - id: debug-statements
           - id: end-of-file-fixer
           - id: trailing-whitespace
-          - id: trailing-whitespace
+
+    - repo: https://github.com/crate-ci/typos
+      rev: v1.50.1
+      hooks:
+          - id: typos
 
     - repo: https://github.com/astral-sh/ruff-pre-commit
       rev: v0.6.9
@@ -18,20 +22,20 @@ repos:
           - id: ruff-format
             files: \.py$
 
-    - repo: https://github.com/oxc-project/mirrors-oxlint
-      rev: v1.78.0
+    - repo: local
       hooks:
-          - id: oxlint
-            args:
-              - --fix
-            files: \.(ts)$
-            exclude: ^vendor/
-            additional_dependencies: ['oxlint','oxlint-tsgolint']
+          - id: yarn-lint
+            name: yarn lint
+            entry: yarn lint
+            language: system
+            files: \.(js|jsx|ts|tsx|mjs|cjs|vue|svelte)$
+            exclude: ^(vendor/|node_modules/|\.yarn/)
+            pass_filenames: false
 
-    - repo: https://github.com/oxc-project/mirrors-oxfmt
-      rev: v0.65.0
-      hooks:
-          - id: oxfmt
-            args: [--write]
-            files: \.(js|jsx|ts|tsx|mjs|cjs|json|html|css|scss|less|vue|md)$
-            exclude: ^vendor/
+          - id: yarn-format
+            name: yarn format
+            entry: yarn format
+            language: system
+            files: \.(js|jsx|ts|tsx|mjs|cjs|json|html|css|scss|less|vue|svelte|md|ya?ml)$
+            exclude: ^(vendor/|node_modules/|\.yarn/)
+            pass_filenames: false

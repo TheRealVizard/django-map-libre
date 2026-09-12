@@ -40,7 +40,20 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 uv sync
 ```
 
-3. Set up frontend tooling with Corepack and Yarn.
+3. Install and set up Node.js 24 LTS with nvm.
+
+```bash
+# Install nvm if you don't have it
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+
+source ~/.bashrc
+
+# Install and use Node.js 24 LTS
+nvm install 24
+nvm use 24
+```
+
+4. Set up frontend tooling with Corepack and Yarn.
 
 ```bash
 corepack enable
@@ -48,7 +61,7 @@ corepack prepare yarn@stable --activate
 yarn install
 ```
 
-4. Install [pre-commit](https://pre-commit.com/) hooks.
+5. Install [pre-commit](https://pre-commit.com/) hooks.
 
 ```bash
 # Install pre-commit hooks
@@ -58,7 +71,7 @@ pre-commit install
 pre-commit run --all-files
 ```
 
-5. Run the development server
+6. Run the development server
 
 ```bash
 make run
@@ -66,9 +79,11 @@ make run
 
 ## 🧰 Available Make commands
 
-| Command      | Description                          |
-| :----------- | :----------------------------------- |
-| `make help`  | Show this help message               |
-| `make build` | Build frontend assets (`yarn build`) |
-| `make pc`    | Run pre-commit hooks on all files    |
-| `make run`   | Build assets and start Django server |
+| Command               | Description                                        |
+| :-------------------- | :------------------------------------------------- |
+| `make help`           | Show this help message                             |
+| `make install`        | Install frontend dependencies with Yarn OnP        |
+| `make install-vscode` | Set up Yarn OnP SDK for VS Code editor integration |
+| `make build`          | Build frontend assets (`yarn build`)               |
+| `make pc`             | Run pre-commit hooks on all files                  |
+| `make run`            | Build assets and start Django server               |

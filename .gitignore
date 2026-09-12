@@ -199,7 +199,7 @@ cython_debug/
 #   that can be found at https://github.com/github/gitignore/blob/main/Global/VisualStudioCode.gitignore
 #   and can be added to the global gitignore or merged into this file. However, if you prefer,
 #   you could uncomment the following to ignore the entire vscode folder
-# .vscode/
+.vscode/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
@@ -228,3 +228,13 @@ django_map_libre/static/vendor/js/
 
 # Dist
 django_map_libre/static/js/
+
+# Yarn OnP
+.pnp.*
+!.pnp.cjs
+.pnp.cjs
+!.pnp.loader.mjs
+.pnp.loader.mjs
+
+# Cache (commit it for Zero-Installs)
+!.yarn/cache/
