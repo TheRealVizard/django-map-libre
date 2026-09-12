@@ -33,7 +33,7 @@ class MetricSystem(Enum):
 class ColorSchemeType(str, Enum):
     FIXED = "fixed"
     CATEGORICAL = "categorical"
-    HEATMAP = "heatmap"
+    RANGE = "range"
 
 
 class LayerType(str, Enum):

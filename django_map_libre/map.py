@@ -24,7 +24,7 @@ class Legend:
     type: ColorSchemeType
 
     # For CATEGORICAL: which property to use as the key (mandatory)
-    # For SEQUENTIAL: which numeric property to interpolate (mandatory)
+    # For RANGE: which numeric property to interpolate (mandatory)
     # For FIXED: ignored
     coloring_property: str | None = None
 
@@ -51,7 +51,7 @@ class Legend:
 
     category_mapping: dict[str, dict[str, str]] | str | None = None
 
-    # For HEATMAP: color interpolation settings # TODO: Increase settings
+    # For RANGE: color interpolation settings # TODO: Increase settings
     min_value: float | None = None
     max_value: float | None = None
     color_ramp: list[str] | None = None  # e.g., ["#0000FF", "#00FF00", "#FF0000"]
@@ -62,11 +62,11 @@ class Legend:
         """Validate the scheme configuration."""
         if (
             self.type == ColorSchemeType.CATEGORICAL
-            or self.type == ColorSchemeType.HEATMAP
+            or self.type == ColorSchemeType.RANGE
         ):
             if not self.coloring_property:
                 raise ValueError(
-                    "CATEGORICAL & HEATMAP schemes requires 'coloring_property'"
+                    "CATEGORICAL & RANGE schemes requires 'coloring_property'"
                 )
         elif self.type == ColorSchemeType.FIXED:
             if not self.color and not self.image:

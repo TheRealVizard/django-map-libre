@@ -9,7 +9,7 @@ export interface TrackedLayer {
 }
 
 export type LayerType = "fill" | "line" | "circle" | "icon" | "symbol";
-export type LegendType = "fixed" | "categorical" | "heatmap";
+export type LegendType = "fixed" | "categorical" | "range";
 
 export interface LegendConfig {
     id: string;
