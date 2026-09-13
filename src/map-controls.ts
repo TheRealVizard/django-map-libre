@@ -1,31 +1,32 @@
-import type { ControlPosition, IControl, Map as MapLibre } from "maplibre-gl";
+import type {
+    ControlPosition,
+    IControl,
+    LayerSpecification,
+    Map as MapLibre,
+} from "maplibre-gl";
+import type { OverlayManager } from "./map-helpers";
 import type { TrackedLayer } from "./map-types";
 
 export class LayerSelector implements IControl {
-    _map: MapLibre | null = null;
-    _container: HTMLDivElement | null = null;
-    _panelVisible = false;
-    _timeout: ReturnType<typeof setTimeout> | undefined = undefined;
-    _isPinned = false;
-    _panel: HTMLDivElement | null = null;
-    _btnIcon: HTMLButtonElement | null = null;
-    _trackedLayers = new Map<string, TrackedLayer>();
+    map: MapLibre | null = null;
+    container: HTMLDivElement | null = null;
+    panelVisible = false;
+    timeout: ReturnType<typeof setTimeout> | undefined = undefined;
+    isPinned = false;
+    panel: HTMLDivElement | null = null;
+    btnIcon: HTMLButtonElement | null = null;
+    titleLayers = new Map<string, TrackedLayer>();
+    overlayManager: OverlayManager;
 
-    constructor(initialLayers: TrackedLayer[] = []) {
-        initialLayers.forEach((item) => {
-            const id = typeof item === "string" ? item : item.id;
-            const label =
-                typeof item === "string" ? item : item.label || item.id;
-            const type = item.type || "overlay";
-            this._trackedLayers.set(id, { id, label, type, visible: true });
-        });
+    constructor(overlayManager: OverlayManager) {
+        this.overlayManager = overlayManager;
     }
 
     onAdd(map: MapLibre): HTMLElement {
-        this._map = map;
+        this.map = map;
 
-        this._container = document.createElement("div");
-        this._container.classList.add(
+        this.container = document.createElement("div");
+        this.container.classList.add(
             "maplibregl-ctrl",
             "maplibregl-ctrl-group",
             "django-map-libre-control"
@@ -33,28 +34,28 @@ export class LayerSelector implements IControl {
 
         const btnIcon = document.createElement("button");
         btnIcon.classList.add("maplibregl-ctrl-icon", "map-layer-selector");
-        this._btnIcon = btnIcon;
+        this.btnIcon = btnIcon;
 
         const panel = document.createElement("div");
         panel.classList.add("maplibregl-ctrl-layers-panel");
-        this._panel = panel;
+        this.panel = panel;
 
-        this._container.addEventListener("mouseenter", () => {
-            clearTimeout(this._timeout);
-            if (!this._isPinned) this._openPanel();
+        this.container.addEventListener("mouseenter", () => {
+            clearTimeout(this.timeout);
+            if (!this.isPinned) this._openPanel();
         });
 
-        this._container.addEventListener("mouseleave", (e) => {
-            if (this._isPinned) return;
+        this.container.addEventListener("mouseleave", (e) => {
+            if (this.isPinned) return;
             const relatedTarget = e.relatedTarget as Node;
-            if (this._container?.contains(relatedTarget)) return;
-            this._timeout = setTimeout(() => this._closePanel(), 150);
+            if (this.container?.contains(relatedTarget)) return;
+            this.timeout = setTimeout(() => this._closePanel(), 150);
         });
 
         btnIcon.addEventListener("click", (e) => {
             e.stopPropagation();
-            this._isPinned = !this._isPinned;
-            if (this._isPinned) {
+            this.isPinned = !this.isPinned;
+            if (this.isPinned) {
                 this._openPanel();
                 btnIcon.classList.add("pinned");
             } else {
@@ -64,17 +65,14 @@ export class LayerSelector implements IControl {
         });
 
         document.addEventListener("click", (e) => {
-            if (this._isPinned) return;
-            if (
-                this._container &&
-                !this._container.contains(e.target as Node)
-            ) {
+            if (this.isPinned) return;
+            if (this.container && !this.container.contains(e.target as Node)) {
                 this._closePanel();
             }
         });
 
         map.on("styledata", () => {
-            if (this._panelVisible) {
+            if (this.panelVisible) {
                 requestAnimationFrame(() => {
                     this._adjustVerticalPosition();
                     this._adjustHorizontalPosition();
@@ -82,26 +80,20 @@ export class LayerSelector implements IControl {
             }
         });
 
-        this._container.appendChild(btnIcon);
-        this._container.appendChild(panel);
+        this.container.appendChild(btnIcon);
+        this.container.appendChild(panel);
 
-        return this._container;
+        return this.container;
     }
 
-    _addLayer(
-        layerId: string,
-        label: string,
-        type: "tile" | "overlay",
-        visible: boolean
-    ) {
-        if (this._trackedLayers.has(layerId)) return;
-        this._trackedLayers.set(layerId, {
+    _addLayer(layerId: string, label: string, visible: boolean) {
+        if (this.titleLayers.has(layerId)) return;
+        this.titleLayers.set(layerId, {
             id: layerId,
             label: label || layerId,
-            type: type,
             visible: visible,
         });
-        if (this._panelVisible) {
+        if (this.panelVisible) {
             this._populateLayerList();
             requestAnimationFrame(() => {
                 this._adjustVerticalPosition();
@@ -110,18 +102,36 @@ export class LayerSelector implements IControl {
         }
     }
 
-    addOverlayLayer(layerId: string, label: string, visible: boolean = true) {
-        this._addLayer(layerId, label, "overlay", visible);
-    }
-
-    addTileLayer(layerId: string, label: string) {
-        this._addLayer(layerId, label, "tile", true);
+    addTileLayer(layerId: string, label: string, visible: boolean) {
+        this._addLayer(layerId, label, visible);
     }
 
     removeLayer(layerId: string) {
-        if (!this._trackedLayers.has(layerId)) return;
-        this._trackedLayers.delete(layerId);
-        if (this._panelVisible) {
+        if (!this.titleLayers.has(layerId)) return;
+        this.titleLayers.delete(layerId);
+        let hasVisibleLayer = false;
+        for (const layer of this.titleLayers.values()) {
+            if (layer.visible) {
+                hasVisibleLayer = true;
+                break;
+            }
+        }
+
+        if (!hasVisibleLayer) {
+            const firstLayer = this.titleLayers.values().next().value as
+                TrackedLayer | undefined;
+
+            if (firstLayer) {
+                firstLayer.visible = true;
+                this.map?.setLayoutProperty(
+                    firstLayer.id,
+                    "visibility",
+                    "visible"
+                );
+            }
+        }
+
+        if (this.panelVisible) {
             this._populateLayerList();
             requestAnimationFrame(() => {
                 this._adjustVerticalPosition();
@@ -131,8 +141,8 @@ export class LayerSelector implements IControl {
     }
 
     clearLayers() {
-        this._trackedLayers.clear();
-        if (this._panelVisible) {
+        this.titleLayers.clear();
+        if (this.panelVisible) {
             this._populateLayerList();
             requestAnimationFrame(() => {
                 this._adjustVerticalPosition();
@@ -142,8 +152,8 @@ export class LayerSelector implements IControl {
     }
 
     _openPanel() {
-        this._panelVisible = true;
-        this._panel?.classList.add("panel-open");
+        this.panelVisible = true;
+        this.panel?.classList.add("panel-open");
         this._populateLayerList();
         requestAnimationFrame(() => {
             this._adjustVerticalPosition();
@@ -152,25 +162,28 @@ export class LayerSelector implements IControl {
     }
 
     _closePanel() {
-        this._panelVisible = false;
-        this._panel?.classList.remove("panel-open");
-        this._btnIcon?.classList.remove("pinned");
+        this.panelVisible = false;
+        this.panel?.classList.remove("panel-open");
+        this.btnIcon?.classList.remove("pinned");
     }
 
     _populateLayerList() {
-        const panel = this._panel;
+        const panel = this.panel;
 
         if (!panel) return;
         panel.innerHTML = "";
 
-        if (!this._map) return;
+        if (!this.map) return;
 
-        const allLayers = this._map.getStyle().layers || [];
-        const trackedIds = new Set(this._trackedLayers.keys());
-        const layersToShow = allLayers.filter((layer) =>
+        const mapLayers = this.map.getStyle().layers || [];
+        const trackedIds = new Set([
+            ...this.titleLayers.keys(),
+            ...this.overlayManager.getIDs(),
+        ]);
+        const targetMapLayers = mapLayers.filter((layer) =>
             trackedIds.has(layer.id)
         );
-        if (layersToShow.length === 0) {
+        if (targetMapLayers.length === 0) {
             const emptyMsg = document.createElement("div");
             emptyMsg.textContent = "No layers added";
             emptyMsg.classList.add("empty-layers");
@@ -178,14 +191,14 @@ export class LayerSelector implements IControl {
             return;
         }
 
-        const tileLayers = layersToShow.filter(
-            (l) => this._trackedLayers.get(l.id)?.type === "tile"
+        const tileLayers = targetMapLayers.filter((l) =>
+            this.titleLayers.has(l.id)
         );
-        const overlayLayers = layersToShow.filter(
-            (l) => this._trackedLayers.get(l.id)?.type === "overlay"
+        const overlayLayers = targetMapLayers.filter((l) =>
+            this.overlayManager.hasOverlay(l.id)
         );
 
-        if (tileLayers.length > 0) {
+        if (targetMapLayers.length > 0) {
             const tileGroupLabel = document.createElement("div");
             tileGroupLabel.textContent = "Base Maps";
             tileGroupLabel.classList.add("layer-group-title");
@@ -215,9 +228,12 @@ export class LayerSelector implements IControl {
         }
     }
 
-    _createLayerItem(layer: any, isTile: boolean): HTMLDivElement {
+    _createLayerItem(
+        layer: LayerSpecification,
+        isTile: boolean
+    ): HTMLDivElement {
         const item = document.createElement("div");
-        const layerInfo = this._trackedLayers.get(layer.id);
+        const layerInfo = this.titleLayers.get(layer.id);
         const label = layerInfo?.label || layer.id;
 
         item.classList.add("layer-item");
@@ -227,7 +243,7 @@ export class LayerSelector implements IControl {
         input.name = isTile ? "tile-layer" : "";
         input.classList.add("layer-input-control");
 
-        const visibility = this._map?.getLayoutProperty(layer.id, "visibility");
+        const visibility = this.map?.getLayoutProperty(layer.id, "visibility");
         const isVisible = visibility !== "none";
         input.checked = isVisible;
 
@@ -253,25 +269,24 @@ export class LayerSelector implements IControl {
 
         input.addEventListener("change", () => {
             const newVisibility = input.checked ? "visible" : "none";
-            this._map?.setLayoutProperty(layer.id, "visibility", newVisibility);
+            if (isTile) {
+                this.map?.setLayoutProperty(
+                    layer.id,
+                    "visibility",
+                    newVisibility
+                );
+            } else {
+                this.overlayManager.toggleOverlayVisibility(layer.id);
+            }
 
             if (isTile && input.checked) {
-                const allLayers = this._map?.getStyle().layers || [];
-                const trackedIds = new Set(this._trackedLayers.keys());
-                const otherTileLayers = allLayers.filter(
-                    (l) =>
-                        trackedIds.has(l.id) &&
-                        l.id !== layer.id &&
-                        this._trackedLayers.get(l.id)?.type === "tile"
-                );
-                otherTileLayers.forEach((other) => {
-                    this._map?.setLayoutProperty(
-                        other.id,
-                        "visibility",
-                        "none"
-                    );
-                    const otherInput = this._panel?.querySelector(
-                        `input[data-layer-id="${other.id}"]`
+                const allLayers = this.map?.getStyle().layers || [];
+                allLayers.forEach((l) => {
+                    if (!this.titleLayers.has(l.id) || l.id !== layer.id)
+                        return;
+                    this.map?.setLayoutProperty(l.id, "visibility", "none");
+                    const otherInput = this.panel?.querySelector(
+                        `input[data-layer-id="${l.id}"]`
                     ) as HTMLInputElement;
                     if (otherInput) otherInput.checked = false;
                 });
@@ -284,11 +299,11 @@ export class LayerSelector implements IControl {
     }
 
     _adjustVerticalPosition() {
-        const panel = this._panel;
+        const panel = this.panel;
         if (!panel) return;
 
-        const btnIcon = this._btnIcon;
-        const mapContainer = this._map?.getContainer();
+        const btnIcon = this.btnIcon;
+        const mapContainer = this.map?.getContainer();
         const btnRect = btnIcon?.getBoundingClientRect();
         const containerRect = mapContainer?.getBoundingClientRect();
 
@@ -328,12 +343,12 @@ export class LayerSelector implements IControl {
     }
 
     _adjustHorizontalPosition() {
-        const panel = this._panel;
+        const panel = this.panel;
 
         if (!panel) return;
 
-        const btnIcon = this._btnIcon;
-        const mapContainer = this._map?.getContainer();
+        const btnIcon = this.btnIcon;
+        const mapContainer = this.map?.getContainer();
         const btnRect = btnIcon?.getBoundingClientRect();
         const containerRect = mapContainer?.getBoundingClientRect();
 
@@ -375,14 +390,14 @@ export class LayerSelector implements IControl {
     }
 
     onRemove() {
-        clearTimeout(this._timeout);
-        if (this._container?.parentNode) {
-            this._container?.parentNode.removeChild(this._container);
+        clearTimeout(this.timeout);
+        if (this.container?.parentNode) {
+            this.container?.parentNode.removeChild(this.container);
         }
-        this._map = null;
-        this._container = null;
-        this._panel = null;
-        this._btnIcon = null;
+        this.map = null;
+        this.container = null;
+        this.panel = null;
+        this.btnIcon = null;
     }
 
     getDefaultPosition(): ControlPosition {

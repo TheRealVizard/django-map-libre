@@ -1,6 +1,5 @@
 import {
     FullscreenControl,
-    GeoJSONSource,
     Map as MapLibre,
     NavigationControl,
     ScaleControl,
@@ -15,13 +14,12 @@ import {
     setWorkerUrl,
 } from "maplibre-gl";
 import { LayerSelector } from "./map-controls";
-import { DataLoader, Overlay, OverlayManager } from "./map-helpers";
+import { Overlay, OverlayManager } from "./map-helpers";
 import type {
     MapWidgetDataset,
     OverlayLayerConfig,
     TileLayerConfig,
 } from "./map-types";
-import type { Feature, FeatureCollection } from "geojson";
 
 setWorkerUrl(import.meta.resolve("maplibre-gl-worker"));
 
@@ -58,7 +56,9 @@ const parseTileLayers = (rawData: string): TileLayerConfig[] => {
         }
     });
     if (!foundSelected && config.length > 0) {
-        config[0] && (config[0].selected = true);
+        if (config[0]) {
+            config[0].selected = true;
+        }
     }
     return config;
 };
@@ -96,8 +96,10 @@ const registerTileLayers = (
     selector: LayerSelector,
     tileLayers: TileLayerConfig[]
 ) => {
+    let first = true;
     tileLayers.forEach((cfg) => {
-        selector.addTileLayer(cfg.id, cfg.label || cfg.id);
+        selector.addTileLayer(cfg.id, cfg.label || cfg.id, first);
+        first = false;
     });
 };
 
@@ -117,8 +119,7 @@ const parseOverlayLayers = (rawData: string): OverlayLayerConfig[] => {
 const addOverlayLayer = async (
     map: MapLibre,
     overlayManager: OverlayManager,
-    overlayConfig: OverlayLayerConfig,
-    selector: LayerSelector
+    overlayConfig: OverlayLayerConfig
 ) => {
     const {
         id,
@@ -260,7 +261,6 @@ const addOverlayLayer = async (
     if (selected) {
         overlay.load();
     }
-    selector.addOverlayLayer(id, label || id, selected);
 };
 
 const initMap = (mapContainer: HTMLElement) => {
@@ -298,8 +298,8 @@ const initMap = (mapContainer: HTMLElement) => {
         center: center,
         transformRequest: (url, _resourceType) => ({
             url: url,
-            referrerPolicy: 'strict-origin-when-cross-origin'
-        })
+            referrerPolicy: "strict-origin-when-cross-origin",
+        }),
     });
     map.setStyle(style);
 
@@ -327,7 +327,8 @@ const initMap = (mapContainer: HTMLElement) => {
     }
 
     // ---- Layer Selector ----
-    const layerSelector = new LayerSelector();
+    const overlayManager = new OverlayManager(map);
+    const layerSelector = new LayerSelector(overlayManager);
     map.addControl(layerSelector, mapConfig.layerSelectorPosition);
 
     registerTileLayers(layerSelector, tileLayers);
@@ -337,11 +338,10 @@ const initMap = (mapContainer: HTMLElement) => {
 
     if (overlayLayers.length > 0) {
         // Wait for map to be ready before adding overlays
-        const overlayManager = new OverlayManager(map);
         map.on("load", () => {
             loadingOverlay?.remove();
             overlayLayers.forEach((overlay) => {
-                addOverlayLayer(map, overlayManager, overlay, layerSelector);
+                addOverlayLayer(map, overlayManager, overlay);
             });
         });
     }

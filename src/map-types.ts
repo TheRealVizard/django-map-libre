@@ -4,7 +4,6 @@ import type { Feature, FeatureCollection } from "geojson";
 export interface TrackedLayer {
     id: string;
     label: string;
-    type: "tile" | "overlay";
     visible: boolean;
 }
 

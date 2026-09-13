@@ -84,8 +84,10 @@ export class DataLoader {
 }
 
 class Loaddable {
+    loader: DataLoader | null = null;
     load(): void {
-        const loader = new DataLoader(
+        if (this.loader) return; // Prevent multiple loads
+        this.loader = new DataLoader(
             this.getUrl(),
             (data: FetchData) => {
                 this.onLoadData(data);
@@ -99,11 +101,12 @@ class Loaddable {
             import.meta.resolve("map-worker")
         );
 
-        loader.load();
+        this.loader.load();
     }
     onLoadComplete(): void {}
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
+        this.loader = null; // Reset loader on error to allow retry
     }
     onLoadData(_data: FetchData): void {
         throw new Error("Method not implemented.");
@@ -215,5 +218,19 @@ export class OverlayManager {
 
     removeOverlay(id: string) {
         this.overlays.delete(id);
+    }
+
+    hasOverlay(id: string): boolean {
+        return this.overlays.has(id);
+    }
+
+    getIDs(): string[] {
+        return Array.from(this.overlays.keys());
+    }
+    toggleOverlayVisibility(id: string) {
+        const overlay = this.getOverlay(id);
+        if (overlay) {
+            overlay.toggleVisibility(this.map);
+        }
     }
 }

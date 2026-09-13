@@ -123,7 +123,7 @@ class MapForm(Form):
                             active=True,  # This is the default view
                         ),
                     ],
-                    selected=True,
+                    selected=False,
                 ),
                 OverlayLayer(
                     id="dnjson",
@@ -139,7 +139,7 @@ class MapForm(Form):
                             active=True,  # This is the default view
                         ),
                     ],
-                    selected=True,
+                    selected=False,
                 ),
             ],
         )
