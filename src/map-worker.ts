@@ -24,7 +24,6 @@ self.onmessage = async (e) => {
             let buffer = "";
 
             while (true) {
-                // eslint-disable-next-line no-await-in-loop -- Required for stream reading
                 const { done, value } = await reader.read();
                 if (done) break;
                 buffer += decoder.decode(value, { stream: true });

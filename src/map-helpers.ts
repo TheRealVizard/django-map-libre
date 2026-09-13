@@ -1,7 +1,13 @@
+import type { Feature } from "geojson";
+import { GeoJSONSource, Map as MapLibre } from "maplibre-gl";
 import type {
     CompleteCallback,
     DataCallback,
     ErrorCallback,
+    FetchData,
+    LayerConfig,
+    LayerType,
+    LegendConfig,
 } from "./map-types";
 
 export class DataLoader {
@@ -74,5 +80,140 @@ export class DataLoader {
             this.worker.terminate();
             this.worker = null;
         }
+    }
+}
+
+class Loaddable {
+    load(): void {
+        const loader = new DataLoader(
+            this.getUrl(),
+            (data: FetchData) => {
+                this.onLoadData(data);
+            },
+            () => {
+                this.onLoadComplete();
+            },
+            (error: string) => {
+                this.onLoadError(error);
+            },
+            import.meta.resolve("map-worker")
+        );
+
+        loader.load();
+    }
+    onLoadComplete(): void {}
+    onLoadError(error: string): void {
+        console.error(`Error loading data:`, error);
+    }
+    onLoadData(_data: FetchData): void {
+        throw new Error("Method not implemented.");
+    }
+    getUrl(): string {
+        throw new Error("Method not implemented.");
+    }
+}
+
+export class OverlayLegend extends Loaddable {
+    legendConfig: LegendConfig;
+    legendData: Record<
+        string,
+        { label?: string; color?: string; icon?: string }
+    > | null;
+    isLoaded: boolean;
+    map: MapLibre;
+
+    constructor(legendConfig: LegendConfig, map: MapLibre) {
+        super();
+        this.legendConfig = legendConfig;
+        this.legendData = null;
+        this.isLoaded = false;
+        this.map = map;
+    }
+    getUrl(): string {
+        return this.legendConfig.category_mapping as string;
+    }
+}
+
+export class Overlay extends Loaddable {
+    layerConfig: LayerConfig;
+    layerType: LayerType;
+    isDisplayed: boolean = false;
+    isLoaded: boolean = false;
+    map: MapLibre;
+
+    constructor(layerConfig: LayerConfig, layerType: LayerType, map: MapLibre) {
+        super();
+        this.layerConfig = layerConfig;
+        this.layerType = layerType;
+        this.map = map;
+    }
+
+    toggleVisibility(map: MapLibre) {
+        this.isDisplayed = !this.isDisplayed;
+        map.setLayoutProperty(
+            this.layerConfig.id,
+            "visibility",
+            this.isDisplayed ? "visible" : "none"
+        );
+        if (!this.isLoaded) {
+            this.load();
+        }
+    }
+    getUrl(): string {
+        return this.layerConfig.url;
+    }
+
+    onLoadData(data: FetchData): void {
+        let newFeatures: Feature[] = [];
+        if (Array.isArray(data)) {
+            for (const item of data) {
+                if (item.type === "Feature") {
+                    newFeatures.push(item);
+                } else if (item.type === "FeatureCollection") {
+                    newFeatures.push(...item.features);
+                }
+            }
+        } else {
+            if (data.type === "Feature") {
+                newFeatures = [data];
+            } else if (data.type === "FeatureCollection") {
+                newFeatures = data.features;
+            } else {
+                console.warn("[Overlay] Unexpected data type:", data);
+                return;
+            }
+        }
+
+        const source = this.map.getSource(
+            `overlay-${this.layerConfig.id}-source`
+        ) as GeoJSONSource | undefined;
+        if (source) {
+            source.updateData({ add: newFeatures });
+        }
+    }
+    onLoadComplete(): void {
+        this.isLoaded = true;
+    }
+}
+
+export class OverlayManager {
+    overlays = new Map<string, Overlay>();
+
+    map: MapLibre;
+
+    constructor(map: MapLibre) {
+        this.map = map;
+    }
+
+    getOverlay(id: string): Overlay {
+        return this.overlays.get(id) as Overlay;
+    }
+
+    addOverlay(id: string, overlay: Overlay) {
+        this.overlays.set(id, overlay);
+    }
+
+    removeOverlay(id: string) {
+        this.overlays.delete(id);
     }
 }

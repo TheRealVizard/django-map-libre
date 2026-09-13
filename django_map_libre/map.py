@@ -147,7 +147,7 @@ class OverlayLayer(Layer):
             "label": self.label,
             "selected": self.selected,
             "url": self.url,
-            "layer_type": self.layer_type.value,
+            "layerType": self.layer_type.value,
             "legends": [legend.to_dict() for legend in self.legends],
         }
 

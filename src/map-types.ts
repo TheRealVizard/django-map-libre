@@ -34,7 +34,7 @@ export interface LegendConfig {
     active?: boolean;
 }
 
-interface LayerConfig {
+export interface LayerConfig {
     id: string;
     label: string;
     url: string;
@@ -42,7 +42,7 @@ interface LayerConfig {
 }
 
 export interface OverlayLayerConfig extends LayerConfig {
-    layer_type: LayerType;
+    layerType: LayerType;
     legends: LegendConfig[];
 }
 
@@ -64,8 +64,17 @@ export interface MapWidgetDataset extends DOMStringMap {
     autoInit: string;
 }
 
-export type DataCallback = (
-    data: FeatureCollection[] | FeatureCollection | Feature[] | Feature
-) => void;
+export interface LegendData {
+    label?: string;
+    icon?: string;
+    color?: string;
+}
+
+export type Legend = Record<string, LegendData>;
+
+export type FetchData =
+    Legend | FeatureCollection[] | FeatureCollection | Feature[] | Feature;
+
+export type DataCallback = (data: FetchData) => void;
 export type CompleteCallback = () => void;
 export type ErrorCallback = (error: string) => void;

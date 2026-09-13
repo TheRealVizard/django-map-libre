@@ -15,7 +15,7 @@ import {
     setWorkerUrl,
 } from "maplibre-gl";
 import { LayerSelector } from "./map-controls";
-import { DataLoader } from "./map-helpers";
+import { DataLoader, Overlay, OverlayManager } from "./map-helpers";
 import type {
     MapWidgetDataset,
     OverlayLayerConfig,
@@ -116,13 +116,14 @@ const parseOverlayLayers = (rawData: string): OverlayLayerConfig[] => {
  */
 const addOverlayLayer = async (
     map: MapLibre,
+    overlayManager: OverlayManager,
     overlayConfig: OverlayLayerConfig,
     selector: LayerSelector
 ) => {
     const {
         id,
         label,
-        layer_type,
+        layerType,
         url,
         legends,
         selected = false,
@@ -135,8 +136,11 @@ const addOverlayLayer = async (
         return;
     }
 
-    if (!layerTypes.includes(layer_type)) {
-        console.warn(`Invalid layer type for overlay ${id}, skipping.`);
+    if (!layerTypes.includes(layerType)) {
+        console.warn(
+            `Invalid layer type for overlay ${id}, skipping.`,
+            layerType
+        );
         return;
     }
 
@@ -150,7 +154,7 @@ const addOverlayLayer = async (
 
     const sourceId = `overlay-${id}-source`;
 
-    const mapType = layer_type === "icon" ? "symbol" : layer_type;
+    const mapType = layerType === "icon" ? "symbol" : layerType;
 
     if (!map.getSource(sourceId)) {
         map.addSource(sourceId, {
@@ -162,7 +166,7 @@ const addOverlayLayer = async (
         });
     }
 
-    let layout: AllLayoutProperties = {
+    const layout: AllLayoutProperties = {
         visibility: selected ? "visible" : "none",
     };
 
@@ -254,50 +258,12 @@ const addOverlayLayer = async (
         map.addLayer(layer);
     }
 
+    const overlay = new Overlay({ id, label, url, selected }, layerType, map);
+    overlayManager.addOverlay(id, overlay);
+    if (selected) {
+        overlay.load();
+    }
     selector.addOverlayLayer(id, label || id, selected);
-
-    const loader = new DataLoader(
-        url,
-        (
-            data: FeatureCollection[] | FeatureCollection | Feature[] | Feature
-        ) => {
-            let newFeatures: Feature[] = [];
-            console.log("HERE", data);
-
-            if (Array.isArray(data)) {
-                for (const item of data) {
-                    if (item.type === "Feature") {
-                        newFeatures.push(item);
-                    } else if (item.type === "FeatureCollection") {
-                        newFeatures.push(...item.features);
-                    }
-                }
-            } else {
-                if (data.type === "Feature") {
-                    newFeatures = [data];
-                } else if (data.type === "FeatureCollection") {
-                    newFeatures = data.features;
-                } else {
-                    console.warn("[Overlay] Unexpected data type:", data);
-                    return;
-                }
-            }
-
-            const source = map.getSource(sourceId) as GeoJSONSource | undefined;
-            if (source && typeof source.updateData === "function") {
-                source.updateData({ add: newFeatures });
-            }
-        },
-        () => {
-            console.log(`[Overlay ${id}] Data loading complete.`);
-        },
-        (error: string) => {
-            console.error(`[Overlay ${id}] Error loading data:`, error);
-        },
-        import.meta.resolve("map-worker")
-    );
-
-    loader.load();
 };
 
 const initMap = (mapContainer: HTMLElement) => {
@@ -370,10 +336,11 @@ const initMap = (mapContainer: HTMLElement) => {
 
     if (overlayLayers.length > 0) {
         // Wait for map to be ready before adding overlays
+        const overlayManager = new OverlayManager(map);
         map.on("load", () => {
             loadingOverlay?.remove();
             overlayLayers.forEach((overlay) => {
-                addOverlayLayer(map, overlay, layerSelector);
+                addOverlayLayer(map, overlayManager, overlay, layerSelector);
             });
         });
     }
