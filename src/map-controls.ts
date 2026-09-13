@@ -233,7 +233,9 @@ export class LayerSelector implements IControl {
         isTile: boolean
     ): HTMLDivElement {
         const item = document.createElement("div");
-        const layerInfo = this.titleLayers.get(layer.id);
+        const layerInfo = isTile
+            ? this.titleLayers.get(layer.id)
+            : this.overlayManager.getOverlay(layer.id).layerConfig;
         const label = layerInfo?.label || layer.id;
 
         item.classList.add("layer-item");
