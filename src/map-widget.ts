@@ -137,10 +137,7 @@ const addOverlayLayer = async (
     }
 
     if (!layerTypes.includes(layerType)) {
-        console.warn(
-            `Invalid layer type for overlay ${id}, skipping.`,
-            layerType
-        );
+        console.warn(`Invalid layer type for overlay ${id}, skipping.`);
         return;
     }
 
@@ -299,6 +296,10 @@ const initMap = (mapContainer: HTMLElement) => {
         container: mapContainer,
         zoom: 13,
         center: center,
+        transformRequest: (url, _resourceType) => ({
+            url: url,
+            referrerPolicy: 'strict-origin-when-cross-origin'
+        })
     });
     map.setStyle(style);
 
