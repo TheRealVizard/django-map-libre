@@ -9,26 +9,45 @@ export interface TrackedLayer {
 
 export type LayerType = "fill" | "line" | "circle" | "icon" | "symbol";
 export type LegendType = "fixed" | "categorical" | "range";
-
+export type Anchor =
+    | "center"
+    | "left"
+    | "right"
+    | "top"
+    | "bottom"
+    | "top-left"
+    | "top-right"
+    | "bottom-left"
+    | "bottom-right";
+export type Overlap = "never" | "always" | "cooperative";
 export interface LegendConfig {
     id: string;
     label: string;
     type: LegendType;
 
-    coloring_property?: string | null;
-    display_property?: string | null;
+    coloringProperty?: string | null;
+    displayProperty?: string | null;
 
     color?: string | null;
     image?: string | null;
 
-    category_mapping?:
+    categoryMapping?:
         | Record<string, { label?: string; color?: string; icon?: string }>
         | string
         | null;
 
-    min_value?: number | null;
-    max_value?: number | null;
-    color_ramp?: string[] | null;
+    minValue?: number | null;
+    maxValue?: number | null;
+    colorRamp?: string[] | null;
+
+    circleRadius?: number | null;
+    circleOpacity?: number | null;
+    circleStrokeColor?: string | null;
+    circleStrokeWidth?: number | null;
+
+    iconSize?: number | null;
+    iconOverlap?: Overlap | null;
+    iconAnchor?: Anchor | null;
 
     active?: boolean;
 }

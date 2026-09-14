@@ -133,7 +133,7 @@ export class OverlayLegend extends Loaddable {
         this.map = map;
     }
     getUrl(): string {
-        return this.legendConfig.category_mapping as string;
+        return this.legendConfig.categoryMapping as string;
     }
 }
 

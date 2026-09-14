@@ -4,11 +4,13 @@ from dataclasses import dataclass
 from django.forms.widgets import Script, Widget
 
 from django_map_libre.helpers import (
+    AnchorType,
     ColorSchemeType,
     Coordinate,
     ImportMap,
     LayerType,
     MetricSystem,
+    OverlapType,
     Position,
 )
 
@@ -56,6 +58,17 @@ class Legend:
     max_value: float | None = None
     color_ramp: list[str] | None = None  # e.g., ["#0000FF", "#00FF00", "#FF0000"]
 
+    # For Circle Overlay: optional circle styling properties
+    circle_radius: float | None = None
+    circle_opacity: float | None = None
+    circle_stroke_color: str | None = None
+    circle_stroke_width: float | None = None
+
+    # For Icon
+    icon_size: float | None = None
+    icon_overlap: OverlapType | None = None
+    icon_anchor: AnchorType | None = None
+
     active: bool = False
 
     def __post_init__(self):
@@ -78,12 +91,19 @@ class Legend:
             "id": self.id,
             "label": self.label,
             "type": self.type.value,
-            "coloring_property": self.coloring_property,
-            "display_property": self.display_property,
+            "coloringProperty": self.coloring_property,
+            "displayProperty": self.display_property,
             "color": self.color,
-            "min_value": self.min_value,
-            "max_value": self.max_value,
-            "color_ramp": self.color_ramp,
+            "minValue": self.min_value,
+            "maxValue": self.max_value,
+            "colorRamp": self.color_ramp,
+            "circleRadius": self.circle_radius,
+            "circleOpacity": self.circle_opacity,
+            "circleStrokeColor": self.circle_stroke_color,
+            "circleStrokeWidth": self.circle_stroke_width,
+            "iconSize": self.icon_size,
+            "iconOverlap": self.icon_overlap,
+            "iconAnchor": self.icon_anchor,
             "active": self.active,
         }
 

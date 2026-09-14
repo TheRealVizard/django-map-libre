@@ -45,6 +45,24 @@ class LayerType(str, Enum):
     ICON = "icon"  # Points with icons
 
 
+class OverlapType(str, Enum):
+    NEVER = "never"
+    ALWAYS = "always"
+    COOPERATIVE = "cooperative"
+
+
+class AnchorType(str, Enum):
+    CENTER = "center"
+    LEFT = "left"
+    RIGHT = "right"
+    TOP = "top"
+    BOTTOM = "bottom"
+    TOP_LEFT = "top-left"
+    TOP_RIGHT = "top-right"
+    BOTTOM_LEFT = "bottom-left"
+    BOTTOM_RIGHT = "bottom-right"
+
+
 class ImportMap(MediaAsset):
     def __init__(self, **attributes):
         super().__init__("", **attributes)

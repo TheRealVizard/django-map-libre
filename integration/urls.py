@@ -24,7 +24,7 @@ from django.http import JsonResponse, StreamingHttpResponse
 from django.template.response import TemplateResponse
 from django.urls import path
 
-from django_map_libre.helpers import ColorSchemeType
+from django_map_libre.helpers import ColorSchemeType, LayerType
 from django_map_libre.map import Legend, MapWidget, OverlayLayer, TileLayer
 
 
@@ -113,6 +113,7 @@ class MapForm(Form):
                     id="json",
                     label="FULL JSON LAYER",
                     url="http://127.0.0.1:8000/data/json-parcels/",
+                    layer_type=LayerType.LINE,
                     legends=[
                         # 1. FIXED COLOR - Clean blue outline with subtle fill
                         Legend(

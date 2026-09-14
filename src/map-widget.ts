@@ -177,7 +177,7 @@ const addOverlayLayer = async (
     // TODO: IMPLEMENT EXTRA STYLE
 
     switch (mapType) {
-        case "fill":
+        case "fill": {
             layer = {
                 id,
                 source: sourceId,
@@ -191,8 +191,8 @@ const addOverlayLayer = async (
                 layout: layout,
             };
             break;
-
-        case "line":
+        }
+        case "line": {
             layer = {
                 id,
                 source: sourceId,
@@ -205,31 +205,41 @@ const addOverlayLayer = async (
                 layout: layout,
             };
             break;
-
-        case "circle":
+        }
+        case "circle": {
             layer = {
                 id,
                 source: sourceId,
                 type: "circle",
                 paint: {
                     "circle-color": activeLegend.color || "red",
-                    // 'circle-radius': activeLegend.circle_radius || 6,
-                    // 'circle-opacity': activeLegend.circle_opacity || 0.8,
-                    // 'circle-stroke-color': activeLegend.circle_stroke_color || '#ffffff',
-                    // 'circle-stroke-width': activeLegend.circle_stroke_width || 2,
+                    "circle-radius": activeLegend.circleRadius || 6,
+                    "circle-opacity": activeLegend.circleOpacity || 0.5,
+                    "circle-stroke-color":
+                        activeLegend.circleStrokeColor || "black",
+                    "circle-stroke-width": activeLegend.circleStrokeWidth || 2,
                 },
                 layout: layout,
             };
             break;
+        }
+        case "symbol": {
+            const imageURL =
+                activeLegend.image || import.meta.resolve("map-marker");
+            const markerID = `marker-${id}`;
 
-        case "symbol":
-            // Mantenemos los comentarios tal cual
-            // let image: string|ImageBitmap | HTMLImageElement|undefined|null = activeLegend.image;
+            let image: HTMLImageElement | ImageBitmap;
 
-            // if (!image) {
-            //   const defaultMarkerResponse = await map.loadImage(import.meta.resolve('map-marker'));
-            //   image = defaultMarkerResponse.data;
-            // }
+            if (imageURL.toLowerCase().endsWith(".svg")) {
+                image = await loadSvgImage(imageURL);
+            } else {
+                const response = await map.loadImage(imageURL);
+                image = response.data;
+            }
+
+            if (!map.hasImage(markerID)) {
+                map.addImage(markerID, image);
+            }
 
             layer = {
                 id,
@@ -242,14 +252,17 @@ const addOverlayLayer = async (
                 },
                 layout: {
                     ...layout,
-                    // 'icon-image': image,
+                    "icon-image": markerID,
+                    // TODO: Include in future
                     // 'text-field': activeLegend.text_field || '',
                     // 'text-size': activeLegend.text_size || 12,
-                    // 'text-font': activeLegend.text_font || ['Open Sans Regular'],
-                    // 'icon-size': activeLegend.icon_size || 1.0,
+                    "icon-size": activeLegend.iconSize || 1, //1 activeLegend.icon_size || 1.0,
+                    "icon-anchor": activeLegend.iconAnchor || "bottom",
+                    "icon-overlap": activeLegend.iconOverlap || "always",
                 },
             };
             break;
+        }
     }
 
     if (!map.getLayer(id)) {
@@ -263,6 +276,26 @@ const addOverlayLayer = async (
     }
 };
 
+async function loadSvgImage(url: string): Promise<HTMLImageElement> {
+    const response = await fetch(url);
+    if (!response.ok)
+        throw new Error(`HTTP ${response.status} al cargar ${url}`);
+
+    const svgText = await response.text();
+    const blob = new Blob([svgText], { type: "image/svg+xml" });
+    const blobUrl = URL.createObjectURL(blob);
+
+    try {
+        return await new Promise<HTMLImageElement>((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => reject(new Error(`SVG inválido: ${url}`));
+            img.src = blobUrl;
+        });
+    } finally {
+        URL.revokeObjectURL(blobUrl);
+    }
+}
 const initMap = (mapContainer: HTMLElement) => {
     const mapConfig = mapContainer.dataset as MapWidgetDataset;
 
