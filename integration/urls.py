@@ -29,8 +29,17 @@ from django_map_libre.map import Legend, MapWidget, OverlayLayer, TileLayer
 
 
 def json_parcels(request):
+    return JsonResponse(
+        {
+            "type": "FeatureCollection",
+            "features": get_features(int(request.GET.get("count", 300))),
+        }
+    )
+
+
+def get_features(features_count):
     features = []
-    for i in range(300):
+    for i in range(features_count):
         lat = random.uniform(37.708, 37.812)
         lon = random.uniform(-122.527, -122.348)
         half = 0.002 / 2
@@ -46,14 +55,14 @@ def json_parcels(request):
             "type": "Feature",
             "geometry": {"type": "Polygon", "coordinates": [coords]},
             "properties": {
-                "parcel_id": f"P{random.randint(10000, 99999)}",
+                "parcel_id": f"P{i}",
                 "area_sqft": round(random.uniform(2000, 8000), 1),
                 "address": f"{random.randint(1, 999)} {random.choice(['Market St', 'Mission St', 'Valencia St', 'Dolores St', 'Castro St'])}",
                 "land_use": random.choice(["residential", "commercial", "mixed-use"]),
             },
         }
         features.append(feature)
-    return JsonResponse({"type": "FeatureCollection", "features": features})
+    return features
 
 
 def ndjson_parcels(request):
@@ -113,31 +122,58 @@ class MapForm(Form):
                     id="json",
                     label="FULL JSON LAYER",
                     url="http://127.0.0.1:8000/data/json-parcels/",
-                    layer_type=LayerType.LINE,
+                    layer_type=LayerType.FILL,
                     legends=[
-                        # 1. FIXED COLOR - Clean blue outline with subtle fill
                         Legend(
                             id="fixed-clean",
                             label="Default View",
                             type=ColorSchemeType.FIXED,
                             color="#4A90D9",
-                            active=True,  # This is the default view
+                            active=True,
                         ),
                     ],
                     selected=False,
                 ),
+                # OverlayLayer(
+                #     id="json",
+                #     label="FULL JSON LAYER",
+                #     url="http://127.0.0.1:8000/data/json-parcels/?count=10",
+                #     layer_type=LayerType.FILL,
+                #     legends=[
+                #         Legend(
+                #             id="fixed-clean",
+                #             label="Default View",
+                #             type=ColorSchemeType.CATEGORICAL,
+                #             coloring_property="parcel_id",
+                #             category_mapping={
+                #                 "0": {"label": "PARCEL 1", "color": "#aaF0af"},
+                #                 "1": {"label": "PARCEL 1", "color": "#ff000f"},
+                #                 "2": {"label": "PARCEL 1", "color": "#0aF0ff"},
+                #                 "3": {"label": "PARCEL 1", "color": "#ff0Faf"},
+                #                 "4": {"label": "PARCEL 1", "color": "#a000ff"},
+                #                 "5": {"label": "PARCEL 1", "color": "#ffF0ff"},
+                #                 "6": {"label": "PARCEL 1", "color": "#CfCF0C"},
+                #                 "7": {"label": "PARCEL 1", "color": "#0fFFCf"},
+                #                 "8": {"label": "PARCEL 1", "color": "#AAA0Af"},
+                #                 "9": {"label": "PARCEL 1", "color": "#0fb0ff"},
+                #                 "10": {"label": "PARCEL 1", "color": "#5fFF5f"},
+                #             },
+                #             active=True,
+                #         ),
+                #     ],
+                #     selected=True,
+                # ),
                 OverlayLayer(
                     id="dnjson",
                     label="NDJSON LAYER",
                     url="http://127.0.0.1:8000/data/ndjson-parcels/",
                     legends=[
-                        # 1. FIXED COLOR - Clean blue outline with subtle fill
                         Legend(
                             id="fixed-clean",
                             label="Default View",
                             type=ColorSchemeType.FIXED,
                             color="#D94A4A",
-                            active=True,  # This is the default view
+                            active=True,
                         ),
                     ],
                     selected=False,

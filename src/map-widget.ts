@@ -20,6 +20,7 @@ import type {
     OverlayLayerConfig,
     TileLayerConfig,
 } from "./map-types";
+import { getMapFixedOverlay } from "./map-functions";
 
 setWorkerUrl(import.meta.resolve("maplibre-gl-worker"));
 
@@ -143,7 +144,7 @@ const addOverlayLayer = async (
     }
 
     // Only 'fixed' is implemented for now
-    if (activeLegend.type !== "fixed") {
+    if (activeLegend.type !== "fixed" && activeLegend.type !== "categorical") {
         console.warn(
             `Legend type '${activeLegend.type}' not yet implemented for overlay ${id}.`
         );
@@ -174,22 +175,14 @@ const addOverlayLayer = async (
         | CircleLayerSpecification
         | SymbolLayerSpecification;
 
-    // TODO: IMPLEMENT EXTRA STYLE
-
     switch (mapType) {
         case "fill": {
             layer = {
                 id,
                 source: sourceId,
                 type: "fill",
-                paint: {
-                    "fill-color": activeLegend.color || "red",
-                    "fill-opacity": 0.7,
-                    "fill-outline-color": "black",
-                    "fill-antialias": true,
-                },
                 layout: layout,
-            };
+            } as FillLayerSpecification;
             break;
         }
         case "line": {
@@ -197,13 +190,8 @@ const addOverlayLayer = async (
                 id,
                 source: sourceId,
                 type: "line",
-                paint: {
-                    "line-color": activeLegend.color || "red",
-                    "line-width": 3,
-                    "line-opacity": 0.8,
-                },
                 layout: layout,
-            };
+            } as LineLayerSpecification;
             break;
         }
         case "circle": {
@@ -211,56 +199,32 @@ const addOverlayLayer = async (
                 id,
                 source: sourceId,
                 type: "circle",
-                paint: {
-                    "circle-color": activeLegend.color || "red",
-                    "circle-radius": activeLegend.circleRadius || 6,
-                    "circle-opacity": activeLegend.circleOpacity || 0.5,
-                    "circle-stroke-color":
-                        activeLegend.circleStrokeColor || "black",
-                    "circle-stroke-width": activeLegend.circleStrokeWidth || 2,
-                },
                 layout: layout,
-            };
+            } as CircleLayerSpecification;
             break;
         }
         case "symbol": {
-            const imageURL =
-                activeLegend.image || import.meta.resolve("map-marker");
-            const markerID = `marker-${id}`;
-
-            let image: HTMLImageElement | ImageBitmap;
-
-            if (imageURL.toLowerCase().endsWith(".svg")) {
-                image = await loadSvgImage(imageURL);
-            } else {
-                const response = await map.loadImage(imageURL);
-                image = response.data;
-            }
-
-            if (!map.hasImage(markerID)) {
-                map.addImage(markerID, image);
-            }
-
             layer = {
                 id,
                 source: sourceId,
                 type: "symbol",
-                paint: {
-                    "text-color": activeLegend.color || "#333333",
-                    "text-halo-color": "#ffffff",
-                    "text-halo-width": 2,
-                },
                 layout: {
                     ...layout,
-                    "icon-image": markerID,
-                    // TODO: Include in future
-                    // 'text-field': activeLegend.text_field || '',
-                    // 'text-size': activeLegend.text_size || 12,
-                    "icon-size": activeLegend.iconSize || 1, //1 activeLegend.icon_size || 1.0,
-                    "icon-anchor": activeLegend.iconAnchor || "bottom",
-                    "icon-overlap": activeLegend.iconOverlap || "always",
                 },
-            };
+            } as SymbolLayerSpecification;
+            break;
+        }
+    }
+
+    switch (activeLegend.type) {
+        // case "range": {
+        //     break;
+        // }
+        case "categorical": {
+            break;
+        }
+        case "fixed": {
+            layer = await getMapFixedOverlay(map, id, layer, activeLegend);
             break;
         }
     }
@@ -276,26 +240,6 @@ const addOverlayLayer = async (
     }
 };
 
-async function loadSvgImage(url: string): Promise<HTMLImageElement> {
-    const response = await fetch(url);
-    if (!response.ok)
-        throw new Error(`HTTP ${response.status} al cargar ${url}`);
-
-    const svgText = await response.text();
-    const blob = new Blob([svgText], { type: "image/svg+xml" });
-    const blobUrl = URL.createObjectURL(blob);
-
-    try {
-        return await new Promise<HTMLImageElement>((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = () => reject(new Error(`SVG inválido: ${url}`));
-            img.src = blobUrl;
-        });
-    } finally {
-        URL.revokeObjectURL(blobUrl);
-    }
-}
 const initMap = (mapContainer: HTMLElement) => {
     const mapConfig = mapContainer.dataset as MapWidgetDataset;
 
