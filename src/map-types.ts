@@ -1,5 +1,5 @@
-import type { ControlPosition, Unit } from "maplibre-gl";
 import type { Feature, FeatureCollection } from "geojson";
+import type { ControlPosition, Unit } from "maplibre-gl";
 
 export interface TrackedLayer {
     id: string;
@@ -31,10 +31,7 @@ export interface LegendConfig {
     color?: string | null;
     image?: string | null;
 
-    categoryMapping?:
-        | Record<string, { label?: string; color?: string; icon?: string }>
-        | string
-        | null;
+    categoryMapping?: Legend | string | null;
 
     minValue?: number | null;
     maxValue?: number | null;

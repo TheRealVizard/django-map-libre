@@ -1,5 +1,9 @@
 import type { Feature } from "geojson";
-import { GeoJSONSource, Map as MapLibre } from "maplibre-gl";
+import {
+    GeoJSONSource,
+    Map as MapLibre,
+    type ExpressionSpecification,
+} from "maplibre-gl";
 import type {
     CompleteCallback,
     DataCallback,
@@ -7,8 +11,10 @@ import type {
     FetchData,
     LayerConfig,
     LayerType,
+    Legend,
     LegendConfig,
 } from "./map-types";
+import { getRandomColor } from "./map-functions";
 
 export class DataLoader {
     private url: string;
@@ -118,22 +124,55 @@ class Loaddable {
 
 export class OverlayLegend extends Loaddable {
     legendConfig: LegendConfig;
-    legendData: Record<
-        string,
-        { label?: string; color?: string; icon?: string }
-    > | null;
+    legendData: Legend | null;
     isLoaded: boolean;
     map: MapLibre;
+    layerId: string;
+    colors: string[] = [];
 
-    constructor(legendConfig: LegendConfig, map: MapLibre) {
+    constructor(layerId: string, legendConfig: LegendConfig, map: MapLibre) {
         super();
+        this.layerId = layerId;
         this.legendConfig = legendConfig;
         this.legendData = null;
         this.isLoaded = false;
         this.map = map;
+        if (
+            legendConfig.type === "categorical" &&
+            legendConfig.categoryMapping !== null &&
+            typeof legendConfig.categoryMapping !== "string"
+        ) {
+            this.isLoaded = true;
+            this.legendData = legendConfig.categoryMapping as Legend;
+            for (const [key, value] of Object.entries(this.legendData)) {
+                this.colors.push(key);
+                this.colors.push(value.color ?? getRandomColor());
+            }
+        }
     }
     getUrl(): string {
         return this.legendConfig.categoryMapping as string;
+    }
+    updateMapLayout(): void {
+        if (this.legendData === null) return;
+        switch (this.legendConfig.type) {
+            case "fixed":
+                break;
+
+            case "categorical":
+                if (this.isLoaded) {
+                    this.map.setPaintProperty(this.layerId, "fill-color", [
+                        "match",
+                        ["get", this.legendConfig.coloringProperty],
+                        ...this.colors,
+                        "#c0c0c0",
+                    ] as unknown as ExpressionSpecification);
+                } else {
+                    // TODO: ADD LOAD LOGIC TO SAVE DATA onLoadData
+                    this.load();
+                }
+                break;
+        }
     }
 }
 
@@ -143,17 +182,32 @@ export class Overlay extends Loaddable {
     isDisplayed: boolean = false;
     isLoaded: boolean = false;
     map: MapLibre;
+    activeLegend: OverlayLegend | undefined;
+    legends: OverlayLegend[];
 
-    constructor(layerConfig: LayerConfig, layerType: LayerType, map: MapLibre) {
+    constructor(
+        layerConfig: LayerConfig,
+        layerType: LayerType,
+        map: MapLibre,
+        activeLegend: LegendConfig,
+        legends: LegendConfig[]
+    ) {
         super();
         this.layerConfig = layerConfig;
         this.layerType = layerType;
         this.map = map;
+        this.legends = legends.map((l) => {
+            const legendOverlay = new OverlayLegend(layerConfig.id, l, map);
+            if (l === activeLegend) {
+                this.activeLegend = legendOverlay;
+            }
+            return legendOverlay;
+        });
     }
 
-    toggleVisibility(map: MapLibre) {
+    toggleVisibility() {
         this.isDisplayed = !this.isDisplayed;
-        map.setLayoutProperty(
+        this.map.setLayoutProperty(
             this.layerConfig.id,
             "visibility",
             this.isDisplayed ? "visible" : "none"
@@ -197,6 +251,10 @@ export class Overlay extends Loaddable {
     onLoadComplete(): void {
         this.isLoaded = true;
     }
+    load(): void {
+        this.activeLegend?.updateMapLayout();
+        super.load();
+    }
 }
 
 export class OverlayManager {
@@ -230,7 +288,7 @@ export class OverlayManager {
     toggleOverlayVisibility(id: string) {
         const overlay = this.getOverlay(id);
         if (overlay) {
-            overlay.toggleVisibility(this.map);
+            overlay.toggleVisibility();
         }
     }
 }

@@ -104,14 +104,9 @@ class Legend:
             "iconSize": self.icon_size,
             "iconOverlap": self.icon_overlap,
             "iconAnchor": self.icon_anchor,
+            "categoryMapping": self.category_mapping,
             "active": self.active,
         }
-
-        if self.category_mapping is not None:
-            if isinstance(self.category_mapping, dict):
-                data["category_mapping"] = self.category_mapping
-            elif isinstance(self.category_mapping, str):
-                data["category_mapping_url"] = self.category_mapping
 
         return {k: v for k, v in data.items() if v is not None}
 

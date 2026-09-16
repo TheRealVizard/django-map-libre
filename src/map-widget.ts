@@ -233,7 +233,13 @@ const addOverlayLayer = async (
         map.addLayer(layer);
     }
 
-    const overlay = new Overlay({ id, label, url, selected }, layerType, map);
+    const overlay = new Overlay(
+        { id, label, url, selected },
+        layerType,
+        map,
+        activeLegend,
+        legends
+    );
     overlayManager.addOverlay(id, overlay);
     if (selected) {
         overlay.load();

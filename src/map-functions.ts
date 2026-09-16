@@ -1,9 +1,9 @@
-import type {
-    Map as MapLibre,
-    CircleLayerSpecification,
-    FillLayerSpecification,
-    LineLayerSpecification,
-    SymbolLayerSpecification,
+import {
+    type Map as MapLibre,
+    type CircleLayerSpecification,
+    type FillLayerSpecification,
+    type LineLayerSpecification,
+    type SymbolLayerSpecification,
 } from "maplibre-gl";
 import type { LegendConfig } from "./map-types";
 
@@ -121,4 +121,11 @@ export const getMapFixedOverlay = async (
         }
     }
     return layer;
+};
+
+export const getRandomColor = (): string => {
+    const h = Math.round(360 * Math.random());
+    const s = Math.round(90 * Math.random()) + 10;
+    const l = Math.round(80 * Math.random()) + 20;
+    return `hsl(${h},${s}%,${l}%)`;
 };
