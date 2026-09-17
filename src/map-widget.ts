@@ -121,14 +121,7 @@ const addOverlayLayer = async (
     overlayManager: OverlayManager,
     overlayConfig: OverlayLayerConfig
 ) => {
-    const {
-        id,
-        label,
-        layerType,
-        url,
-        legends,
-        selected,
-    } = overlayConfig;
+    const { id, label, layerType, url, legends, selected } = overlayConfig;
 
     // Find active legend (or first one)
     const activeLegend = legends.find((l) => l.active) || legends[0];

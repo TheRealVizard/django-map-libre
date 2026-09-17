@@ -6,7 +6,13 @@ import {
     type AllPaintProperties,
     type ExpressionSpecification,
 } from "maplibre-gl";
-import { getLayoutForSymbolOverlay, getPaintForCircleOverlay, getPaintForFillOverlay, getPaintForLineOverlay, getRandomColor } from "./map-functions";
+import {
+    getLayoutForSymbolOverlay,
+    getPaintForCircleOverlay,
+    getPaintForFillOverlay,
+    getPaintForLineOverlay,
+    getRandomColor,
+} from "./map-functions";
 import type {
     CompleteCallback,
     DataCallback,
@@ -111,7 +117,7 @@ class Loaddable {
 
         this.loader.load();
     }
-    onLoadComplete(): void { }
+    onLoadComplete(): void {}
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
@@ -131,9 +137,14 @@ export class OverlayLegend extends Loaddable {
     map: MapLibre;
     layerId: string;
     colors: string[] = [];
-    layerType: LayerType
+    layerType: LayerType;
 
-    constructor(layerId: string, legendConfig: LegendConfig, layerType: LayerType, map: MapLibre) {
+    constructor(
+        layerId: string,
+        legendConfig: LegendConfig,
+        layerType: LayerType,
+        map: MapLibre
+    ) {
         super();
         this.layerId = layerId;
         this.legendConfig = legendConfig;
@@ -157,13 +168,13 @@ export class OverlayLegend extends Loaddable {
     updateMapLayout(): void {
         switch (this.legendConfig.type) {
             case "fixed":
-                this.applyFixedLegendConfig()
+                this.applyFixedLegendConfig();
                 break;
 
             case "categorical":
                 if (this.isLoaded) {
                     this.applyColors();
-                } else if (this.legendConfig.categoryMapping === null) {
+                    //} else if (this.legendConfig.categoryMapping === null) {
                 } else {
                     this.load();
                 }
@@ -173,23 +184,51 @@ export class OverlayLegend extends Loaddable {
     applyFixedLegendConfig() {
         switch (this.layerType) {
             case "fill":
-                for (const [prop, value] of Object.entries(getPaintForFillOverlay(this.legendConfig))) {
-                    this.map.setPaintProperty(this.layerId, prop as keyof AllPaintProperties, value)
+                for (const [prop, value] of Object.entries(
+                    getPaintForFillOverlay(this.legendConfig)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
                 }
                 break;
             case "line":
-                for (const [prop, value] of Object.entries(getPaintForLineOverlay(this.legendConfig))) {
-                    this.map.setPaintProperty(this.layerId, prop as keyof AllPaintProperties, value)
+                for (const [prop, value] of Object.entries(
+                    getPaintForLineOverlay(this.legendConfig)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
                 }
                 break;
             case "circle":
-                for (const [prop, value] of Object.entries(getPaintForCircleOverlay(this.legendConfig))) {
-                    this.map.setPaintProperty(this.layerId, prop as keyof AllPaintProperties, value)
+                for (const [prop, value] of Object.entries(
+                    getPaintForCircleOverlay(this.legendConfig)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
                 }
                 break;
             case "symbol":
-                for (const [prop, value] of Object.entries(getLayoutForSymbolOverlay(this.map, this.layerId, this.legendConfig))) {
-                    this.map.setLayoutProperty(this.layerId, prop as keyof AllLayoutProperties, value)
+                for (const [prop, value] of Object.entries(
+                    getLayoutForSymbolOverlay(
+                        this.map,
+                        this.layerId,
+                        this.legendConfig
+                    )
+                )) {
+                    this.map.setLayoutProperty(
+                        this.layerId,
+                        prop as keyof AllLayoutProperties,
+                        value
+                    );
                 }
                 break;
         }
@@ -204,12 +243,12 @@ export class OverlayLegend extends Loaddable {
     }
     onLoadData(data: FetchData): void {
         // TODO: ALLOW NDJSON
-        this.legendData = data as Legend
+        this.legendData = data as Legend;
     }
     onLoadComplete(): void {
-        this.isLoaded = true
+        this.isLoaded = true;
         this.cacheColors();
-        this.applyColors()
+        this.applyColors();
     }
     cacheColors() {
         if (!this.legendData) return;
@@ -242,7 +281,12 @@ export class Overlay extends Loaddable {
         this.map = map;
         this.isDisplayed = layerConfig.selected;
         this.legends = legends.map((l) => {
-            const legendOverlay = new OverlayLegend(layerConfig.id, l, layerType, map);
+            const legendOverlay = new OverlayLegend(
+                layerConfig.id,
+                l,
+                layerType,
+                map
+            );
             if (l === activeLegend) {
                 this.activeLegend = legendOverlay;
             }

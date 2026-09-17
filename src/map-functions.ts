@@ -1,7 +1,7 @@
 import {
     type AllLayoutProperties,
     type AllPaintProperties,
-    type Map as MapLibre
+    type Map as MapLibre,
 } from "maplibre-gl";
 import type { LegendConfig } from "./map-types";
 
@@ -33,34 +33,38 @@ export const getRandomColor = (): string => {
     return `hsl(${h},${s}%,${l}%)`;
 };
 
-export const getPaintForFillOverlay = (activeLegend: LegendConfig): AllPaintProperties => {
+export const getPaintForFillOverlay = (
+    activeLegend: LegendConfig
+): AllPaintProperties => {
     return {
         "fill-color": activeLegend.color || "red",
         "fill-opacity": 0.7,
         "fill-outline-color": "black",
         "fill-antialias": true,
-    }
-}
+    };
+};
 
-export const getPaintForLineOverlay = (activeLegend: LegendConfig): AllPaintProperties => {
+export const getPaintForLineOverlay = (
+    activeLegend: LegendConfig
+): AllPaintProperties => {
     return {
         "line-color": activeLegend.color || "red",
         "line-width": 3,
         "line-opacity": 0.8,
-    }
-}
+    };
+};
 
-export const getPaintForCircleOverlay = (activeLegend: LegendConfig): AllPaintProperties => {
+export const getPaintForCircleOverlay = (
+    activeLegend: LegendConfig
+): AllPaintProperties => {
     return {
         "circle-color": activeLegend.color || "red",
         "circle-radius": activeLegend.circleRadius || 6,
         "circle-opacity": activeLegend.circleOpacity || 0.5,
-        "circle-stroke-color":
-            activeLegend.circleStrokeColor || "black",
+        "circle-stroke-color": activeLegend.circleStrokeColor || "black",
         "circle-stroke-width": activeLegend.circleStrokeWidth || 2,
-    }
-}
-
+    };
+};
 
 // TODO: Include in future for symbol
 // Layout
@@ -71,8 +75,11 @@ export const getPaintForCircleOverlay = (activeLegend: LegendConfig): AllPaintPr
 //     "text-halo-color": "#ffffff",
 //     "text-halo-width": 2,
 // },
-export const getLayoutForSymbolOverlay = async (map: MapLibre,
-    id: string, activeLegend: LegendConfig): Promise<AllLayoutProperties> => {
+export const getLayoutForSymbolOverlay = async (
+    map: MapLibre,
+    id: string,
+    activeLegend: LegendConfig
+): Promise<AllLayoutProperties> => {
     const markerID = `marker-${id}`;
 
     if (!map.hasImage(markerID)) {
@@ -95,5 +102,5 @@ export const getLayoutForSymbolOverlay = async (map: MapLibre,
         "icon-size": activeLegend.iconSize || 1, //1 activeLegend.icon_size || 1.0,
         "icon-anchor": activeLegend.iconAnchor || "bottom",
         "icon-overlap": activeLegend.iconOverlap || "always",
-    }
-}
+    };
+};
