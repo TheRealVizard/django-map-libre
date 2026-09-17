@@ -254,7 +254,7 @@ export class OverlayLegend extends Loaddable {
         if (!this.legendData) return;
         for (const [key, value] of Object.entries(this.legendData)) {
             this.colors.push(key);
-            this.colors.push(value.color || getRandomColor());
+            this.colors.push(value.color || getRandomColor(key));
         }
     }
 }
