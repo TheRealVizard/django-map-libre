@@ -149,8 +149,8 @@ class MapForm(Form):
                                 "P0": {"label": "PARCEL 1", "color": "#aaF0af"},
                                 "P1": {"label": "PARCEL 1"},
                                 "P2": {"label": "PARCEL 1", "color": "#0aF0ff"},
-                                "P3": {"label": "PARCEL 1", "color": "#ff0Faf"},
-                                "P4": {"label": "PARCEL 1", "color": "#a000ff"},
+                                "P3": {"label": "PARCEL 1"},
+                                "P4": {"label": "PARCEL 1"},
                                 "P5": {"label": "PARCEL 1"},
                                 "P6": {"label": "PARCEL 1", "color": "#CfCF0C"},
                                 "P7": {

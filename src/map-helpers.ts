@@ -146,7 +146,7 @@ export class OverlayLegend extends Loaddable {
             this.legendData = legendConfig.categoryMapping as Legend;
             for (const [key, value] of Object.entries(this.legendData)) {
                 this.colors.push(key);
-                this.colors.push(value.color ?? getRandomColor());
+                this.colors.push(value.color || getRandomColor());
             }
         }
     }
