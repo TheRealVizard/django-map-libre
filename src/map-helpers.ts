@@ -240,6 +240,7 @@ export class Overlay extends Loaddable {
         this.layerConfig = layerConfig;
         this.layerType = layerType;
         this.map = map;
+        this.isDisplayed = layerConfig.selected;
         this.legends = legends.map((l) => {
             const legendOverlay = new OverlayLegend(layerConfig.id, l, layerType, map);
             if (l === activeLegend) {
@@ -250,15 +251,15 @@ export class Overlay extends Loaddable {
     }
 
     toggleVisibility() {
+        if (!this.isLoaded) {
+            this.load();
+        }
         this.isDisplayed = !this.isDisplayed;
         this.map.setLayoutProperty(
             this.layerConfig.id,
             "visibility",
             this.isDisplayed ? "visible" : "none"
         );
-        if (!this.isLoaded) {
-            this.load();
-        }
     }
     getUrl(): string {
         return this.layerConfig.url;

@@ -20,7 +20,6 @@ import type {
     OverlayLayerConfig,
     TileLayerConfig,
 } from "./map-types";
-import { getMapFixedOverlay } from "./map-functions";
 
 setWorkerUrl(import.meta.resolve("maplibre-gl-worker"));
 
@@ -128,7 +127,7 @@ const addOverlayLayer = async (
         layerType,
         url,
         legends,
-        selected = false,
+        selected,
     } = overlayConfig;
 
     // Find active legend (or first one)

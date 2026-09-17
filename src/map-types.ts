@@ -53,7 +53,7 @@ export interface LayerConfig {
     id: string;
     label: string;
     url: string;
-    selected?: boolean;
+    selected: boolean;
 }
 
 export interface OverlayLayerConfig extends LayerConfig {
