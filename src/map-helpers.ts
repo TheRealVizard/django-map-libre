@@ -109,7 +109,7 @@ class Loaddable {
 
         this.loader.load();
     }
-    onLoadComplete(): void {}
+    onLoadComplete(): void { }
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
@@ -129,14 +129,16 @@ export class OverlayLegend extends Loaddable {
     map: MapLibre;
     layerId: string;
     colors: string[] = [];
+    layerType: LayerType
 
-    constructor(layerId: string, legendConfig: LegendConfig, map: MapLibre) {
+    constructor(layerId: string, legendConfig: LegendConfig,layerType:LayerType, map: MapLibre) {
         super();
         this.layerId = layerId;
         this.legendConfig = legendConfig;
         this.legendData = null;
         this.isLoaded = false;
         this.map = map;
+        this.layerType = layerType;
         if (
             legendConfig.type === "categorical" &&
             legendConfig.categoryMapping !== null &&
@@ -144,34 +146,49 @@ export class OverlayLegend extends Loaddable {
         ) {
             this.isLoaded = true;
             this.legendData = legendConfig.categoryMapping as Legend;
-            for (const [key, value] of Object.entries(this.legendData)) {
-                this.colors.push(key);
-                this.colors.push(value.color || getRandomColor());
-            }
+            this.cacheColors();
         }
     }
     getUrl(): string {
         return this.legendConfig.categoryMapping as string;
     }
     updateMapLayout(): void {
-        if (this.legendData === null) return;
         switch (this.legendConfig.type) {
             case "fixed":
                 break;
 
             case "categorical":
                 if (this.isLoaded) {
-                    this.map.setPaintProperty(this.layerId, "fill-color", [
-                        "match",
-                        ["get", this.legendConfig.coloringProperty],
-                        ...this.colors,
-                        "#c0c0c0",
-                    ] as unknown as ExpressionSpecification);
+                    this.applyColors();
+                } else if (this.legendConfig.categoryMapping === null) {
                 } else {
-                    // TODO: ADD LOAD LOGIC TO SAVE DATA onLoadData
                     this.load();
                 }
                 break;
+        }
+    }
+    applyColors() {
+        this.map.setPaintProperty(this.layerId, "fill-color", [
+            "match",
+            ["get", this.legendConfig.coloringProperty],
+            ...this.colors,
+            "#c0c0c0",
+        ] as unknown as ExpressionSpecification);
+    }
+    onLoadData(data: FetchData): void {
+        // TODO: ALLOW NDJSON
+        this.legendData = data as Legend
+    }
+    onLoadComplete(): void {
+        this.isLoaded = true
+        this.cacheColors();
+        this.applyColors()
+    }
+    cacheColors() {
+        if (!this.legendData) return;
+        for (const [key, value] of Object.entries(this.legendData)) {
+            this.colors.push(key);
+            this.colors.push(value.color || getRandomColor());
         }
     }
 }
@@ -197,7 +214,7 @@ export class Overlay extends Loaddable {
         this.layerType = layerType;
         this.map = map;
         this.legends = legends.map((l) => {
-            const legendOverlay = new OverlayLegend(layerConfig.id, l, map);
+            const legendOverlay = new OverlayLegend(layerConfig.id, l,layerType, map);
             if (l === activeLegend) {
                 this.activeLegend = legendOverlay;
             }

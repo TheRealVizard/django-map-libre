@@ -28,6 +28,22 @@ from django_map_libre.helpers import ColorSchemeType, LayerType
 from django_map_libre.map import Legend, MapWidget, OverlayLayer, TileLayer
 
 
+def get_random_color():
+    r = f"{random.randint(0, 255):0x}"
+    g = f"{random.randint(0, 255):0x}"
+    b = f"{random.randint(0, 255):0x}"
+    return f"#{r.ljust(2,'0')}{g.ljust(2,'0')}{b.ljust(2,'0')}"
+
+
+def random_legend(request):
+    return JsonResponse(
+        {
+            f"P{i}": {"label": f"Parcel ID:{i}", "color": get_random_color()}
+            for i in range(int(request.GET.get("count", 300)))
+        }
+    )
+
+
 def json_parcels(request):
     return JsonResponse(
         {
@@ -136,7 +152,7 @@ class MapForm(Form):
                 ),
                 OverlayLayer(
                     id="categorical-mapping-clean",
-                    label="Categorical-Mapping-Clean",
+                    label="Categorical Mapping Hardcode",
                     url="http://127.0.0.1:8000/data/json-parcels/?count=10",
                     layer_type=LayerType.FILL,
                     legends=[
@@ -146,20 +162,37 @@ class MapForm(Form):
                             type=ColorSchemeType.CATEGORICAL,
                             coloring_property="parcel_id",
                             category_mapping={
-                                "P0": {"label": "PARCEL 1", "color": "#aaF0af"},
+                                "P0": {"label": "PARCEL 0", "color": "#aaF0af"},
                                 "P1": {"label": "PARCEL 1"},
-                                "P2": {"label": "PARCEL 1", "color": "#0aF0ff"},
-                                "P3": {"label": "PARCEL 1"},
-                                "P4": {"label": "PARCEL 1"},
-                                "P5": {"label": "PARCEL 1"},
-                                "P6": {"label": "PARCEL 1", "color": "#CfCF0C"},
+                                "P2": {"label": "PARCEL 2", "color": "#0aF0ff"},
+                                "P3": {"label": "PARCEL 3"},
+                                "P4": {"label": "PARCEL 4"},
+                                "P5": {"label": "PARCEL 5"},
+                                "P6": {"label": "PARCEL 6", "color": "#CfCF0C"},
                                 "P7": {
-                                    "label": "PARCEL 1",
+                                    "label": "PARCEL 7",
                                 },
-                                "P8": {"label": "PARCEL 1", "color": "#AAA0Af"},
-                                "P9": {"label": "PARCEL 1", "color": "#0fb0ff"},
-                                "P10": {"label": "PARCEL 1"},
+                                "P8": {"label": "PARCEL 8", "color": "#AAA0Af"},
+                                "P9": {"label": "PARCEL 9", "color": "#0fb0ff"},
+                                "P10": {"label": "PARCEL 10"},
                             },
+                            active=True,
+                        ),
+                    ],
+                    selected=True,
+                ),
+                OverlayLayer(
+                    id="categorical-mapping-api-legend",
+                    label="Categorical Mapping API Legend",
+                    url="http://127.0.0.1:8000/data/json-parcels/?count=20000",
+                    layer_type=LayerType.FILL,
+                    legends=[
+                        Legend(
+                            id="categorical-mapping-api-legend",
+                            label="Default View",
+                            type=ColorSchemeType.CATEGORICAL,
+                            coloring_property="parcel_id",
+                            category_mapping="http://127.0.0.1:8000/data/random_legend/?count=20000",
                             active=True,
                         ),
                     ],
@@ -193,4 +226,5 @@ urlpatterns = [
     path("", map),
     path("data/json-parcels/", json_parcels, name="json_parcels"),
     path("data/ndjson-parcels/", ndjson_parcels, name="ndjson_parcels"),
+    path("data/random_legend/", random_legend, name="random_legend"),
 ]
