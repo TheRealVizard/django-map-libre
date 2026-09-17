@@ -216,19 +216,6 @@ const addOverlayLayer = async (
         }
     }
 
-    switch (activeLegend.type) {
-        // case "range": {
-        //     break;
-        // }
-        case "categorical": {
-            break;
-        }
-        case "fixed": {
-            layer = await getMapFixedOverlay(map, id, layer, activeLegend);
-            break;
-        }
-    }
-
     if (!map.getLayer(id)) {
         map.addLayer(layer);
     }

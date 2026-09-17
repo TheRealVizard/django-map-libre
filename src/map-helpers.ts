@@ -2,8 +2,11 @@ import type { Feature } from "geojson";
 import {
     GeoJSONSource,
     Map as MapLibre,
+    type AllLayoutProperties,
+    type AllPaintProperties,
     type ExpressionSpecification,
 } from "maplibre-gl";
+import { getLayoutForSymbolOverlay, getPaintForCircleOverlay, getPaintForFillOverlay, getPaintForLineOverlay, getRandomColor } from "./map-functions";
 import type {
     CompleteCallback,
     DataCallback,
@@ -14,7 +17,6 @@ import type {
     Legend,
     LegendConfig,
 } from "./map-types";
-import { getRandomColor } from "./map-functions";
 
 export class DataLoader {
     private url: string;
@@ -131,7 +133,7 @@ export class OverlayLegend extends Loaddable {
     colors: string[] = [];
     layerType: LayerType
 
-    constructor(layerId: string, legendConfig: LegendConfig,layerType:LayerType, map: MapLibre) {
+    constructor(layerId: string, legendConfig: LegendConfig, layerType: LayerType, map: MapLibre) {
         super();
         this.layerId = layerId;
         this.legendConfig = legendConfig;
@@ -155,6 +157,7 @@ export class OverlayLegend extends Loaddable {
     updateMapLayout(): void {
         switch (this.legendConfig.type) {
             case "fixed":
+                this.applyFixedLegendConfig()
                 break;
 
             case "categorical":
@@ -163,6 +166,30 @@ export class OverlayLegend extends Loaddable {
                 } else if (this.legendConfig.categoryMapping === null) {
                 } else {
                     this.load();
+                }
+                break;
+        }
+    }
+    applyFixedLegendConfig() {
+        switch (this.layerType) {
+            case "fill":
+                for (const [prop, value] of Object.entries(getPaintForFillOverlay(this.legendConfig))) {
+                    this.map.setPaintProperty(this.layerId, prop as keyof AllPaintProperties, value)
+                }
+                break;
+            case "line":
+                for (const [prop, value] of Object.entries(getPaintForLineOverlay(this.legendConfig))) {
+                    this.map.setPaintProperty(this.layerId, prop as keyof AllPaintProperties, value)
+                }
+                break;
+            case "circle":
+                for (const [prop, value] of Object.entries(getPaintForCircleOverlay(this.legendConfig))) {
+                    this.map.setPaintProperty(this.layerId, prop as keyof AllPaintProperties, value)
+                }
+                break;
+            case "symbol":
+                for (const [prop, value] of Object.entries(getLayoutForSymbolOverlay(this.map, this.layerId, this.legendConfig))) {
+                    this.map.setLayoutProperty(this.layerId, prop as keyof AllLayoutProperties, value)
                 }
                 break;
         }
@@ -214,7 +241,7 @@ export class Overlay extends Loaddable {
         this.layerType = layerType;
         this.map = map;
         this.legends = legends.map((l) => {
-            const legendOverlay = new OverlayLegend(layerConfig.id, l,layerType, map);
+            const legendOverlay = new OverlayLegend(layerConfig.id, l, layerType, map);
             if (l === activeLegend) {
                 this.activeLegend = legendOverlay;
             }
