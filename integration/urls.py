@@ -183,7 +183,7 @@ class MapForm(Form):
                             active=True,
                         ),
                     ],
-                    selected=True,
+                    selected=False,
                 ),
                 OverlayLayer(
                     id="categorical-mapping-api-legend",
@@ -197,6 +197,23 @@ class MapForm(Form):
                             type=ColorSchemeType.CATEGORICAL,
                             coloring_property="parcel_id",
                             category_mapping="http://127.0.0.1:8000/data/random_legend/?count=90",
+                            active=True,
+                        ),
+                    ],
+                    selected=False,
+                ),
+                OverlayLayer(
+                    id="categorical-mapping-generated-legend",
+                    label="Categorical Generated Legend",
+                    url="http://127.0.0.1:8000/data/ndjson-parcels/?count=400000&batch=1000",
+                    layer_type=LayerType.FILL,
+                    legends=[
+                        Legend(
+                            id="categorical-generated-legend",
+                            label="Default View",
+                            type=ColorSchemeType.CATEGORICAL,
+                            coloring_property="parcel_id",
+                            category_mapping=None,
                             active=True,
                         ),
                     ],

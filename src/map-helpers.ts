@@ -1,4 +1,4 @@
-import type { Feature } from "geojson";
+import type { Feature, FeatureCollection } from "geojson";
 import {
     GeoJSONSource,
     Map as MapLibre,
@@ -89,6 +89,8 @@ export class DataLoader {
 
 class Loaddable {
     loader: DataLoader | null = null;
+    private pendingTasks: Set<Promise<void>> = new Set();
+    private completeReceived = false;
     load(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.loader) resolve(); // Prevent multiple loads
@@ -99,11 +101,12 @@ class Loaddable {
             this.loader = new DataLoader(
                 this.getUrl(),
                 (data: FetchData) => {
-                    this.onLoadData(data);
+                    this.pendingTasks.add(this.onLoadData(data));
+                    this.tryComplete(resolve);
                 },
                 () => {
-                    this.onLoadComplete();
-                    resolve();
+                    this.completeReceived = true;
+                    this.tryComplete(resolve);
                 },
                 (error: string) => {
                     this.onLoadError(error);
@@ -114,12 +117,21 @@ class Loaddable {
             this.loader.load();
         });
     }
+    private tryComplete(resolve: (value: void | PromiseLike<void>) => void) {
+        if (this.completeReceived) {
+            Promise.all(this.pendingTasks).then(() => {
+                this.pendingTasks.clear();
+                this.onLoadComplete();
+                resolve();
+            });
+        }
+    }
     onLoadComplete(): void {}
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
     }
-    onLoadData(_data: FetchData): void {
+    onLoadData(_data: FetchData): Promise<void> {
         throw new Error("Method not implemented.");
     }
     getUrl(): string {
@@ -301,9 +313,10 @@ export class OverlayLegend extends Loaddable {
         }
         resolve();
     }
-    onLoadData(data: FetchData): void {
+    onLoadData(data: FetchData): Promise<void> {
         // TODO: ALLOW NDJSON
         this.legendData = data as Legend;
+        return Promise.resolve();
     }
     onLoadComplete(): void {
         this.isLoaded = true;
@@ -369,7 +382,7 @@ export class Overlay extends Loaddable {
         return this.layerConfig.url;
     }
 
-    onLoadData(data: FetchData): void {
+    onLoadData(data: FetchData): Promise<void> {
         let newFeatures: Feature[] = [];
         if (Array.isArray(data)) {
             for (const item of data) {
@@ -396,7 +409,7 @@ export class Overlay extends Loaddable {
                 newFeatures = data.features;
             } else {
                 console.warn("[Overlay] Unexpected data type:", data);
-                return;
+                return Promise.resolve();
             }
         }
 
@@ -404,16 +417,25 @@ export class Overlay extends Loaddable {
             `overlay-${this.layerConfig.id}-source`
         ) as GeoJSONSource | undefined;
         if (source) {
-            source.updateData({ add: newFeatures });
+            return source.updateData({ add: newFeatures });
         }
+        return Promise.resolve();
     }
     onLoadComplete(): void {
         this.isLoaded = true;
     }
     load(): Promise<void> {
-        return (this.activeLegend?.updateMapLayout() as Promise<void>).then(
-            () => super.load()
-        );
+        return (this.activeLegend?.updateMapLayout() as Promise<void>)
+            .then(() => super.load())
+            .then(async () => {
+                const source = this.map.getSource(
+                    `overlay-${this.layerConfig.id}-source`
+                ) as GeoJSONSource | undefined;
+                const currentData = await source?.getData();
+                const featureCount = (currentData as FeatureCollection).features
+                    .length;
+                console.log(featureCount, "FEATURE COUNT");
+            });
     }
 }
 
