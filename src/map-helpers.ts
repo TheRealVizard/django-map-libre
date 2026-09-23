@@ -126,7 +126,7 @@ class Loaddable {
             });
         }
     }
-    onLoadComplete(): void {}
+    onLoadComplete(): void { }
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
@@ -260,6 +260,27 @@ export class OverlayLegend extends Loaddable {
     //         });
     //     }
     // }
+    doExtraStyling() {
+        if (this.parentOverlay.isLoaded) {
+            if (this.colors.length != 0) {
+                this.applyColors();
+            } else {
+                const source = this.parentOverlay.map.getSource(
+                    `overlay-${this.parentOverlay.layerConfig.id}-source`
+                ) as GeoJSONSource | undefined;
+                source?.getData().then((data) => {
+                    const colorKeys = new Set<string>();
+                    for (const feature of (data as FeatureCollection).features) {
+                        const colorKey = feature.properties?.[this.legendConfig.coloringProperty as string];
+                        if (colorKey == null || colorKeys.has(colorKey)) continue;
+                        colorKeys.add(colorKey);
+                        this.colors.push(colorKey, getRandomColor(colorKey));
+                    }
+                    this.applyColors();
+                });
+            }
+        }
+    }
     applyFixedLegendConfig(resolve: (value: void | PromiseLike<void>) => void) {
         switch (this.parentOverlay.layerType) {
             case "fill":
@@ -423,19 +444,11 @@ export class Overlay extends Loaddable {
     }
     onLoadComplete(): void {
         this.isLoaded = true;
+        this.activeLegend?.doExtraStyling();
     }
     load(): Promise<void> {
         return (this.activeLegend?.updateMapLayout() as Promise<void>)
-            .then(() => super.load())
-            .then(async () => {
-                const source = this.map.getSource(
-                    `overlay-${this.layerConfig.id}-source`
-                ) as GeoJSONSource | undefined;
-                const currentData = await source?.getData();
-                const featureCount = (currentData as FeatureCollection).features
-                    .length;
-                console.log(featureCount, "FEATURE COUNT");
-            });
+            .then(() => super.load());
     }
 }
 
