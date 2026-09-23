@@ -17,7 +17,6 @@ Including another URLconf
 
 import json
 import random
-import time
 
 from django.forms import CharField, Form
 from django.http import JsonResponse, StreamingHttpResponse
@@ -83,32 +82,37 @@ def get_features(features_count):
 
 def ndjson_parcels(request):
     def generate():
-        for i in range(100000):
-            time.sleep(0.00005)  # Simulate some processing delay
-            lat = random.uniform(37.708, 37.812)
-            lon = random.uniform(-122.527, -122.348)
-            half = 0.002 / 2
-            coords = [
-                [lon - half, lat - half],
-                [lon + half, lat - half],
-                [lon + half, lat + half],
-                [lon - half, lat + half],
-                [lon - half, lat - half],
-            ]
-            feature = {
-                "id": f"FIDD{i}",
-                "type": "Feature",
-                "geometry": {"type": "Polygon", "coordinates": [coords]},
-                "properties": {
-                    "parcel_id": f"P{random.randint(10000, 99999)}",
-                    "area_sqft": round(random.uniform(2000, 8000), 1),
-                    "address": f"{random.randint(1, 999)} {random.choice(['Market St', 'Mission St', 'Valencia St', 'Dolores St', 'Castro St'])}",
-                    "land_use": random.choice(
-                        ["residential", "commercial", "mixed-use"]
-                    ),
-                },
-            }
-            yield json.dumps(feature) + "\n"
+        counts = int(request.GET.get("count", 300))
+        batch = int(request.GET.get("batch", 1))
+        for i in range(counts // batch):
+            # time.sleep(0.00005)  # Simulate some processing delay
+            features = []
+            for b in range(batch):
+                lat = random.uniform(37.708, 37.812)
+                lon = random.uniform(-122.527, -122.348)
+                half = 0.002 / 2
+                coords = [
+                    [lon - half, lat - half],
+                    [lon + half, lat - half],
+                    [lon + half, lat + half],
+                    [lon - half, lat + half],
+                    [lon - half, lat - half],
+                ]
+                feature = {
+                    "id": f"FIDD{i}-{b}",
+                    "type": "Feature",
+                    "geometry": {"type": "Polygon", "coordinates": [coords]},
+                    "properties": {
+                        "parcel_id": f"P{i}",
+                        "area_sqft": round(random.uniform(2000, 8000), 1),
+                        "address": f"{random.randint(1, 999)} {random.choice(['Market St', 'Mission St', 'Valencia St', 'Dolores St', 'Castro St'])}",
+                        "land_use": random.choice(
+                            ["residential", "commercial", "mixed-use"]
+                        ),
+                    },
+                }
+                features.append(feature)
+            yield json.dumps(features) + "\n"
 
     return StreamingHttpResponse(generate(), content_type="application/x-ndjson")
 
@@ -184,7 +188,7 @@ class MapForm(Form):
                 OverlayLayer(
                     id="categorical-mapping-api-legend",
                     label="Categorical Mapping API Legend",
-                    url="http://127.0.0.1:8000/data/json-parcels/?count=20",
+                    url="http://127.0.0.1:8000/data/ndjson-parcels/?count=10000&batch=1000",
                     layer_type=LayerType.FILL,
                     legends=[
                         Legend(
@@ -192,7 +196,7 @@ class MapForm(Form):
                             label="Default View",
                             type=ColorSchemeType.CATEGORICAL,
                             coloring_property="parcel_id",
-                            category_mapping="http://127.0.0.1:8000/data/random_legend/?count=15",
+                            category_mapping=None,
                             active=True,
                         ),
                     ],

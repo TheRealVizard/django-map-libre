@@ -68,16 +68,13 @@ export class DataLoader {
                     this.onData(data);
                 } else if (type === "complete") {
                     this.onComplete();
-                    this._cleanup();
                 } else if (type === "error") {
                     this.onError(error);
-                    this._cleanup();
                 }
             };
 
             this.worker.onerror = (e) => {
                 this.onError(e.message);
-                this._cleanup();
             };
 
             this.worker.postMessage({ url: this.url });
@@ -88,19 +85,16 @@ export class DataLoader {
             );
         }
     }
-
-    _cleanup() {
-        if (this.worker) {
-            this.worker.terminate();
-            this.worker = null;
-        }
-    }
 }
 
 class Loaddable {
     loader: DataLoader | null = null;
     load(): void {
         if (this.loader) return; // Prevent multiple loads
+        if (this.getUrl() === null) {
+            this.onLoadComplete();
+            return;
+        }
         this.loader = new DataLoader(
             this.getUrl(),
             (data: FetchData) => {
@@ -114,7 +108,6 @@ class Loaddable {
             },
             import.meta.resolve("map-worker")
         );
-
         this.loader.load();
     }
     onLoadComplete(): void {}
@@ -137,12 +130,13 @@ export class OverlayLegend extends Loaddable {
     map: MapLibre;
     layerId: string;
     colors: string[] = [];
-    layerType: LayerType;
+    parentOverlay: Overlay;
+    paintScheduled: boolean = false;
 
     constructor(
         layerId: string,
         legendConfig: LegendConfig,
-        layerType: LayerType,
+        overlay: Overlay,
         map: MapLibre
     ) {
         super();
@@ -151,10 +145,10 @@ export class OverlayLegend extends Loaddable {
         this.legendData = null;
         this.isLoaded = false;
         this.map = map;
-        this.layerType = layerType;
+        this.parentOverlay = overlay;
         if (
             legendConfig.type === "categorical" &&
-            legendConfig.categoryMapping !== null &&
+            legendConfig.categoryMapping !== undefined &&
             typeof legendConfig.categoryMapping !== "string"
         ) {
             this.isLoaded = true;
@@ -172,17 +166,80 @@ export class OverlayLegend extends Loaddable {
                 break;
 
             case "categorical":
-                if (this.isLoaded) {
+                this.applyCategoricalConfig();
+                break;
+        }
+    }
+    applyCategoricalConfig() {
+        switch (this.parentOverlay.layerType) {
+            case "fill":
+                if (
+                    this.legendConfig.categoryMapping === undefined ||
+                    this.legendConfig.categoryMapping === null
+                ) {
+                    // TODO complete
+                    //  if (this.parentOverlay.isLoaded) {
+                    //     if (this.colors.length != 0) {
+                    //         this.applyColors();
+                    //     } else {
+                    //         const source = this.parentOverlay.map.getSource(
+                    //             `overlay-${this.parentOverlay.layerConfig.id}-source`
+                    //         ) as GeoJSONSource | undefined;
+                    //         source?.getData().then((data) => {
+                    //             const colorKeys = new Set<string>();
+                    //             for (const feature of (data as FeatureCollection).features) {
+                    //                 const colorKey = feature.properties?.[this.legendConfig.coloringProperty as string];
+                    //                 if (colorKey == null || colorKeys.has(colorKey)) continue;
+                    //                 colorKeys.add(colorKey);
+                    //                 this.colors.push(colorKey, getRandomColor(colorKey));
+                    //             }
+                    //         });
+                    //         this.applyColors();
+                    //     }
+                    // }
+                } else if (this.isLoaded) {
                     this.applyColors();
-                    //} else if (this.legendConfig.categoryMapping === null) {
                 } else {
                     this.load();
                 }
                 break;
         }
     }
+    applyColors() {
+        this.map.setPaintProperty(this.layerId, "fill-color", [
+            "match",
+            ["get", this.legendConfig.coloringProperty],
+            ...this.colors,
+            "#c0c0c0",
+        ] as unknown as ExpressionSpecification);
+    }
+    // async registerFeatures(features: Feature[]): Promise<void> {
+    //     if (this.legendConfig.type !== "categorical") return;
+    //     if (!this.legendData) this.legendData = {};
+
+    //     let updatePaintRequired = false;
+    //     for (const feature of features) {
+    //         const colorKey = feature.properties?.[this.legendConfig.coloringProperty as string];
+    //         if (colorKey == null || this.legendData[colorKey]) continue;
+
+    //         const color = getRandomColor(colorKey);
+    //         this.legendData[colorKey] = { color } as LegendData;
+    //         this.colors.push(colorKey, color);
+    //         updatePaintRequired = true;
+    //     }
+
+    //     if (updatePaintRequired) {
+    //         if (this.paintScheduled) return;
+    //         this.paintScheduled = true;
+
+    //         requestAnimationFrame(() => {
+    //             this.paintScheduled = false;
+    //             this.applyColors();
+    //         });
+    //     }
+    // }
     applyFixedLegendConfig() {
-        switch (this.layerType) {
+        switch (this.parentOverlay.layerType) {
             case "fill":
                 for (const [prop, value] of Object.entries(
                     getPaintForFillOverlay(this.legendConfig)
@@ -233,14 +290,6 @@ export class OverlayLegend extends Loaddable {
                 break;
         }
     }
-    applyColors() {
-        this.map.setPaintProperty(this.layerId, "fill-color", [
-            "match",
-            ["get", this.legendConfig.coloringProperty],
-            ...this.colors,
-            "#c0c0c0",
-        ] as unknown as ExpressionSpecification);
-    }
     onLoadData(data: FetchData): void {
         // TODO: ALLOW NDJSON
         this.legendData = data as Legend;
@@ -248,7 +297,7 @@ export class OverlayLegend extends Loaddable {
     onLoadComplete(): void {
         this.isLoaded = true;
         this.cacheColors();
-        this.applyColors();
+        this.updateMapLayout();
     }
     cacheColors() {
         if (!this.legendData) return;
@@ -284,7 +333,7 @@ export class Overlay extends Loaddable {
             const legendOverlay = new OverlayLegend(
                 layerConfig.id,
                 l,
-                layerType,
+                this,
                 map
             );
             if (l === activeLegend) {
@@ -313,10 +362,20 @@ export class Overlay extends Loaddable {
         let newFeatures: Feature[] = [];
         if (Array.isArray(data)) {
             for (const item of data) {
-                if (item.type === "Feature") {
-                    newFeatures.push(item);
-                } else if (item.type === "FeatureCollection") {
-                    newFeatures.push(...item.features);
+                if (Array.isArray(item)) {
+                    for (const subItem of item) {
+                        if (subItem.type === "Feature") {
+                            newFeatures.push(subItem);
+                        } else if (subItem.type === "FeatureCollection") {
+                            newFeatures.push(...subItem.features);
+                        }
+                    }
+                } else {
+                    if (item.type === "Feature") {
+                        newFeatures.push(item);
+                    } else if (item.type === "FeatureCollection") {
+                        newFeatures.push(...item.features);
+                    }
                 }
             }
         } else {
