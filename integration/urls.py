@@ -188,7 +188,7 @@ class MapForm(Form):
                 OverlayLayer(
                     id="categorical-mapping-api-legend",
                     label="Categorical Mapping API Legend",
-                    url="http://127.0.0.1:8000/data/ndjson-parcels/?count=10000&batch=1000",
+                    url="http://127.0.0.1:8000/data/ndjson-parcels/?count=100&batch=10",
                     layer_type=LayerType.FILL,
                     legends=[
                         Legend(
@@ -196,7 +196,7 @@ class MapForm(Form):
                             label="Default View",
                             type=ColorSchemeType.CATEGORICAL,
                             coloring_property="parcel_id",
-                            category_mapping=None,
+                            category_mapping="http://127.0.0.1:8000/data/random_legend/?count=90",
                             active=True,
                         ),
                     ],

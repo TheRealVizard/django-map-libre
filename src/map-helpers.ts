@@ -89,26 +89,30 @@ export class DataLoader {
 
 class Loaddable {
     loader: DataLoader | null = null;
-    load(): void {
-        if (this.loader) return; // Prevent multiple loads
-        if (this.getUrl() === null) {
-            this.onLoadComplete();
-            return;
-        }
-        this.loader = new DataLoader(
-            this.getUrl(),
-            (data: FetchData) => {
-                this.onLoadData(data);
-            },
-            () => {
+    load(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.loader) resolve(); // Prevent multiple loads
+            if (this.getUrl() === null) {
                 this.onLoadComplete();
-            },
-            (error: string) => {
-                this.onLoadError(error);
-            },
-            import.meta.resolve("map-worker")
-        );
-        this.loader.load();
+                return resolve();
+            }
+            this.loader = new DataLoader(
+                this.getUrl(),
+                (data: FetchData) => {
+                    this.onLoadData(data);
+                },
+                () => {
+                    this.onLoadComplete();
+                    resolve();
+                },
+                (error: string) => {
+                    this.onLoadError(error);
+                    reject();
+                },
+                import.meta.resolve("map-worker")
+            );
+            this.loader.load();
+        });
     }
     onLoadComplete(): void {}
     onLoadError(error: string): void {
@@ -159,18 +163,20 @@ export class OverlayLegend extends Loaddable {
     getUrl(): string {
         return this.legendConfig.categoryMapping as string;
     }
-    updateMapLayout(): void {
-        switch (this.legendConfig.type) {
-            case "fixed":
-                this.applyFixedLegendConfig();
-                break;
+    updateMapLayout(): Promise<void> {
+        return new Promise((resolve, _reject) => {
+            switch (this.legendConfig.type) {
+                case "fixed":
+                    this.applyFixedLegendConfig(resolve);
+                    break;
 
-            case "categorical":
-                this.applyCategoricalConfig();
-                break;
-        }
+                case "categorical":
+                    this.applyCategoricalConfig(resolve);
+                    break;
+            }
+        });
     }
-    applyCategoricalConfig() {
+    applyCategoricalConfig(resolve: (value: void | PromiseLike<void>) => void) {
         switch (this.parentOverlay.layerType) {
             case "fill":
                 if (
@@ -197,10 +203,14 @@ export class OverlayLegend extends Loaddable {
                     //         this.applyColors();
                     //     }
                     // }
+                    resolve();
                 } else if (this.isLoaded) {
                     this.applyColors();
+                    resolve();
                 } else {
-                    this.load();
+                    this.load()
+                        .then(() => resolve())
+                        .catch(() => resolve());
                 }
                 break;
         }
@@ -238,7 +248,7 @@ export class OverlayLegend extends Loaddable {
     //         });
     //     }
     // }
-    applyFixedLegendConfig() {
+    applyFixedLegendConfig(resolve: (value: void | PromiseLike<void>) => void) {
         switch (this.parentOverlay.layerType) {
             case "fill":
                 for (const [prop, value] of Object.entries(
@@ -289,6 +299,7 @@ export class OverlayLegend extends Loaddable {
                 }
                 break;
         }
+        resolve();
     }
     onLoadData(data: FetchData): void {
         // TODO: ALLOW NDJSON
@@ -399,9 +410,10 @@ export class Overlay extends Loaddable {
     onLoadComplete(): void {
         this.isLoaded = true;
     }
-    load(): void {
-        this.activeLegend?.updateMapLayout();
-        super.load();
+    load(): Promise<void> {
+        return (this.activeLegend?.updateMapLayout() as Promise<void>).then(
+            () => super.load()
+        );
     }
 }
 
