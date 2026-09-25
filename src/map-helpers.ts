@@ -12,6 +12,7 @@ import {
     getPaintForFillOverlay,
     getPaintForLineOverlay,
     getRandomColor,
+    loadImageOnMap,
 } from "./map-functions";
 import type {
     CompleteCallback,
@@ -23,6 +24,8 @@ import type {
     Legend,
     LegendConfig,
 } from "./map-types";
+
+const DefaultMapMarkerID = `marker-django-map-libre-default`;
 
 export class DataLoader {
     private url: string;
@@ -146,6 +149,7 @@ export class OverlayLegend extends Loaddable {
     map: MapLibre;
     layerId: string;
     colors: string[] = [];
+    markers: string[] = [];
     parentOverlay: Overlay;
     paintScheduled: boolean = false;
 
@@ -170,6 +174,7 @@ export class OverlayLegend extends Loaddable {
             this.isLoaded = true;
             this.legendData = legendConfig.categoryMapping as Legend;
             this.cacheColors();
+            this.cacheIcons();
         }
     }
     getUrl(): string {
@@ -256,7 +261,7 @@ export class OverlayLegend extends Loaddable {
                     "#c0c0c0",
                 ] as unknown as ExpressionSpecification);
                 break;
-            case "symbol":
+            case "icon":
                 for (const [prop, value] of Object.entries(
                     getLayoutForSymbolOverlay(
                         this.map,
@@ -271,7 +276,12 @@ export class OverlayLegend extends Loaddable {
                         value
                     );
                 }
-                // TODO: INCLUDE ICON LOAD ANS SET.
+                this.map.setLayoutProperty(this.layerId, "icon-image", [
+                    "match",
+                    ["get", this.legendConfig.coloringProperty],
+                    ...this.markers,
+                    DefaultMapMarkerID,
+                ] as unknown as ExpressionSpecification);
                 break;
         }
     }
@@ -341,7 +351,7 @@ export class OverlayLegend extends Loaddable {
                     );
                 }
                 break;
-            case "symbol":
+            case "icon":
                 for (const [prop, value] of Object.entries(
                     getLayoutForSymbolOverlay(
                         this.map,
@@ -367,13 +377,23 @@ export class OverlayLegend extends Loaddable {
     onLoadComplete(): void {
         this.isLoaded = true;
         this.cacheColors();
+        this.cacheIcons();
         this.updateMapLayout();
     }
     cacheColors() {
-        if (!this.legendData) return;
+        if (!this.legendData || this.parentOverlay.layerType === "icon") return;
         for (const [key, value] of Object.entries(this.legendData)) {
             this.colors.push(key);
             this.colors.push(value.color || getRandomColor(key));
+        }
+    }
+    cacheIcons() {
+        if (!this.legendData || this.parentOverlay.layerType !== "icon") return;
+        loadImageOnMap(null, this.map, DefaultMapMarkerID);
+        for (const [key, data] of Object.entries(this.legendData)) {
+            const markerID = `marker-${key}-${this.layerId}`;
+            this.markers.push(key, markerID);
+            loadImageOnMap(data.icon, this.map, markerID);
         }
     }
 }

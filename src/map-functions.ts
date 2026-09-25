@@ -246,22 +246,10 @@ export const getLayoutForSymbolOverlay = async (
     activeLegend: LegendConfig,
     basic = false
 ): Promise<AllLayoutProperties> => {
-    const markerID = `marker-${id}`;
+    const markerID = `marker-${id}-${activeLegend.id}`;
 
     if (!basic && !map.hasImage(markerID)) {
-        const imageURL =
-            activeLegend.image || import.meta.resolve("map-marker");
-
-        let image: HTMLImageElement | ImageBitmap;
-
-        if (imageURL.toLowerCase().endsWith(".svg")) {
-            image = await loadSvgImage(imageURL);
-        } else {
-            const response = await map.loadImage(imageURL);
-            image = response.data;
-        }
-
-        map.addImage(markerID, image);
+        await loadImageOnMap(activeLegend.image, map, markerID);
     }
     return {
         "icon-size": activeLegend.iconSize || 1, //1 activeLegend.icon_size || 1.0,
@@ -274,3 +262,23 @@ export const getLayoutForSymbolOverlay = async (
               }),
     };
 };
+
+export async function loadImageOnMap(
+    url: string | null | undefined,
+    map: MapLibre,
+    markerID: string
+) {
+    if (map.hasImage(markerID)) return;
+
+    const imageURL = url || import.meta.resolve("map-marker");
+
+    let image: HTMLImageElement | ImageBitmap;
+
+    if (imageURL.toLowerCase().endsWith(".svg")) {
+        image = await loadSvgImage(imageURL);
+    } else {
+        const response = await map.loadImage(imageURL);
+        image = response.data;
+    }
+    map.addImage(markerID, image);
+}

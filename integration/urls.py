@@ -17,21 +17,61 @@ Including another URLconf
 
 import json
 import random
+from typing import Final
 
 from django.forms import CharField, Form
-from django.http import JsonResponse, StreamingHttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse, StreamingHttpResponse
 from django.template.response import TemplateResponse
-from django.urls import path
+from django.urls import path, reverse
 
 from django_map_libre.helpers import ColorSchemeType, LayerType
 from django_map_libre.map import Legend, MapWidget, OverlayLayer, TileLayer
 
+ICONS: Final[dict] = {
+    "home": '<path d="M3 11l9-8 9 8v10H3z"/>',
+    "heart": '<path d="M12 21s-8-5-8-11a5 5 0 019-3 5 5 0 019 3c0 6-8 11-8 11z"/>',
+    "star": '<path d="M12 2l3 7 7 .5-5.5 4.5 2 7L12 17l-6.5 4 2-7L2 9.5 9 9z"/>',
+    "check": '<path d="M4 12l6 6L20 6"/>',
+    "search": '<circle cx="10" cy="10" r="7"/><path d="M15 15l6 6"/>',
+    "user": '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+    "bolt": '<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+    "trash": '<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/>',
+}
 
-def get_random_color():
-    r = f"{random.randint(0, 255):0x}"
-    g = f"{random.randint(0, 255):0x}"
-    b = f"{random.randint(0, 255):0x}"
-    return f"#{r.ljust(2,'0')}{g.ljust(2,'0')}{b.ljust(2,'0')}"
+
+def render_icon(name: str) -> str:
+    """Return an inline SVG string for the given icon name."""
+    body = ICONS[name]
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" '
+        f'width="24px" height="24px" fill="{get_random_color()}" stroke="black" stroke-width="3">{body}</svg>'
+    )
+
+
+def icon(request, name):
+    resp = HttpResponse(render_icon(name), content_type="image/svg+xml")
+    resp["Cache-Control"] = "public, max-age=86400"
+    return resp
+
+
+def random_icon_legend(request: HttpRequest):
+    count = int(request.GET.get("count", 300))
+    names = list(ICONS.keys())
+    return JsonResponse(
+        {
+            f"P{i}": {
+                "label": names[i % len(names)].capitalize(),
+                "icon": request.build_absolute_uri(
+                    reverse("icon", args=[names[i % len(names)]])
+                ),
+            }
+            for i in range(count)
+        },
+    )
+
+
+def get_random_color() -> str:
+    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
 
 
 def random_legend(request):
@@ -299,6 +339,73 @@ class MapForm(Form):
                     ],
                     selected=False,
                 ),
+                OverlayLayer(
+                    id="fixed-icons",
+                    label="Fixed Icons",
+                    url="http://127.0.0.1:8000/data/json-parcels/?count=8",
+                    layer_type=LayerType.ICON,
+                    legends=[
+                        Legend(
+                            id="fixed-icons",
+                            label="Icon View",
+                            type=ColorSchemeType.CATEGORICAL,
+                            coloring_property="parcel_id",
+                            category_mapping={
+                                "P0": {
+                                    "label": "Home",
+                                    "icon": "http://127.0.0.1:8000/icons/home.svg",
+                                },
+                                "P1": {
+                                    "label": "Heart",
+                                    "icon": "http://127.0.0.1:8000/icons/heart.svg",
+                                },
+                                "P2": {
+                                    "label": "Star",
+                                    "icon": "http://127.0.0.1:8000/icons/star.svg",
+                                },
+                                "P3": {
+                                    "label": "Check",
+                                    "icon": "http://127.0.0.1:8000/icons/check.svg",
+                                },
+                                "P4": {
+                                    "label": "Search",
+                                    "icon": "http://127.0.0.1:8000/icons/search.svg",
+                                },
+                                "P5": {
+                                    "label": "User",
+                                    "icon": "http://127.0.0.1:8000/icons/user.svg",
+                                },
+                                "P6": {
+                                    "label": "Bolt",
+                                    "icon": "http://127.0.0.1:8000/icons/bolt.svg",
+                                },
+                                "P7": {
+                                    "label": "Trash",
+                                    "icon": "http://127.0.0.1:8000/icons/trash.svg",
+                                },
+                            },
+                            active=True,
+                        ),
+                    ],
+                    selected=True,
+                ),
+                OverlayLayer(
+                    id="categorical-icons-api",
+                    label="Categorical Icons API",
+                    url="http://127.0.0.1:8000/data/json-parcels/?count=30",
+                    layer_type=LayerType.ICON,
+                    legends=[
+                        Legend(
+                            id="categorical-icons-api",
+                            label="Icon View",
+                            type=ColorSchemeType.CATEGORICAL,
+                            coloring_property="parcel_id",
+                            category_mapping="http://127.0.0.1:8000/data/random_icon_legend/?count=30",
+                            active=True,
+                        ),
+                    ],
+                    selected=True,
+                ),
             ],
         )
     )
@@ -313,4 +420,6 @@ urlpatterns = [
     path("data/json-parcels/", json_parcels, name="json_parcels"),
     path("data/ndjson-parcels/", ndjson_parcels, name="ndjson_parcels"),
     path("data/random_legend/", random_legend, name="random_legend"),
+    path("data/random_icon_legend/", random_icon_legend, name="random_icon_legend"),
+    path("icons/<str:name>.svg", icon, name="icon"),
 ]
