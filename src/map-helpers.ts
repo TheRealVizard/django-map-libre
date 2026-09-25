@@ -94,7 +94,7 @@ class Loaddable {
     load(): Promise<void> {
         return new Promise((resolve, reject) => {
             if (this.loader) resolve(); // Prevent multiple loads
-            if (this.getUrl() === null) {
+            if (this.getUrl() === null || this.getUrl() === undefined) {
                 this.onLoadComplete();
                 return resolve();
             }
@@ -126,7 +126,7 @@ class Loaddable {
             });
         }
     }
-    onLoadComplete(): void { }
+    onLoadComplete(): void {}
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
@@ -189,79 +189,99 @@ export class OverlayLegend extends Loaddable {
         });
     }
     applyCategoricalConfig(resolve: (value: void | PromiseLike<void>) => void) {
-        switch (this.parentOverlay.layerType) {
-            case "fill":
-                if (
-                    this.legendConfig.categoryMapping === undefined ||
-                    this.legendConfig.categoryMapping === null
-                ) {
-                    // TODO complete
-                    //  if (this.parentOverlay.isLoaded) {
-                    //     if (this.colors.length != 0) {
-                    //         this.applyColors();
-                    //     } else {
-                    //         const source = this.parentOverlay.map.getSource(
-                    //             `overlay-${this.parentOverlay.layerConfig.id}-source`
-                    //         ) as GeoJSONSource | undefined;
-                    //         source?.getData().then((data) => {
-                    //             const colorKeys = new Set<string>();
-                    //             for (const feature of (data as FeatureCollection).features) {
-                    //                 const colorKey = feature.properties?.[this.legendConfig.coloringProperty as string];
-                    //                 if (colorKey == null || colorKeys.has(colorKey)) continue;
-                    //                 colorKeys.add(colorKey);
-                    //                 this.colors.push(colorKey, getRandomColor(colorKey));
-                    //             }
-                    //         });
-                    //         this.applyColors();
-                    //     }
-                    // }
-                    resolve();
-                } else if (this.isLoaded) {
-                    this.applyColors();
-                    resolve();
-                } else {
-                    this.load()
-                        .then(() => resolve())
-                        .catch(() => resolve());
-                }
-                break;
+        if (
+            this.legendConfig.categoryMapping === undefined ||
+            this.legendConfig.categoryMapping === null
+        ) {
+            resolve();
+        } else if (this.isLoaded) {
+            this.applyColors();
+            resolve();
+        } else {
+            this.load()
+                .then(() => resolve())
+                .catch(() => resolve());
         }
     }
     applyColors() {
-        this.map.setPaintProperty(this.layerId, "fill-color", [
-            "match",
-            ["get", this.legendConfig.coloringProperty],
-            ...this.colors,
-            "#c0c0c0",
-        ] as unknown as ExpressionSpecification);
+        switch (this.parentOverlay.layerType) {
+            case "fill":
+                for (const [prop, value] of Object.entries(
+                    getPaintForFillOverlay(this.legendConfig, true)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
+                }
+                this.map.setPaintProperty(this.layerId, "fill-color", [
+                    "match",
+                    ["get", this.legendConfig.coloringProperty],
+                    ...this.colors,
+                    "#c0c0c0",
+                ] as unknown as ExpressionSpecification);
+                break;
+            case "line":
+                for (const [prop, value] of Object.entries(
+                    getPaintForLineOverlay(this.legendConfig, true)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
+                }
+                this.map.setPaintProperty(this.layerId, "line-color", [
+                    "match",
+                    ["get", this.legendConfig.coloringProperty],
+                    ...this.colors,
+                    "#c0c0c0",
+                ] as unknown as ExpressionSpecification);
+                break;
+            case "circle":
+                for (const [prop, value] of Object.entries(
+                    getPaintForCircleOverlay(this.legendConfig, true)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
+                }
+                this.map.setPaintProperty(this.layerId, "circle-color", [
+                    "match",
+                    ["get", this.legendConfig.coloringProperty],
+                    ...this.colors,
+                    "#c0c0c0",
+                ] as unknown as ExpressionSpecification);
+                break;
+            case "symbol":
+                for (const [prop, value] of Object.entries(
+                    getLayoutForSymbolOverlay(
+                        this.map,
+                        this.layerId,
+                        this.legendConfig,
+                        true
+                    )
+                )) {
+                    this.map.setLayoutProperty(
+                        this.layerId,
+                        prop as keyof AllLayoutProperties,
+                        value
+                    );
+                }
+                // TODO: INCLUDE ICON LOAD ANS SET.
+                break;
+        }
     }
-    // async registerFeatures(features: Feature[]): Promise<void> {
-    //     if (this.legendConfig.type !== "categorical") return;
-    //     if (!this.legendData) this.legendData = {};
-
-    //     let updatePaintRequired = false;
-    //     for (const feature of features) {
-    //         const colorKey = feature.properties?.[this.legendConfig.coloringProperty as string];
-    //         if (colorKey == null || this.legendData[colorKey]) continue;
-
-    //         const color = getRandomColor(colorKey);
-    //         this.legendData[colorKey] = { color } as LegendData;
-    //         this.colors.push(colorKey, color);
-    //         updatePaintRequired = true;
-    //     }
-
-    //     if (updatePaintRequired) {
-    //         if (this.paintScheduled) return;
-    //         this.paintScheduled = true;
-
-    //         requestAnimationFrame(() => {
-    //             this.paintScheduled = false;
-    //             this.applyColors();
-    //         });
-    //     }
-    // }
     doExtraStyling() {
-        if (this.parentOverlay.isLoaded) {
+        if (
+            this.legendConfig.type === "categorical" &&
+            (this.legendConfig.categoryMapping === undefined ||
+                this.legendConfig.categoryMapping === null) &&
+            this.parentOverlay.isLoaded
+        ) {
             if (this.colors.length != 0) {
                 this.applyColors();
             } else {
@@ -270,9 +290,14 @@ export class OverlayLegend extends Loaddable {
                 ) as GeoJSONSource | undefined;
                 source?.getData().then((data) => {
                     const colorKeys = new Set<string>();
-                    for (const feature of (data as FeatureCollection).features) {
-                        const colorKey = feature.properties?.[this.legendConfig.coloringProperty as string];
-                        if (colorKey == null || colorKeys.has(colorKey)) continue;
+                    for (const feature of (data as FeatureCollection)
+                        .features) {
+                        const colorKey =
+                            feature.properties?.[
+                                this.legendConfig.coloringProperty as string
+                            ];
+                        if (colorKey == null || colorKeys.has(colorKey))
+                            continue;
                         colorKeys.add(colorKey);
                         this.colors.push(colorKey, getRandomColor(colorKey));
                     }
@@ -447,8 +472,9 @@ export class Overlay extends Loaddable {
         this.activeLegend?.doExtraStyling();
     }
     load(): Promise<void> {
-        return (this.activeLegend?.updateMapLayout() as Promise<void>)
-            .then(() => super.load());
+        return (this.activeLegend?.updateMapLayout() as Promise<void>).then(
+            () => super.load()
+        );
     }
 }
 

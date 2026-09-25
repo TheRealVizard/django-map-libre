@@ -183,35 +183,51 @@ export const getRandomColor = (index: string): string => {
 };
 
 export const getPaintForFillOverlay = (
-    activeLegend: LegendConfig
+    activeLegend: LegendConfig,
+    basic = false
 ): AllPaintProperties => {
     return {
-        "fill-color": activeLegend.color || "red",
         "fill-opacity": 0.7,
+        "fill-layer-opacity": 1,
         "fill-outline-color": "black",
         "fill-antialias": true,
+        ...(basic
+            ? {}
+            : {
+                  "fill-color": activeLegend.color || "red",
+              }),
     };
 };
 
 export const getPaintForLineOverlay = (
-    activeLegend: LegendConfig
+    activeLegend: LegendConfig,
+    basic = false
 ): AllPaintProperties => {
     return {
-        "line-color": activeLegend.color || "red",
         "line-width": 3,
         "line-opacity": 0.8,
+        ...(basic
+            ? {}
+            : {
+                  "line-color": activeLegend.color || "red",
+              }),
     };
 };
 
 export const getPaintForCircleOverlay = (
-    activeLegend: LegendConfig
+    activeLegend: LegendConfig,
+    basic = false
 ): AllPaintProperties => {
     return {
-        "circle-color": activeLegend.color || "red",
         "circle-radius": activeLegend.circleRadius || 6,
         "circle-opacity": activeLegend.circleOpacity || 0.5,
         "circle-stroke-color": activeLegend.circleStrokeColor || "black",
         "circle-stroke-width": activeLegend.circleStrokeWidth || 2,
+        ...(basic
+            ? {}
+            : {
+                  "circle-color": activeLegend.color || "red",
+              }),
     };
 };
 
@@ -227,11 +243,12 @@ export const getPaintForCircleOverlay = (
 export const getLayoutForSymbolOverlay = async (
     map: MapLibre,
     id: string,
-    activeLegend: LegendConfig
+    activeLegend: LegendConfig,
+    basic = false
 ): Promise<AllLayoutProperties> => {
     const markerID = `marker-${id}`;
 
-    if (!map.hasImage(markerID)) {
+    if (!basic && !map.hasImage(markerID)) {
         const imageURL =
             activeLegend.image || import.meta.resolve("map-marker");
 
@@ -247,9 +264,13 @@ export const getLayoutForSymbolOverlay = async (
         map.addImage(markerID, image);
     }
     return {
-        "icon-image": markerID,
         "icon-size": activeLegend.iconSize || 1, //1 activeLegend.icon_size || 1.0,
         "icon-anchor": activeLegend.iconAnchor || "bottom",
         "icon-overlap": activeLegend.iconOverlap || "always",
+        ...(basic
+            ? {}
+            : {
+                  "icon-image": markerID,
+              }),
     };
 };
