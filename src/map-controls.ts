@@ -4,8 +4,9 @@ import type {
     LayerSpecification,
     Map as MapLibre,
 } from "maplibre-gl";
-import type { OverlayManager } from "./map-helpers";
+import type { Overlay, OverlayManager } from "./map-helpers";
 import type { TrackedLayer } from "./map-types";
+import { toTitleCase } from "./map-functions";
 
 class Control implements IControl {
     map: MapLibre | null = null;
@@ -473,47 +474,52 @@ export class LegendControl extends Control {
 
         if (!overlay.activeLegend) return;
         if (overlay.activeLegend?.legendConfig.type === "fixed") {
-            const row = document.createElement("div");
-            const text = document.createElement("span");
-            row.classList.add("legend-section-row");
-            text.textContent = overlay.activeLegend?.legendConfig.label;
-            if (overlay.layerType === "icon") {
-            } else {
-                const preview = document.createElement("span");
-                preview.classList.add("legend-preview-color");
-                preview.style.background = overlay.activeLegend?.legendConfig
-                    .color as string;
-                row.appendChild(preview);
-                row.appendChild(text);
-                body.appendChild(row);
-            }
+            body.appendChild(
+                this.getLegendRow(
+                    overlay,
+                    overlay.activeLegend?.legendConfig.label ||
+                        toTitleCase(overlay.activeLegend?.legendConfig.id),
+                    overlay.activeLegend?.legendConfig.color as string,
+                    overlay.activeLegend?.legendConfig.image as string
+                )
+            );
         } else if (overlay.activeLegend.legendConfig.type === "categorical") {
             if (!overlay.activeLegend?.legendData) return;
             for (const [key, data] of Object.entries(
                 overlay.activeLegend?.legendData
             )) {
-                const row = document.createElement("div");
-                row.classList.add("legend-section-row");
-                const text = document.createElement("span");
-                text.textContent = data.label || key.toString();
-                if (overlay.layerType === "icon") {
-                    const preview = document.createElement("img");
-                    preview.classList.add("legend-preview-img");
-                    preview.src = data.icon as string;
-                    row.appendChild(preview);
-                } else {
-                    const preview = document.createElement("span");
-                    preview.classList.add("legend-preview-color");
-                    preview.style.background = data.color as string;
-                    row.appendChild(preview);
-                }
-
-                row.appendChild(text);
-                body.appendChild(row);
+                body.appendChild(
+                    this.getLegendRow(
+                        overlay,
+                        data.label || toTitleCase(key),
+                        data.color as string,
+                        data.icon as string
+                    )
+                );
             }
         } else {
         }
     }
+    getLegendRow(overlay: Overlay, title: string, color: string, icon: string) {
+        const row = document.createElement("div");
+        row.classList.add("legend-section-row");
+        const text = document.createElement("span");
+        text.textContent = title;
+        if (overlay.layerType === "icon") {
+            const preview = document.createElement("img");
+            preview.classList.add("legend-preview-img");
+            preview.src = icon;
+            row.appendChild(preview);
+        } else {
+            const preview = document.createElement("span");
+            preview.classList.add(`legend-preview-${overlay.layerType}`);
+            preview.style.background = color;
+            row.appendChild(preview);
+        }
+        row.appendChild(text);
+        return row;
+    }
+
     cleanContainer(layerID: string) {
         const container = this.containers.get(layerID);
         while (container?.firstChild != null) {

@@ -281,3 +281,11 @@ export async function loadImageOnMap(
     }
     map.addImage(markerID, image);
 }
+
+export const toTitleCase = (str: string) =>
+    str
+        .toLowerCase()
+        .replace(
+            /(^|[\s\-/([{"])([a-z])/g,
+            (_, sep, ch) => sep + ch.toUpperCase()
+        );

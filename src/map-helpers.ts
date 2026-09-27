@@ -13,6 +13,7 @@ import {
     getPaintForLineOverlay,
     getRandomColor,
     loadImageOnMap,
+    toTitleCase,
 } from "./map-functions";
 import type {
     CompleteCallback,
@@ -304,6 +305,7 @@ export class OverlayLegend extends Loaddable {
                     `overlay-${this.parentOverlay.layerConfig.id}-source`
                 ) as GeoJSONSource | undefined;
                 source?.getData().then((data) => {
+                    this.legendData = {};
                     const colorKeys = new Set<string>();
                     for (const feature of (data as FeatureCollection)
                         .features) {
@@ -313,8 +315,16 @@ export class OverlayLegend extends Loaddable {
                             ];
                         if (colorKey == null || colorKeys.has(colorKey))
                             continue;
+                        const color = getRandomColor(colorKey);
+                        this.legendData = {
+                            ...this.legendData,
+                            [colorKey]: {
+                                label: toTitleCase(colorKey),
+                                color: color,
+                            },
+                        };
                         colorKeys.add(colorKey);
-                        this.colors.push(colorKey, getRandomColor(colorKey));
+                        this.colors.push(colorKey, color);
                     }
                     this.applyColors();
                 });
@@ -390,7 +400,10 @@ export class OverlayLegend extends Loaddable {
         if (!this.legendData || this.parentOverlay.layerType === "icon") return;
         for (const [key, value] of Object.entries(this.legendData)) {
             this.colors.push(key);
-            this.colors.push(value.color || getRandomColor(key));
+            if (!value.color) {
+                value.color = getRandomColor(key);
+            }
+            this.colors.push(value.color);
         }
     }
     cacheIcons() {

@@ -374,11 +374,30 @@
 }
 
 .legend-preview-img,
-.legend-preview-color {
-    border: solid #1a1a1a 0.05rem;
-    border-radius: 0.3rem;
+.legend-preview-line,
+.legend-preview-fill,
+.legend-preview-circle {
     display: block;
-    height: 0.9rem;
     width: 0.9rem;
+}
+.legend-preview-img,
+.legend-preview-line,
+.legend-preview-fill {
+    border-radius: 0.3rem;
+}
+.legend-preview-line {
+    height: 0.3rem;
+}
+.legend-preview-img,
+.legend-preview-fill,
+.legend-preview-circle {
+    height: 0.9rem;
+}
+.legend-preview-fill,
+.legend-preview-circle {
+    border: solid #1a1a1a 0.05rem;
     box-shadow: 0 0 0 2px #0000001a;
+}
+.legend-preview-circle {
+    border-radius: 1rem;
 }

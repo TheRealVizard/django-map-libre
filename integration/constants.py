@@ -20,10 +20,18 @@ STREET_NAMES: Final[tuple[str, ...]] = (
     "Castro St",
 )
 
-LAND_USES: Final[tuple[str, ...]] = ("residential", "commercial", "mixed-use")
+LAND_USES: Final[tuple[str, ...]] = (
+    "residential",
+    "commercial",
+    "mixed-use",
+    "biohazard",
+    "unknown",
+)
 
 LAND_USE_MAPPING: Final[dict[str, dict]] = {
+    "biohazard": {"label": "Biohazard", "color": "#D94A4A"},
     "residential": {"label": "Residential", "color": "#4A90D9"},
     "commercial": {"label": "Commercial", "color": "#D9A64A"},
     "mixed-use": {"label": "Mixed Use", "color": "#7BD94A"},
+    "unknown": {"label": "Unknown"},
 }

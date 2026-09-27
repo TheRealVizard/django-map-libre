@@ -65,7 +65,7 @@ def fill_layers() -> list[OverlayLayer]:
                     active=True,
                 ),
             ],
-            selected=False,
+            selected=True,
         ),
         OverlayLayer(
             id="parcel-palette-api",
@@ -78,13 +78,11 @@ def fill_layers() -> list[OverlayLayer]:
                     label="Palette from API",
                     type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
-                    category_mapping=(
-                        f"{reverse('random_color_legend')}?count=90"
-                    ),
+                    category_mapping=(f"{reverse('random_color_legend')}?count=90"),
                     active=True,
                 ),
             ],
-            selected=False,
+            selected=True,
         ),
         OverlayLayer(
             id="parcel-palette-streamed",
@@ -101,7 +99,7 @@ def fill_layers() -> list[OverlayLayer]:
                     active=True,
                 ),
             ],
-            selected=True,
+            selected=False,
         ),
     ]
 
@@ -140,7 +138,7 @@ def line_layers() -> list[OverlayLayer]:
                     active=True,
                 ),
             ],
-            selected=True,
+            selected=False,
         ),
         OverlayLayer(
             id="parcel-outlines-streamed",
@@ -179,7 +177,7 @@ def circle_layers() -> list[OverlayLayer]:
                     active=True,
                 ),
             ],
-            selected=True,
+            selected=False,
         ),
         OverlayLayer(
             id="property-centroids-api",
@@ -192,9 +190,7 @@ def circle_layers() -> list[OverlayLayer]:
                     label="Palette from API",
                     type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
-                    category_mapping=(
-                        f"{reverse('random_color_legend')}?count=120"
-                    ),
+                    category_mapping=(f"{reverse('random_color_legend')}?count=120"),
                     active=True,
                 ),
             ],
@@ -218,19 +214,43 @@ def icon_layers() -> list[OverlayLayer]:
                     type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping={
-                        "P0": {"label": "Home", "icon": f"{reverse('icon', args=['home'])}"},
-                        "P1": {"label": "Heart", "icon": f"{reverse('icon', args=['heart'])}"},
-                        "P2": {"label": "Star", "icon": f"{reverse('icon', args=['star'])}"},
-                        "P3": {"label": "Check", "icon": f"{reverse('icon', args=['check'])}"},
-                        "P4": {"label": "Search", "icon": f"{reverse('icon', args=['search'])}"},
-                        "P5": {"label": "User", "icon": f"{reverse('icon', args=['user'])}"},
-                        "P6": {"label": "Bolt", "icon": f"{reverse('icon', args=['bolt'])}"},
-                        "P7": {"label": "Trash", "icon": f"{reverse('icon', args=['trash'])}"},
+                        "P0": {
+                            "label": "Home",
+                            "icon": f"{reverse('icon', args=['home'])}",
+                        },
+                        "P1": {
+                            "label": "Heart",
+                            "icon": f"{reverse('icon', args=['heart'])}",
+                        },
+                        "P2": {
+                            "label": "Star",
+                            "icon": f"{reverse('icon', args=['star'])}",
+                        },
+                        "P3": {
+                            "label": "Check",
+                            "icon": f"{reverse('icon', args=['check'])}",
+                        },
+                        "P4": {
+                            "label": "Search",
+                            "icon": f"{reverse('icon', args=['search'])}",
+                        },
+                        "P5": {
+                            "label": "User",
+                            "icon": f"{reverse('icon', args=['user'])}",
+                        },
+                        "P6": {
+                            "label": "Bolt",
+                            "icon": f"{reverse('icon', args=['bolt'])}",
+                        },
+                        "P7": {
+                            "label": "Trash",
+                            "icon": f"{reverse('icon', args=['trash'])}",
+                        },
                     },
                     active=True,
                 ),
             ],
-            selected=True,
+            selected=False,
         ),
         OverlayLayer(
             id="poi-markers-api",
@@ -243,9 +263,7 @@ def icon_layers() -> list[OverlayLayer]:
                     label="Icons from API",
                     type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
-                    category_mapping=(
-                        f"{reverse('random_icon_legend')}?count=40"
-                    ),
+                    category_mapping=(f"{reverse('random_icon_legend')}?count=40"),
                     active=True,
                 ),
             ],
