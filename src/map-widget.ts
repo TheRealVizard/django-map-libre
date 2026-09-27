@@ -13,7 +13,7 @@ import {
     type SymbolLayerSpecification,
     setWorkerUrl,
 } from "maplibre-gl";
-import { LayerSelector } from "./map-controls";
+import { LayerSelector, LegendControl } from "./map-controls";
 import { Overlay, OverlayManager } from "./map-helpers";
 import type {
     MapWidgetDataset,
@@ -292,6 +292,15 @@ const initMap = (mapContainer: HTMLElement) => {
     const overlayManager = new OverlayManager(map);
     const layerSelector = new LayerSelector(overlayManager);
     map.addControl(layerSelector, mapConfig.layerSelectorPosition);
+
+    const legendControl = new LegendControl(overlayManager);
+    map.addControl(legendControl, "top-left"); // o la posición que prefieras
+    const legendControl2 = new LegendControl(overlayManager);
+    map.addControl(legendControl2, "top-right"); // o la posición que prefieras
+    const legendControl3 = new LegendControl(overlayManager);
+    map.addControl(legendControl3, "bottom-left"); // o la posición que prefieras
+    const legendControl4 = new LegendControl(overlayManager);
+    map.addControl(legendControl4, "bottom-right"); // o la posición que prefieras
 
     registerTileLayers(layerSelector, tileLayers);
 

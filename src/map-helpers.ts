@@ -152,12 +152,15 @@ export class OverlayLegend extends Loaddable {
     markers: string[] = [];
     parentOverlay: Overlay;
     paintScheduled: boolean = false;
+    onLoadCompleteListener: (layerID: string, legendID: string) => void =
+        () => {};
 
     constructor(
         layerId: string,
         legendConfig: LegendConfig,
         overlay: Overlay,
-        map: MapLibre
+        map: MapLibre,
+        onLoadCompleteListener: (layerID: string, legendID: string) => void
     ) {
         super();
         this.layerId = layerId;
@@ -166,6 +169,7 @@ export class OverlayLegend extends Loaddable {
         this.isLoaded = false;
         this.map = map;
         this.parentOverlay = overlay;
+        this.onLoadCompleteListener = onLoadCompleteListener;
         if (
             legendConfig.type === "categorical" &&
             legendConfig.categoryMapping !== undefined &&
@@ -284,6 +288,7 @@ export class OverlayLegend extends Loaddable {
                 ] as unknown as ExpressionSpecification);
                 break;
         }
+        this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
     }
     doExtraStyling() {
         if (
@@ -367,6 +372,7 @@ export class OverlayLegend extends Loaddable {
                 }
                 break;
         }
+        this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
         resolve();
     }
     onLoadData(data: FetchData): Promise<void> {
@@ -406,6 +412,18 @@ export class Overlay extends Loaddable {
     map: MapLibre;
     activeLegend: OverlayLegend | undefined;
     legends: OverlayLegend[];
+    overlayLoadCompleteListener?: (layerID: string) => void;
+    legendLoadCompleteListener?: (layerID: string, legendID: string) => void;
+
+    public setOverlayLoadCompleteListener(fn: (layerID: string) => void) {
+        this.overlayLoadCompleteListener = fn;
+    }
+
+    public setLegendLoadCompleteListener(
+        fn: (layerID: string, legendID: string) => void
+    ) {
+        this.legendLoadCompleteListener = fn;
+    }
 
     constructor(
         layerConfig: LayerConfig,
@@ -424,13 +442,19 @@ export class Overlay extends Loaddable {
                 layerConfig.id,
                 l,
                 this,
-                map
+                map,
+                (layerID, legendID) =>
+                    this.onLegendLoadComplete(layerID, legendID)
             );
             if (l === activeLegend) {
                 this.activeLegend = legendOverlay;
             }
             return legendOverlay;
         });
+    }
+    onLegendLoadComplete(layerID: string, legendID: string) {
+        if (this.legendLoadCompleteListener)
+            this.legendLoadCompleteListener(layerID, legendID);
     }
 
     toggleVisibility() {
@@ -492,19 +516,32 @@ export class Overlay extends Loaddable {
         this.activeLegend?.doExtraStyling();
     }
     load(): Promise<void> {
-        return (this.activeLegend?.updateMapLayout() as Promise<void>).then(
-            () => super.load()
-        );
+        return (this.activeLegend?.updateMapLayout() as Promise<void>)
+            .then(() => super.load())
+            .then(() => {
+                if (this.overlayLoadCompleteListener)
+                    this.overlayLoadCompleteListener(this.layerConfig.id);
+                return Promise.resolve();
+            });
     }
 }
 
 export class OverlayManager {
     overlays = new Map<string, Overlay>();
+    overlayLoadListeners = new Set<(layerID: string) => void>();
+    legendLoadListeners = new Set<
+        (layerID: string, legendID: string) => void
+    >();
+    overlayAddListeners = new Set<(layerID: string) => void>();
 
     map: MapLibre;
 
     constructor(map: MapLibre) {
         this.map = map;
+    }
+
+    getOverlays(): Overlay[] {
+        return Array.from(this.overlays.values());
     }
 
     getOverlay(id: string): Overlay {
@@ -513,6 +550,15 @@ export class OverlayManager {
 
     addOverlay(id: string, overlay: Overlay) {
         this.overlays.set(id, overlay);
+        overlay.setLegendLoadCompleteListener((layerID, legendID) =>
+            this.onLegendLoadComplete(layerID, legendID)
+        );
+        overlay.setOverlayLoadCompleteListener((layerID) =>
+            this.onOverlayLoadComplete(layerID)
+        );
+        for (const fn of this.overlayAddListeners) {
+            fn(id);
+        }
     }
 
     removeOverlay(id: string) {
@@ -531,5 +577,24 @@ export class OverlayManager {
         if (overlay) {
             overlay.toggleVisibility();
         }
+    }
+    onOverlayLoadComplete(layerID: string) {
+        for (const fn of this.overlayLoadListeners) {
+            fn(layerID);
+        }
+    }
+    onLegendLoadComplete(layerID: string, legendID: string) {
+        for (const fn of this.legendLoadListeners) {
+            fn(layerID, legendID);
+        }
+    }
+    addOverlayLoadListener(fn: (layerID: string) => void) {
+        this.overlayLoadListeners.add(fn);
+    }
+    addLegendLoadListener(fn: (layerID: string, legendID: string) => void) {
+        this.legendLoadListeners.add(fn);
+    }
+    addOverlayAddListener(fn: (layerID: string) => void) {
+        this.overlayAddListeners.add(fn);
     }
 }

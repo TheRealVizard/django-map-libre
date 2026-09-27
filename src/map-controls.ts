@@ -157,7 +157,7 @@ export class LayerSelector extends Control {
         );
 
         const btnIcon = document.createElement("button");
-        btnIcon.classList.add("maplibregl-ctrl-icon", "map-layer-selector");
+        btnIcon.classList.add("map-layer-selector", "map-control-btn");
         this.btnIcon = btnIcon;
 
         const panel = document.createElement("div");
@@ -413,5 +413,195 @@ export class LayerSelector extends Control {
     onRemove(): void {
         super.onRemove();
         clearTimeout(this.timeout);
+    }
+}
+export class LegendControl extends Control {
+    loadingOverlay: HTMLDivElement | undefined;
+    containers = new Map<string, HTMLElement>();
+
+    constructor(overlayManager: OverlayManager) {
+        super(overlayManager);
+        overlayManager.addOverlayAddListener((layerID) =>
+            this.onOverlayAdd(layerID)
+        );
+        overlayManager.addLegendLoadListener((layerID, legendID) =>
+            this.onLegendLoad(layerID, legendID)
+        );
+    }
+    onLegendLoad(layerID: string, _legendID: string): void {
+        if (!this.containers.has(layerID)) return;
+        if (this.loadingOverlay) {
+            this.loadingOverlay?.remove();
+            this.loadingOverlay = undefined;
+        }
+        this.cleanContainer(layerID);
+        this.buildLegendSection(layerID);
+    }
+    buildLegendSection(layerID: string) {
+        const overlay = this.overlayManager.getOverlay(layerID);
+
+        const section = document.createElement("div");
+        section.classList.add("legend-section");
+
+        const header = document.createElement("div");
+        header.classList.add("legend-section-header");
+
+        const toggle = document.createElement("span");
+        toggle.classList.add("legend-chevron");
+
+        const title = document.createElement("span");
+        title.classList.add("legend-section-title");
+        title.textContent = overlay.layerConfig.label;
+
+        header.appendChild(toggle);
+        header.appendChild(title);
+        section.appendChild(header);
+
+        header.addEventListener("click", () => {
+            section.classList.toggle("collapsed");
+            toggle.classList.toggle("legend-chevron-toggle");
+        });
+
+        const body = document.createElement("div");
+        body.classList.add("legend-section-body");
+
+        section.appendChild(body);
+
+        const container = this.containers.get(layerID);
+        container?.classList.add("with-content");
+        container?.appendChild(section);
+
+        if (!overlay.activeLegend) return;
+        if (overlay.activeLegend?.legendConfig.type === "fixed") {
+            const row = document.createElement("div");
+            const text = document.createElement("span");
+            row.classList.add("legend-section-row");
+            text.textContent = overlay.activeLegend?.legendConfig.label;
+            if (overlay.layerType === "icon") {
+            } else {
+                const preview = document.createElement("span");
+                preview.classList.add("legend-preview-color");
+                preview.style.background = overlay.activeLegend?.legendConfig
+                    .color as string;
+                row.appendChild(preview);
+                row.appendChild(text);
+                body.appendChild(row);
+            }
+        } else if (overlay.activeLegend.legendConfig.type === "categorical") {
+            if (!overlay.activeLegend?.legendData) return;
+            for (const [key, data] of Object.entries(
+                overlay.activeLegend?.legendData
+            )) {
+                const row = document.createElement("div");
+                row.classList.add("legend-section-row");
+                const text = document.createElement("span");
+                text.textContent = data.label || key.toString();
+                if (overlay.layerType === "icon") {
+                    const preview = document.createElement("img");
+                    preview.classList.add("legend-preview-img");
+                    preview.src = data.icon as string;
+                    row.appendChild(preview);
+                } else {
+                    const preview = document.createElement("span");
+                    preview.classList.add("legend-preview-color");
+                    preview.style.background = data.color as string;
+                    row.appendChild(preview);
+                }
+
+                row.appendChild(text);
+                body.appendChild(row);
+            }
+        } else {
+        }
+    }
+    cleanContainer(layerID: string) {
+        const container = this.containers.get(layerID);
+        while (container?.firstChild != null) {
+            container.removeChild(container.firstChild);
+        }
+    }
+
+    onOverlayAdd(layerID: string) {
+        if (this.containers.has(layerID)) return;
+        const container = document.createElement("div");
+        container.classList.add("legend-list-container");
+        this.containers.set(layerID, container);
+        if (!this.panel?.contains(container)) {
+            this.panel?.appendChild(container);
+        }
+    }
+
+    onAdd(map: MapLibre): HTMLElement {
+        this.map = map;
+
+        this.container = document.createElement("div");
+        this.container.classList.add(
+            "maplibregl-ctrl",
+            "maplibregl-ctrl-group",
+            "django-map-libre-control",
+            "map-legend-container"
+        );
+
+        const mainPanel = document.createElement("div");
+        mainPanel.classList.add("map-legend-panel");
+
+        const btnIcon = document.createElement("button");
+        btnIcon.classList.add("map-legend-button", "map-control-btn");
+        this.btnIcon = btnIcon;
+
+        mainPanel.append(btnIcon);
+
+        btnIcon.addEventListener("click", () => {
+            this.panelVisible = !this.panelVisible;
+            if (this.panelVisible) {
+                mainPanel.classList.add("expanded");
+            } else {
+                mainPanel.classList.remove("expanded");
+            }
+        });
+
+        const contentPanel = document.createElement("div");
+        contentPanel.classList.add("map-legend-expanded-container");
+
+        const header = document.createElement("div");
+        header.classList.add("map-legend-header");
+        header.addEventListener("click", () => {
+            this.panelVisible = !this.panelVisible;
+            if (this.panelVisible) {
+                mainPanel.classList.add("expanded");
+            } else {
+                mainPanel.classList.remove("expanded");
+            }
+        });
+
+        const hideBtn = document.createElement("button");
+        hideBtn.classList.add("map-hide-panel-btn");
+
+        const textHeader = document.createElement("span");
+        textHeader.textContent = "Legend"; // TODO: LANGUAGE
+        header.appendChild(textHeader);
+        header.append(hideBtn);
+
+        contentPanel.appendChild(header);
+
+        mainPanel.appendChild(contentPanel);
+
+        const loadingOverlay = document.createElement("div");
+        loadingOverlay.className = "map-loading-overlay";
+
+        const spinner = document.createElement("div");
+        spinner.className = "map-loading-spinner";
+        loadingOverlay.appendChild(spinner);
+        this.loadingOverlay = loadingOverlay;
+        contentPanel.appendChild(loadingOverlay);
+
+        this.container.appendChild(mainPanel);
+
+        const legendWrapper = document.createElement("div");
+        legendWrapper.classList.add("map-legend-wrapper");
+        contentPanel.appendChild(legendWrapper);
+        this.panel = legendWrapper;
+
+        return this.container;
     }
 }

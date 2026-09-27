@@ -207,7 +207,7 @@ class MapForm(Form):
                             active=True,
                         ),
                     ],
-                    selected=False,
+                    selected=True,
                 ),
                 OverlayLayer(
                     id="categorical-mapping-clean",
@@ -238,7 +238,7 @@ class MapForm(Form):
                             active=True,
                         ),
                     ],
-                    selected=False,
+                    selected=True,
                 ),
                 OverlayLayer(
                     id="categorical-mapping-api-legend",
@@ -303,7 +303,7 @@ class MapForm(Form):
                             active=True,
                         ),
                     ],
-                    selected=False,
+                    selected=True,
                 ),
                 OverlayLayer(
                     id="line-categorical-api",
@@ -387,7 +387,7 @@ class MapForm(Form):
                             active=True,
                         ),
                     ],
-                    selected=True,
+                    selected=False,
                 ),
                 OverlayLayer(
                     id="categorical-icons-api",
@@ -404,7 +404,7 @@ class MapForm(Form):
                             active=True,
                         ),
                     ],
-                    selected=True,
+                    selected=False,
                 ),
             ],
         )
