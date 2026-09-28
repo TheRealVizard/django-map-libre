@@ -197,6 +197,7 @@ export class LayerSelector extends Control {
         });
 
         map.on("styledata", () => {
+            this._populateLayerList();
             if (this.panelVisible) {
                 requestAnimationFrame(() => {
                     this._adjustVerticalPosition();
@@ -211,7 +212,6 @@ export class LayerSelector extends Control {
         return this.container;
     }
     _openPanel(): void {
-        this._populateLayerList();
         super._openPanel();
     }
     _addLayer(layerId: string, label: string, visible: boolean) {
@@ -222,7 +222,6 @@ export class LayerSelector extends Control {
             visible: visible,
         });
         if (this.panelVisible) {
-            this._populateLayerList();
             requestAnimationFrame(() => {
                 this._adjustVerticalPosition();
                 this._adjustHorizontalPosition();
@@ -260,7 +259,6 @@ export class LayerSelector extends Control {
         }
 
         if (this.panelVisible) {
-            this._populateLayerList();
             requestAnimationFrame(() => {
                 this._adjustVerticalPosition();
                 this._adjustHorizontalPosition();
@@ -271,7 +269,6 @@ export class LayerSelector extends Control {
     clearLayers() {
         this.titleLayers.clear();
         if (this.panelVisible) {
-            this._populateLayerList();
             requestAnimationFrame(() => {
                 this._adjustVerticalPosition();
                 this._adjustHorizontalPosition();
@@ -283,7 +280,8 @@ export class LayerSelector extends Control {
         const panel = this.panel;
 
         if (!panel) return;
-        panel.innerHTML = "";
+
+        while (panel.firstChild) panel.removeChild(panel.firstChild);
 
         if (!this.map) return;
 
@@ -355,6 +353,7 @@ export class LayerSelector extends Control {
         const input = document.createElement("input");
         input.type = isTile ? "radio" : "checkbox";
         input.name = isTile ? "tile-layer" : "";
+        input.setAttribute("data-layer-id", layer.id);
         input.classList.add("layer-input-control");
 
         const visibility = this.map?.getLayoutProperty(layer.id, "visibility");
@@ -394,16 +393,14 @@ export class LayerSelector extends Control {
             }
 
             if (isTile && input.checked) {
-                const allLayers = this.map?.getStyle().layers || [];
-                allLayers.forEach((l) => {
-                    if (!this.titleLayers.has(l.id) || l.id !== layer.id)
-                        return;
-                    this.map?.setLayoutProperty(l.id, "visibility", "none");
+                for (const layerID of this.titleLayers.keys()) {
+                    if (layerID == layer.id) continue;
                     const otherInput = this.panel?.querySelector(
-                        `input[data-layer-id="${l.id}"]`
+                        `input[data-layer-id="${layerID}"]`
                     ) as HTMLInputElement;
                     if (otherInput) otherInput.checked = false;
-                });
+                    this.map?.setLayoutProperty(layerID, "visibility", "none");
+                }
             }
         });
 

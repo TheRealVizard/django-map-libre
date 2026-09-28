@@ -294,13 +294,13 @@ const initMap = (mapContainer: HTMLElement) => {
     map.addControl(layerSelector, mapConfig.layerSelectorPosition);
 
     const legendControl = new LegendControl(overlayManager);
-    map.addControl(legendControl, "top-left"); // o la posición que prefieras
+    map.addControl(legendControl, "top-left");
     const legendControl2 = new LegendControl(overlayManager);
-    map.addControl(legendControl2, "top-right"); // o la posición que prefieras
+    map.addControl(legendControl2, "top-right");
     const legendControl3 = new LegendControl(overlayManager);
-    map.addControl(legendControl3, "bottom-left"); // o la posición que prefieras
+    map.addControl(legendControl3, "bottom-left");
     const legendControl4 = new LegendControl(overlayManager);
-    map.addControl(legendControl4, "bottom-right"); // o la posición que prefieras
+    map.addControl(legendControl4, "bottom-right");
 
     registerTileLayers(layerSelector, tileLayers);
 
