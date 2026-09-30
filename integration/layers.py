@@ -2,8 +2,13 @@
 
 from django.urls import reverse
 
-from django_map_libre.helpers import ColorSchemeType, LayerType
-from django_map_libre.map import Legend, OverlayLayer, TileLayer
+from django_map_libre.helpers import LayerType
+from django_map_libre.map import (
+    CategoricalLegend,
+    FixedLegend,
+    OverlayLayer,
+    TileLayer,
+)
 
 from integration.constants import LAND_USE_MAPPING
 
@@ -40,13 +45,12 @@ def fill_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}",
             layer_type=LayerType.FILL,
             legends=[
-                Legend(
+                FixedLegend(
                     id="parcel-footprint-default",
                     label="Default View",
-                    type=ColorSchemeType.FIXED,
                     color="#4A90D9",
                     active=True,
-                ),
+                )
             ],
             selected=False,
         ),
@@ -56,10 +60,9 @@ def fill_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=300",
             layer_type=LayerType.FILL,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="land-use-classification",
                     label="Land Use",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="land_use",
                     category_mapping=LAND_USE_MAPPING,
                     active=True,
@@ -73,10 +76,9 @@ def fill_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=90",
             layer_type=LayerType.FILL,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="parcel-palette-api",
                     label="Palette from API",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping=(f"{reverse('random_color_legend')}?count=90"),
                     active=True,
@@ -90,10 +92,9 @@ def fill_layers() -> list[OverlayLayer]:
             url=f"{reverse('ndjson_parcels')}?count=4000&batch=400",
             layer_type=LayerType.FILL,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="parcel-palette-generated",
                     label="Auto-generated Palette",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping=None,
                     active=True,
@@ -113,10 +114,9 @@ def line_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=300",
             layer_type=LayerType.LINE,
             legends=[
-                Legend(
+                FixedLegend(
                     id="parcel-outlines-default",
                     label="Default View",
-                    type=ColorSchemeType.FIXED,
                     color="#1F2937",
                     active=True,
                 ),
@@ -129,10 +129,9 @@ def line_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=60",
             layer_type=LayerType.LINE,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="parcel-zoning-lines",
                     label="Land Use (Lines)",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="land_use",
                     category_mapping=LAND_USE_MAPPING,
                     active=True,
@@ -146,10 +145,9 @@ def line_layers() -> list[OverlayLayer]:
             url=f"{reverse('ndjson_parcels')}?count=2000&batch=200",
             layer_type=LayerType.LINE,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="parcel-outlines-streamed",
                     label="Auto-generated Palette",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping=None,
                     active=True,
@@ -169,10 +167,9 @@ def circle_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=200",
             layer_type=LayerType.CIRCLE,
             legends=[
-                Legend(
+                FixedLegend(
                     id="parcel-centroids-default",
                     label="Default View",
-                    type=ColorSchemeType.FIXED,
                     color="#3388FF",
                     active=True,
                 ),
@@ -185,10 +182,9 @@ def circle_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=120",
             layer_type=LayerType.CIRCLE,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="property-centroids-api",
                     label="Palette from API",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping=(f"{reverse('random_color_legend')}?count=120"),
                     active=True,
@@ -208,10 +204,9 @@ def icon_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=8",
             layer_type=LayerType.ICON,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="amenity-markers",
                     label="Amenities",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping={
                         "P0": {
@@ -258,10 +253,9 @@ def icon_layers() -> list[OverlayLayer]:
             url=f"{reverse('json_parcels')}?count=40",
             layer_type=LayerType.ICON,
             legends=[
-                Legend(
+                CategoricalLegend(
                     id="poi-markers-api",
                     label="Icons from API",
-                    type=ColorSchemeType.CATEGORICAL,
                     coloring_property="parcel_id",
                     category_mapping=(f"{reverse('random_icon_legend')}?count=40"),
                     active=True,
