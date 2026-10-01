@@ -135,14 +135,6 @@ const addOverlayLayer = async (
         return;
     }
 
-    // Only 'fixed' is implemented for now
-    if (activeLegend.type !== "fixed" && activeLegend.type !== "categorical") {
-        console.warn(
-            `Legend type '${activeLegend.type}' not yet implemented for overlay ${id}.`
-        );
-        return;
-    }
-
     const sourceId = `overlay-${id}-source`;
 
     const mapType = layerType === "icon" ? "symbol" : layerType;

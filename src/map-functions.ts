@@ -50,7 +50,6 @@ const COLOR_PALETTE = [
     "#006400",
     "#BDB76B",
     "#8B008B",
-    "#F8F8FF",
     "#556B2F",
     "#FF8C00",
     "#9932CC",
@@ -60,7 +59,6 @@ const COLOR_PALETTE = [
     "#483D8B",
     "#2F4F4F",
     "#00CED1",
-    "#FFFAF0",
     "#9400D3",
     "#FF1493",
     "#00BFFF",
@@ -73,29 +71,22 @@ const COLOR_PALETTE = [
     "#DAA520",
     "#808080",
     "#ADFF2F",
-    "#F0FFF0",
     "#FF69B4",
     "#CD5C5C",
-    "#DCDCDC",
     "#4B0082",
     "#F0E68C",
-    "#E6E6FA",
-    "#FFF0F5",
     "#7CFC00",
     "#F08080",
     "#E0FFFF",
     "#FAFAD2",
-    "#D3D3D3",
     "#90EE90",
     "#FFB6C1",
-    "#FDF5E6",
     "#FFA07A",
     "#20B2AA",
     "#87CEFA",
     "#778899",
     "#B0C4DE",
     "#FFFFE0",
-    "#00FF00",
     "#32CD32",
     "#FF00FF",
     "#800000",
@@ -108,13 +99,9 @@ const COLOR_PALETTE = [
     "#00FA9A",
     "#48D1CC",
     "#C71585",
-    "#FFE4E1",
-    "#FFDEAD",
     "#000080",
-    "#808000",
     "#6B8E23",
     "#FF4500",
-    "#FAF0E6",
     "#DA70D6",
     "#EEE8AA",
     "#98FB98",
@@ -135,7 +122,6 @@ const COLOR_PALETTE = [
     "#A0522D",
     "#87CEEB",
     "#6A5ACD",
-    "#708090",
     "#00FF7F",
     "#4682B4",
     "#D2B48C",
@@ -150,8 +136,7 @@ const COLOR_PALETTE = [
 
 const loadSvgImage = async (url: string): Promise<HTMLImageElement> => {
     const response = await fetch(url);
-    if (!response.ok)
-        throw new Error(`HTTP ${response.status} al cargar ${url}`);
+    if (!response.ok) throw new Error(`HTTP ${response.status} loading ${url}`);
 
     const svgText = await response.text();
     const blob = new Blob([svgText], { type: "image/svg+xml" });
@@ -161,7 +146,7 @@ const loadSvgImage = async (url: string): Promise<HTMLImageElement> => {
         return await new Promise<HTMLImageElement>((resolve, reject) => {
             const img = new Image();
             img.onload = () => resolve(img);
-            img.onerror = () => reject(new Error(`SVG inválido: ${url}`));
+            img.onerror = () => reject(new Error(`Invalid SVG: ${url}`));
             img.src = blobUrl;
         });
     } finally {
@@ -289,3 +274,43 @@ export const toTitleCase = (str: string) =>
             /(^|[\s\-/([{"])([a-z])/g,
             (_, sep, ch) => sep + ch.toUpperCase()
         );
+
+export const hexToRgb = (hex: string): [number, number, number] => {
+    const cleaned = hex.replace("#", "");
+    return [
+        parseInt(cleaned.substring(0, 2), 16),
+        parseInt(cleaned.substring(2, 4), 16),
+        parseInt(cleaned.substring(4, 6), 16),
+    ];
+};
+
+export const rgbToHex = (r: number, g: number, b: number): string => {
+    const toHex = (n: number): string =>
+        Math.max(0, Math.min(255, Math.round(n)))
+            .toString(16)
+            .padStart(2, "0");
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+
+export const interpolateHex = (a: string, b: string, t: number): string => {
+    const [r1, g1, b1] = hexToRgb(a);
+    const [r2, g2, b2] = hexToRgb(b);
+    return rgbToHex(r1 + (r2 - r1) * t, g1 + (g2 - g1) * t, b1 + (b2 - b1) * t);
+};
+
+export const splitColorRamp = (ramp: string[], steps: number): string[] => {
+    const result: string[] = [];
+    for (let i = 0; i < steps; i++) {
+        const position = (i / (steps - 1)) * (ramp.length - 1);
+        const lower = Math.floor(position);
+        const upper = Math.min(lower + 1, ramp.length - 1);
+        result.push(
+            interpolateHex(
+                ramp[lower] as string,
+                ramp[upper] as string,
+                position - lower
+            )
+        );
+    }
+    return result;
+};

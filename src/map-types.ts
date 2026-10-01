@@ -33,6 +33,7 @@ export interface LegendConfig {
 
     categoryMapping?: Legend | string | null;
 
+    numSteps?: number | null;
     minValue?: number | null;
     maxValue?: number | null;
     colorRamp?: string[] | null;

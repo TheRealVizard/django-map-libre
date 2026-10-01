@@ -6,7 +6,7 @@ import type {
 } from "maplibre-gl";
 import type { Overlay, OverlayManager } from "./map-helpers";
 import type { TrackedLayer } from "./map-types";
-import { toTitleCase } from "./map-functions";
+import { splitColorRamp, toTitleCase } from "./map-functions";
 
 class Control implements IControl {
     map: MapLibre | null = null;
@@ -470,17 +470,19 @@ export class LegendControl extends Control {
         container?.appendChild(section);
 
         if (!overlay.activeLegend) return;
-        if (overlay.activeLegend?.legendConfig.type === "fixed") {
+
+        const config = overlay.activeLegend.legendConfig;
+
+        if (config.type === "fixed") {
             body.appendChild(
                 this.getLegendRow(
                     overlay,
-                    overlay.activeLegend?.legendConfig.label ||
-                        toTitleCase(overlay.activeLegend?.legendConfig.id),
-                    overlay.activeLegend?.legendConfig.color as string,
-                    overlay.activeLegend?.legendConfig.image as string
+                    config.label || toTitleCase(config.id),
+                    config.color as string,
+                    config.image as string
                 )
             );
-        } else if (overlay.activeLegend.legendConfig.type === "categorical") {
+        } else if (config.type === "categorical") {
             if (!overlay.activeLegend?.legendData) return;
             for (const [key, data] of Object.entries(
                 overlay.activeLegend?.legendData
@@ -495,6 +497,28 @@ export class LegendControl extends Control {
                 );
             }
         } else {
+            if (config.minValue && !overlay.activeLegend.minValue) return;
+
+            const min = (config.minValue ||
+                overlay.activeLegend.minValue) as number;
+            const max = (config.maxValue ||
+                overlay.activeLegend.maxValue) as number;
+
+            const steps = config.numSteps as number;
+            const colors = splitColorRamp(config.colorRamp as string[], steps);
+            const stepSize = (max - min) / steps;
+            for (let i = 0; i < steps; i++) {
+                const low = min + i * stepSize;
+                const high = min + (i + 1) * stepSize;
+                body.appendChild(
+                    this.getLegendRow(
+                        overlay,
+                        `${low.toFixed(0)} - ${high.toFixed(0)}`,
+                        colors[i] as string,
+                        ""
+                    )
+                );
+            }
         }
     }
     getLegendRow(overlay: Overlay, title: string, color: string, icon: string) {

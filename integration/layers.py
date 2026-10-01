@@ -7,6 +7,7 @@ from django_map_libre.map import (
     CategoricalLegend,
     FixedLegend,
     OverlayLayer,
+    RangeLegend,
     TileLayer,
 )
 
@@ -102,6 +103,42 @@ def fill_layers() -> list[OverlayLayer]:
             ],
             selected=False,
         ),
+        OverlayLayer(
+            id="parcel-area-fill",
+            label="Parcel Area (Range)",
+            url=f"{reverse('json_parcels')}?count=300",
+            layer_type=LayerType.FILL,
+            legends=[
+                RangeLegend(
+                    id="parcel-area-fill",
+                    label="Area",
+                    coloring_property="area_sqft",
+                    num_steps=5,
+                    min_value=2000,
+                    max_value=8000,
+                    color_ramp=["#0000FF", "#00FF00", "#FF0000"],
+                    active=True,
+                ),
+            ],
+            selected=False,
+        ),
+        OverlayLayer(
+            id="parcel-score-fill",
+            label="Parcel Score (Range)",
+            url=f"{reverse('json_parcels')}?count=300",
+            layer_type=LayerType.FILL,
+            legends=[
+                RangeLegend(
+                    id="parcel-score-fill",
+                    label="Score",
+                    coloring_property="score",
+                    num_steps=10,
+                    color_ramp=["#FF0000", "#E1FF00", "#00FF1A"],
+                    active=True,
+                ),
+            ],
+            selected=True,
+        ),
     ]
 
 
@@ -155,6 +192,25 @@ def line_layers() -> list[OverlayLayer]:
             ],
             selected=False,
         ),
+        OverlayLayer(
+            id="parcel-area-lines",
+            label="Parcel Area (Range)",
+            url=f"{reverse('json_parcels')}?count=300",
+            layer_type=LayerType.LINE,
+            legends=[
+                RangeLegend(
+                    id="parcel-area-lines",
+                    label="Area",
+                    coloring_property="area_sqft",
+                    num_steps=6,
+                    min_value=2000,
+                    max_value=8000,
+                    color_ramp=["#00FF00", "#FFFF00", "#FF0000"],
+                    active=True,
+                ),
+            ],
+            selected=False,
+        ),
     ]
 
 
@@ -187,6 +243,25 @@ def circle_layers() -> list[OverlayLayer]:
                     label="Palette from API",
                     coloring_property="parcel_id",
                     category_mapping=(f"{reverse('random_color_legend')}?count=120"),
+                    active=True,
+                ),
+            ],
+            selected=False,
+        ),
+        OverlayLayer(
+            id="parcel-area-circles",
+            label="Parcel Area (Range)",
+            url=f"{reverse('json_parcels')}?count=200",
+            layer_type=LayerType.CIRCLE,
+            legends=[
+                RangeLegend(
+                    id="parcel-area-circles",
+                    label="Area",
+                    coloring_property="area_sqft",
+                    num_steps=4,
+                    min_value=2000,
+                    max_value=8000,
+                    color_ramp=["#00FFFF", "#0000FF"],
                     active=True,
                 ),
             ],

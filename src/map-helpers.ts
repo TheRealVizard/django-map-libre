@@ -13,6 +13,7 @@ import {
     getPaintForLineOverlay,
     getRandomColor,
     loadImageOnMap,
+    splitColorRamp,
     toTitleCase,
 } from "./map-functions";
 import type {
@@ -27,6 +28,7 @@ import type {
 } from "./map-types";
 
 const DefaultMapMarkerID = `marker-django-map-libre-default`;
+const FallBackColor = "#c0c0c0";
 
 export class DataLoader {
     private url: string;
@@ -151,6 +153,8 @@ export class OverlayLegend extends Loaddable {
     layerId: string;
     colors: string[] = [];
     markers: string[] = [];
+    minValue?: number;
+    maxValue?: number;
     parentOverlay: Overlay;
     paintScheduled: boolean = false;
     onLoadCompleteListener: (layerID: string, legendID: string) => void =
@@ -195,9 +199,26 @@ export class OverlayLegend extends Loaddable {
                 case "categorical":
                     this.applyCategoricalConfig(resolve);
                     break;
+                case "range":
+                    this.applyRangeConfig(resolve);
+                    break;
             }
         });
     }
+    applyRangeConfig = (resolve: (value: void | PromiseLike<void>) => void) => {
+        if (
+            this.legendConfig.minValue == null ||
+            this.legendConfig.maxValue == null
+        ) {
+            resolve();
+            return;
+        }
+        this.minValue = this.legendConfig.minValue as number;
+        this.maxValue = this.legendConfig.maxValue as number;
+        this.applyRangeColors();
+        resolve();
+    };
+
     applyCategoricalConfig(resolve: (value: void | PromiseLike<void>) => void) {
         if (
             this.legendConfig.categoryMapping === undefined ||
@@ -213,6 +234,79 @@ export class OverlayLegend extends Loaddable {
                 .catch(() => resolve());
         }
     }
+    applyRangeColors = () => {
+        if (!this.minValue || !this.maxValue) return;
+        const steps = this.legendConfig.numSteps as number;
+        const colors = splitColorRamp(
+            this.legendConfig.colorRamp as string[],
+            steps
+        );
+
+        const stepSize = (this.maxValue - this.minValue) / steps;
+
+        const stepsData: unknown[] = [colors[0] as string];
+        for (let i = 1; i < steps; i++) {
+            stepsData.push(this.minValue + i * stepSize, colors[i]);
+        }
+
+        const styleExpression = [
+            "step",
+            ["get", this.legendConfig.coloringProperty],
+            ...stepsData,
+        ] as unknown as ExpressionSpecification;
+
+        switch (this.parentOverlay.layerType) {
+            case "fill":
+                for (const [prop, value] of Object.entries(
+                    getPaintForFillOverlay(this.legendConfig, true)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
+                }
+                this.map.setPaintProperty(
+                    this.layerId,
+                    "fill-color",
+                    styleExpression
+                );
+                break;
+            case "line":
+                for (const [prop, value] of Object.entries(
+                    getPaintForLineOverlay(this.legendConfig, true)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
+                }
+                this.map.setPaintProperty(
+                    this.layerId,
+                    "line-color",
+                    styleExpression
+                );
+                break;
+            case "circle":
+                for (const [prop, value] of Object.entries(
+                    getPaintForCircleOverlay(this.legendConfig, true)
+                )) {
+                    this.map.setPaintProperty(
+                        this.layerId,
+                        prop as keyof AllPaintProperties,
+                        value
+                    );
+                }
+                this.map.setPaintProperty(
+                    this.layerId,
+                    "circle-color",
+                    styleExpression
+                );
+                break;
+        }
+        this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+    };
     applyColors() {
         switch (this.parentOverlay.layerType) {
             case "fill":
@@ -229,7 +323,7 @@ export class OverlayLegend extends Loaddable {
                     "match",
                     ["get", this.legendConfig.coloringProperty],
                     ...this.colors,
-                    "#c0c0c0",
+                    FallBackColor,
                 ] as unknown as ExpressionSpecification);
                 break;
             case "line":
@@ -246,7 +340,7 @@ export class OverlayLegend extends Loaddable {
                     "match",
                     ["get", this.legendConfig.coloringProperty],
                     ...this.colors,
-                    "#c0c0c0",
+                    FallBackColor,
                 ] as unknown as ExpressionSpecification);
                 break;
             case "circle":
@@ -263,7 +357,7 @@ export class OverlayLegend extends Loaddable {
                     "match",
                     ["get", this.legendConfig.coloringProperty],
                     ...this.colors,
-                    "#c0c0c0",
+                    FallBackColor,
                 ] as unknown as ExpressionSpecification);
                 break;
             case "icon":
@@ -327,6 +421,38 @@ export class OverlayLegend extends Loaddable {
                         this.colors.push(colorKey, color);
                     }
                     this.applyColors();
+                });
+            }
+        } else if (
+            this.legendConfig.type === "range" &&
+            (this.legendConfig.minValue === null ||
+                this.legendConfig.minValue === undefined) &&
+            this.parentOverlay.isLoaded
+        ) {
+            if (this.minValue !== undefined && this.minValue !== null) {
+                this.applyRangeColors();
+            } else {
+                const source = this.parentOverlay.map.getSource(
+                    `overlay-${this.parentOverlay.layerConfig.id}-source`
+                ) as GeoJSONSource | undefined;
+                source?.getData().then((data) => {
+                    let minValue = Number.POSITIVE_INFINITY;
+                    let maxValue = Number.NEGATIVE_INFINITY;
+                    for (const feature of (data as FeatureCollection)
+                        .features) {
+                        let value =
+                            feature.properties?.[
+                                this.legendConfig.coloringProperty as string
+                            ];
+                        if (value) {
+                            value = Number.parseFloat(value);
+                            minValue = Math.min(minValue, value);
+                            maxValue = Math.max(maxValue, value);
+                        }
+                    }
+                    this.minValue = minValue;
+                    this.maxValue = maxValue;
+                    this.applyRangeColors();
                 });
             }
         }

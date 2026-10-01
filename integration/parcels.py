@@ -35,6 +35,7 @@ def build_parcel_feature(index: int, batch: int | None = None) -> dict:
         "properties": {
             "parcel_id": f"P{index}",
             "area_sqft": round(random.uniform(2000, 8000), 1),
+            "score": round(random.uniform(1, 100), 1),
             "address": f"{random.randint(1, 999)} {random.choice(STREET_NAMES)}",
             "land_use": random.choice(LAND_USES),
         },
