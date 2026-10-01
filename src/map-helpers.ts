@@ -132,7 +132,7 @@ class Loaddable {
             });
         }
     }
-    onLoadComplete(): void {}
+    onLoadComplete(): void { }
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
@@ -158,7 +158,7 @@ export class OverlayLegend extends Loaddable {
     parentOverlay: Overlay;
     paintScheduled: boolean = false;
     onLoadCompleteListener: (layerID: string, legendID: string) => void =
-        () => {};
+        () => { };
 
     constructor(
         layerId: string,
@@ -401,15 +401,16 @@ export class OverlayLegend extends Loaddable {
                 source?.getData().then((data) => {
                     this.legendData = {};
                     const colorKeys = new Set<string>();
+                    let index = 0;
                     for (const feature of (data as FeatureCollection)
                         .features) {
                         const colorKey =
                             feature.properties?.[
-                                this.legendConfig.coloringProperty as string
+                            this.legendConfig.coloringProperty as string
                             ];
                         if (colorKey == null || colorKeys.has(colorKey))
                             continue;
-                        const color = getRandomColor(colorKey);
+                        const color = getRandomColor(index);
                         this.legendData = {
                             ...this.legendData,
                             [colorKey]: {
@@ -419,6 +420,7 @@ export class OverlayLegend extends Loaddable {
                         };
                         colorKeys.add(colorKey);
                         this.colors.push(colorKey, color);
+                        index++;
                     }
                     this.applyColors();
                 });
@@ -442,7 +444,7 @@ export class OverlayLegend extends Loaddable {
                         .features) {
                         let value =
                             feature.properties?.[
-                                this.legendConfig.coloringProperty as string
+                            this.legendConfig.coloringProperty as string
                             ];
                         if (value) {
                             value = Number.parseFloat(value);
@@ -524,12 +526,14 @@ export class OverlayLegend extends Loaddable {
     }
     cacheColors() {
         if (!this.legendData || this.parentOverlay.layerType === "icon") return;
+        let index = 0;
         for (const [key, value] of Object.entries(this.legendData)) {
             this.colors.push(key);
             if (!value.color) {
-                value.color = getRandomColor(key);
+                value.color = getRandomColor(index);
             }
             this.colors.push(value.color);
+            index++;
         }
     }
     cacheIcons() {
@@ -671,6 +675,12 @@ export class OverlayManager {
     legendLoadListeners = new Set<
         (layerID: string, legendID: string) => void
     >();
+    legendHideListeners = new Set<
+        (layerID: string, legendID: string) => void
+    >();
+    legendDisplayListeners = new Set<
+        (layerID: string, legendID: string) => void
+    >();
     overlayAddListeners = new Set<(layerID: string) => void>();
 
     map: MapLibre;
@@ -715,6 +725,15 @@ export class OverlayManager {
         const overlay = this.getOverlay(id);
         if (overlay) {
             overlay.toggleVisibility();
+            if (!overlay.isDisplayed) {
+                for (const fn of this.legendHideListeners) {
+                    fn(overlay.layerConfig.id, overlay.activeLegend?.legendConfig.id as string);
+                }
+            } else {
+                for (const fn of this.legendDisplayListeners) {
+                    fn(overlay.layerConfig.id, overlay.activeLegend?.legendConfig.id as string);
+                }
+            }
         }
     }
     onOverlayLoadComplete(layerID: string) {
@@ -735,5 +754,11 @@ export class OverlayManager {
     }
     addOverlayAddListener(fn: (layerID: string) => void) {
         this.overlayAddListeners.add(fn);
+    }
+    addLegendHideListener(fn: (layerID: string, legendID: string) => void) {
+        this.legendHideListeners.add(fn);
+    }
+    addLegendDisplayListener(fn: (layerID: string, legendID: string) => void) {
+        this.legendDisplayListeners.add(fn);
     }
 }

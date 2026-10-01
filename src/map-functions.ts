@@ -154,16 +154,8 @@ const loadSvgImage = async (url: string): Promise<HTMLImageElement> => {
     }
 };
 
-const hashString = (str: string): number => {
-    let hash = 5381;
-    for (let i = 0; i < str.length; i++) {
-        hash = (hash << 5) + hash + str.charCodeAt(i);
-    }
-    return hash >>> 0;
-};
-
-export const getRandomColor = (index: string): string => {
-    return COLOR_PALETTE[hashString(index) % COLOR_PALETTE.length] as string;
+export const getRandomColor = (index: number = 0): string => {
+    return COLOR_PALETTE[index % COLOR_PALETTE.length] as string;
 };
 
 export const getPaintForFillOverlay = (
@@ -178,8 +170,8 @@ export const getPaintForFillOverlay = (
         ...(basic
             ? {}
             : {
-                  "fill-color": activeLegend.color || "red",
-              }),
+                "fill-color": activeLegend.color || "red",
+            }),
     };
 };
 
@@ -193,8 +185,8 @@ export const getPaintForLineOverlay = (
         ...(basic
             ? {}
             : {
-                  "line-color": activeLegend.color || "red",
-              }),
+                "line-color": activeLegend.color || "red",
+            }),
     };
 };
 
@@ -210,8 +202,8 @@ export const getPaintForCircleOverlay = (
         ...(basic
             ? {}
             : {
-                  "circle-color": activeLegend.color || "red",
-              }),
+                "circle-color": activeLegend.color || "red",
+            }),
     };
 };
 
@@ -242,8 +234,8 @@ export const getLayoutForSymbolOverlay = async (
         ...(basic
             ? {}
             : {
-                  "icon-image": markerID,
-              }),
+                "icon-image": markerID,
+            }),
     };
 };
 

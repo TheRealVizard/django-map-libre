@@ -425,6 +425,12 @@ export class LegendControl extends Control {
         overlayManager.addLegendLoadListener((layerID, legendID) =>
             this.onLegendLoad(layerID, legendID)
         );
+        overlayManager.addLegendHideListener((layerID, legendID) =>
+            this.onLegendHide(layerID, legendID)
+        );
+        overlayManager.addLegendDisplayListener((layerID, legendID) =>
+            this.onLegendDisplay(layerID, legendID)
+        );
     }
     onLegendLoad(layerID: string, _legendID: string): void {
         if (!this.containers.has(layerID)) return;
@@ -434,6 +440,15 @@ export class LegendControl extends Control {
         }
         this.cleanContainer(layerID);
         this.buildLegendSection(layerID);
+    }
+    onLegendHide(layerID: string, _legendID: string): void {
+        if (!this.containers.has(layerID)) return;
+        this.cleanContainer(layerID);
+        const container = this.containers.get(layerID);
+        container?.classList.remove("with-content");
+    }
+    onLegendDisplay(layerID: string,  legendID: string): void {
+        this.onLegendLoad(layerID, legendID);
     }
     buildLegendSection(layerID: string) {
         const overlay = this.overlayManager.getOverlay(layerID);
