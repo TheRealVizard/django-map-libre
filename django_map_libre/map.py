@@ -373,16 +373,16 @@ class RangeLegend(Legend):
     :param coloring_property: Numeric feature property that drives the
         interpolation. Required.
     :param num_steps: Number of discrete color steps (buckets). Required.
-    :param min_value: Lower bound of the range. Inferred from the data when
-        omitted.
-    :param max_value: Upper bound of the range. Inferred from the data when
-        omitted.
+    :param bounds: Tuple of lower bound of the range and Upper bound of the range.
+        Inferred from the data when omitted.
     :param color_ramp: Ordered list of hex colors used to build the ramp,
         e.g. ``["#0000FF", "#00FF00", "#FF0000"]``. When omitted, the
         frontend generates one.
     :raises ValueError: If ``coloring_property`` is empty, if ``num_steps``
-        is not greater than 0, if ``min_value`` is greater than
-        ``max_value``, or if ``color_ramp`` has fewer than two colors.
+        is not greater than 1, if ``min value`` is greater than
+        ``max value``, if ``color_ramp`` has fewer than two colors,
+        if ``bounds`` does not have both bounds, and if ``num_steps`` and
+        ``color_ramp`` are not even or odd.
     """
 
     type: ClassVar[ColorSchemeType] = ColorSchemeType.RANGE
@@ -393,11 +393,8 @@ class RangeLegend(Legend):
     num_steps: int
     """Number of discrete color steps (buckets) the range is split into."""
 
-    min_value: float | None = None
-    """Lower bound of the range. Inferred from the data when omitted."""
-
-    max_value: float | None = None
-    """Upper bound of the range. Inferred from the data when omitted."""
+    bounds: tuple[float,float]| None = None
+    """Lower and Upper bounds of the range. Inferred from the data when omitted."""
 
     color_ramp: list[str] | None = None
     """Ordered list of hex colors used to build the ramp."""
@@ -405,14 +402,24 @@ class RangeLegend(Legend):
     def __post_init__(self) -> None:
         if not self.coloring_property:
             raise ValueError("RangeLegend requires a non-empty 'coloring_property'.")
-        if self.num_steps <= 0:
-            raise ValueError("num_steps must be greater than 0.")
-        if (
-            self.min_value is not None
-            and self.max_value is not None
-            and self.min_value > self.max_value
-        ):
-            raise ValueError("min_value cannot be greater than max_value.")
+        if self.num_steps <= 1:
+            raise ValueError("num_steps must be greater than 1.")
+        elif self.num_steps % 2 != len(self.color_ramp) % 2:
+            raise ValueError("Both `num_steps` and `color_ramp` must be even or odd.")
+        
+        if self.bounds is not None and len(self.bounds) < 2:
+            raise ValueError("Missing bound.")
+        elif self.bounds is not None and len(self.bounds)>2:
+            raise ValueError("Only 2 values where expected.")
+        elif  self.bounds is not None:
+            min_value, max_value = self.bounds
+            if (
+                min_value is not None
+                and max_value is not None
+                and min_value > max_value
+            ):
+                raise ValueError("Min value cannot be greater than Max Value.")
+
         if self.color_ramp is not None and len(self.color_ramp) < 2:
             raise ValueError("color_ramp must contain at least two colors.")
 
@@ -423,8 +430,10 @@ class RangeLegend(Legend):
         return {
             "coloringProperty": self.coloring_property,
             "numSteps": self.num_steps,
-            "minValue": self.min_value,
-            "maxValue": self.max_value,
+            "bounds": None if self.bounds is None else {
+                "min": self.bounds[0],
+                "max": self.bounds[1],
+            },
             "colorRamp": self.color_ramp,
         }
 
@@ -654,7 +663,6 @@ class MapWidget(Widget):
         tile_layers: list[TileLayer] | None = None,
         overlay_layers: list[OverlayLayer] | None = None,
         auto_init: bool = True,
-        auto_load: bool = True,
         center: Coordinate | tuple[float, float] | None = None,
         navigation_position: Position = Position.TopLeft,
         allow_fullscreen: bool = True,
@@ -672,8 +680,6 @@ class MapWidget(Widget):
         :param overlay_layers: GeoJSON overlays available in the layer
             selector.
         :param auto_init: Initialize the map automatically on page load.
-        :param auto_load: Load tile and overlay data automatically on page
-            load.
         :param center: Initial center of the map. Accepts a ``Coordinate``
             or a ``(latitude, longitude)`` tuple.
         :param navigation_position: Where to place the navigation controls.
@@ -698,7 +704,6 @@ class MapWidget(Widget):
 
         self.attrs = {
             "data-auto-init": auto_init,
-            "data-auto-load": auto_load,
             "data-navigation-position": navigation_position.value,
             "data-center": center,
             "data-tile-layer": (

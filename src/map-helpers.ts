@@ -25,6 +25,7 @@ import type {
     LayerType,
     Legend,
     LegendConfig,
+    RangeBound,
 } from "./map-types";
 
 const DefaultMapMarkerID = `marker-django-map-libre-default`;
@@ -153,8 +154,7 @@ export class OverlayLegend extends Loaddable {
     layerId: string;
     colors: string[] = [];
     markers: string[] = [];
-    minValue?: number;
-    maxValue?: number;
+    bounds?: RangeBound;
     parentOverlay: Overlay;
     paintScheduled: boolean = false;
     onLoadCompleteListener: (layerID: string, legendID: string) => void =
@@ -207,14 +207,12 @@ export class OverlayLegend extends Loaddable {
     }
     applyRangeConfig = (resolve: (value: void | PromiseLike<void>) => void) => {
         if (
-            this.legendConfig.minValue == null ||
-            this.legendConfig.maxValue == null
+            this.legendConfig.bounds == null
         ) {
             resolve();
             return;
         }
-        this.minValue = this.legendConfig.minValue as number;
-        this.maxValue = this.legendConfig.maxValue as number;
+        this.bounds = this.legendConfig.bounds as RangeBound;
         this.applyRangeColors();
         resolve();
     };
@@ -235,18 +233,22 @@ export class OverlayLegend extends Loaddable {
         }
     }
     applyRangeColors = () => {
-        if (!this.minValue || !this.maxValue) return;
+        if (!this.bounds) return;
+
+        const minValue = this.bounds.min;
+        const maxValue = this.bounds.max;
+
         const steps = this.legendConfig.numSteps as number;
         const colors = splitColorRamp(
             this.legendConfig.colorRamp as string[],
             steps
         );
 
-        const stepSize = (this.maxValue - this.minValue) / steps;
+        const stepSize = (maxValue - minValue) / steps;
 
         const stepsData: unknown[] = [colors[0] as string];
         for (let i = 1; i < steps; i++) {
-            stepsData.push(this.minValue + i * stepSize, colors[i]);
+            stepsData.push(minValue + i * stepSize, colors[i]);
         }
 
         const styleExpression = [
@@ -427,11 +429,11 @@ export class OverlayLegend extends Loaddable {
             }
         } else if (
             this.legendConfig.type === "range" &&
-            (this.legendConfig.minValue === null ||
-                this.legendConfig.minValue === undefined) &&
+            (this.legendConfig.bounds === null ||
+                this.legendConfig.bounds === undefined) &&
             this.parentOverlay.isLoaded
         ) {
-            if (this.minValue !== undefined && this.minValue !== null) {
+            if (this.bounds !== undefined && this.bounds !== null) {
                 this.applyRangeColors();
             } else {
                 const source = this.parentOverlay.map.getSource(
@@ -452,8 +454,10 @@ export class OverlayLegend extends Loaddable {
                             maxValue = Math.max(maxValue, value);
                         }
                     }
-                    this.minValue = minValue;
-                    this.maxValue = maxValue;
+                    this.bounds = {
+                        min: minValue,
+                        max: maxValue
+                    }
                     this.applyRangeColors();
                 });
             }

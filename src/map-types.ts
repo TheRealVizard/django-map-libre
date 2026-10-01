@@ -7,6 +7,11 @@ export interface TrackedLayer {
     visible: boolean;
 }
 
+export interface RangeBound {
+    min: number;
+    max: number;
+}
+
 export type LayerType = "fill" | "line" | "circle" | "icon" | "symbol";
 export type LegendType = "fixed" | "categorical" | "range";
 export type Anchor =
@@ -34,8 +39,7 @@ export interface LegendConfig {
     categoryMapping?: Legend | string | null;
 
     numSteps?: number | null;
-    minValue?: number | null;
-    maxValue?: number | null;
+    bounds?: RangeBound | null;
     colorRamp?: string[] | null;
 
     circleRadius?: number | null;

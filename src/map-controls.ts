@@ -5,7 +5,7 @@ import type {
     Map as MapLibre,
 } from "maplibre-gl";
 import type { Overlay, OverlayManager } from "./map-helpers";
-import type { TrackedLayer } from "./map-types";
+import type { RangeBound, TrackedLayer } from "./map-types";
 import { splitColorRamp, toTitleCase } from "./map-functions";
 
 class Control implements IControl {
@@ -512,12 +512,13 @@ export class LegendControl extends Control {
                 );
             }
         } else {
-            if (config.minValue && !overlay.activeLegend.minValue) return;
+            if (config.bounds && !overlay.activeLegend.bounds) return;
 
-            const min = (config.minValue ||
-                overlay.activeLegend.minValue) as number;
-            const max = (config.maxValue ||
-                overlay.activeLegend.maxValue) as number;
+            const bounds = (config.bounds ||
+                overlay.activeLegend.bounds) as RangeBound;
+
+            const min = bounds.min;
+            const max = bounds.max;
 
             const steps = config.numSteps as number;
             const colors = splitColorRamp(config.colorRamp as string[], steps);
