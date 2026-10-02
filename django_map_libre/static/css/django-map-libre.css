@@ -401,3 +401,22 @@
 .legend-preview-circle {
     border-radius: 1rem;
 }
+
+.legend-type-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    flex-wrap: nowrap;
+    column-gap: 0.2rem;
+    align-items: center;
+}
+.legend-type-container span {
+    text-wrap: nowrap;
+    font-weight: bold;
+}
+.legend-type-container select {
+    width: 100%;
+}
+.legend-type-container select option {
+    text-wrap: wrap;
+}

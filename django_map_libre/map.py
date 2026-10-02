@@ -393,7 +393,7 @@ class RangeLegend(Legend):
     num_steps: int
     """Number of discrete color steps (buckets) the range is split into."""
 
-    bounds: tuple[float,float]| None = None
+    bounds: tuple[float, float] | None = None
     """Lower and Upper bounds of the range. Inferred from the data when omitted."""
 
     color_ramp: list[str] | None = None
@@ -406,12 +406,12 @@ class RangeLegend(Legend):
             raise ValueError("num_steps must be greater than 1.")
         elif self.num_steps % 2 != len(self.color_ramp) % 2:
             raise ValueError("Both `num_steps` and `color_ramp` must be even or odd.")
-        
+
         if self.bounds is not None and len(self.bounds) < 2:
             raise ValueError("Missing bound.")
-        elif self.bounds is not None and len(self.bounds)>2:
+        elif self.bounds is not None and len(self.bounds) > 2:
             raise ValueError("Only 2 values where expected.")
-        elif  self.bounds is not None:
+        elif self.bounds is not None:
             min_value, max_value = self.bounds
             if (
                 min_value is not None
@@ -430,7 +430,9 @@ class RangeLegend(Legend):
         return {
             "coloringProperty": self.coloring_property,
             "numSteps": self.num_steps,
-            "bounds": None if self.bounds is None else {
+            "bounds": None
+            if self.bounds is None
+            else {
                 "min": self.bounds[0],
                 "max": self.bounds[1],
             },

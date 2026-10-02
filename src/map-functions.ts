@@ -170,8 +170,8 @@ export const getPaintForFillOverlay = (
         ...(basic
             ? {}
             : {
-                "fill-color": activeLegend.color || "red",
-            }),
+                  "fill-color": activeLegend.color || "red",
+              }),
     };
 };
 
@@ -185,8 +185,8 @@ export const getPaintForLineOverlay = (
         ...(basic
             ? {}
             : {
-                "line-color": activeLegend.color || "red",
-            }),
+                  "line-color": activeLegend.color || "red",
+              }),
     };
 };
 
@@ -202,8 +202,8 @@ export const getPaintForCircleOverlay = (
         ...(basic
             ? {}
             : {
-                "circle-color": activeLegend.color || "red",
-            }),
+                  "circle-color": activeLegend.color || "red",
+              }),
     };
 };
 
@@ -234,8 +234,8 @@ export const getLayoutForSymbolOverlay = async (
         ...(basic
             ? {}
             : {
-                "icon-image": markerID,
-            }),
+                  "icon-image": markerID,
+              }),
     };
 };
 

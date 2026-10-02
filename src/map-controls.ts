@@ -447,7 +447,7 @@ export class LegendControl extends Control {
         const container = this.containers.get(layerID);
         container?.classList.remove("with-content");
     }
-    onLegendDisplay(layerID: string,  legendID: string): void {
+    onLegendDisplay(layerID: string, legendID: string): void {
         this.onLegendLoad(layerID, legendID);
     }
     buildLegendSection(layerID: string) {
@@ -477,6 +477,39 @@ export class LegendControl extends Control {
 
         const body = document.createElement("div");
         body.classList.add("legend-section-body");
+
+        if (overlay.legends.length > 1) {
+            const legendTypeContainer = document.createElement("div");
+            legendTypeContainer.classList.add("legend-type-container");
+            body.appendChild(legendTypeContainer);
+
+            const label = document.createElement("span");
+            label.textContent = "Legend by:"; // TODO: LANGUAGE
+
+            legendTypeContainer.appendChild(label);
+
+            const checkBox = document.createElement("select");
+            legendTypeContainer.appendChild(checkBox);
+
+            for (const legend of overlay.legends) {
+                const option = document.createElement("option");
+                option.textContent = legend.legendConfig.label;
+                if (
+                    legend.legendConfig.id ===
+                    overlay.activeLegend?.legendConfig.id
+                ) {
+                    option.selected = true;
+                }
+                option.value = legend.legendConfig.id;
+                checkBox.appendChild(option);
+                checkBox.addEventListener("change", () => {
+                    this.overlayManager.setOverlayLegend(
+                        overlay.layerConfig.id,
+                        checkBox.value
+                    );
+                });
+            }
+        }
 
         section.appendChild(body);
 

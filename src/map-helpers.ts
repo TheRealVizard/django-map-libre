@@ -133,7 +133,7 @@ class Loaddable {
             });
         }
     }
-    onLoadComplete(): void { }
+    onLoadComplete(): void {}
     onLoadError(error: string): void {
         console.error(`Error loading data:`, error);
         this.loader = null; // Reset loader on error to allow retry
@@ -158,7 +158,7 @@ export class OverlayLegend extends Loaddable {
     parentOverlay: Overlay;
     paintScheduled: boolean = false;
     onLoadCompleteListener: (layerID: string, legendID: string) => void =
-        () => { };
+        () => {};
 
     constructor(
         layerId: string,
@@ -206,9 +206,7 @@ export class OverlayLegend extends Loaddable {
         });
     }
     applyRangeConfig = (resolve: (value: void | PromiseLike<void>) => void) => {
-        if (
-            this.legendConfig.bounds == null
-        ) {
+        if (this.legendConfig.bounds == null) {
             resolve();
             return;
         }
@@ -408,7 +406,7 @@ export class OverlayLegend extends Loaddable {
                         .features) {
                         const colorKey =
                             feature.properties?.[
-                            this.legendConfig.coloringProperty as string
+                                this.legendConfig.coloringProperty as string
                             ];
                         if (colorKey == null || colorKeys.has(colorKey))
                             continue;
@@ -446,7 +444,7 @@ export class OverlayLegend extends Loaddable {
                         .features) {
                         let value =
                             feature.properties?.[
-                            this.legendConfig.coloringProperty as string
+                                this.legendConfig.coloringProperty as string
                             ];
                         if (value) {
                             value = Number.parseFloat(value);
@@ -456,8 +454,8 @@ export class OverlayLegend extends Loaddable {
                     }
                     this.bounds = {
                         min: minValue,
-                        max: maxValue
-                    }
+                        max: maxValue,
+                    };
                     this.applyRangeColors();
                 });
             }
@@ -731,11 +729,31 @@ export class OverlayManager {
             overlay.toggleVisibility();
             if (!overlay.isDisplayed) {
                 for (const fn of this.legendHideListeners) {
-                    fn(overlay.layerConfig.id, overlay.activeLegend?.legendConfig.id as string);
+                    fn(
+                        overlay.layerConfig.id,
+                        overlay.activeLegend?.legendConfig.id as string
+                    );
                 }
             } else {
                 for (const fn of this.legendDisplayListeners) {
-                    fn(overlay.layerConfig.id, overlay.activeLegend?.legendConfig.id as string);
+                    fn(
+                        overlay.layerConfig.id,
+                        overlay.activeLegend?.legendConfig.id as string
+                    );
+                }
+            }
+        }
+    }
+    setOverlayLegend(layerID: string, legendID: string) {
+        const overlay = this.getOverlay(layerID);
+        if (overlay) {
+            for (const legend of overlay.legends) {
+                if (legend.legendConfig.id === legendID) {
+                    overlay.activeLegend = legend;
+                    overlay.activeLegend.updateMapLayout().then(() => {
+                        overlay.activeLegend?.doExtraStyling();
+                    });
+                    return;
                 }
             }
         }
