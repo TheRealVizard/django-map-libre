@@ -53,7 +53,7 @@ class Legend(ABC):
 
     Every legend has:
 
-    * a unique ``id`` and a human readable ``label``;
+    * a unique ``id`` and a human-readable ``label``;
     * an ``active`` flag, because a layer may carry several legends but
       only one is rendered at a time;
     * optional circle/icon styling, shared by all legend types, that is
@@ -326,7 +326,7 @@ class CategoricalLegend(Legend):
         if not isinstance(self.category_mapping, dict):
             raise ValueError(
                 "category_mapping must be a dict, a non-empty URL string, "
-                "or None. Got {type(self.category_mapping).__name__}."
+                f"or None. Got {type(self.category_mapping).__name__}."
             )
 
         allowed_keys = {"label", "color", "icon"}
@@ -379,8 +379,8 @@ class RangeLegend(Legend):
         e.g. ``["#0000FF", "#00FF00", "#FF0000"]``. When omitted, the
         frontend generates one.
     :raises ValueError: If ``coloring_property`` is empty, if ``num_steps``
-        is not greater than 1, if ``min value`` is greater than
-        ``max value``, if ``color_ramp`` has fewer than two colors,
+        is not greater than 1, if ``min bound`` is greater than
+        ``max bound``, if ``color_ramp`` has fewer than two colors,
         if ``bounds`` does not have both bounds, and if ``num_steps`` and
         ``color_ramp`` are not even or odd.
     """
@@ -404,13 +404,13 @@ class RangeLegend(Legend):
             raise ValueError("RangeLegend requires a non-empty 'coloring_property'.")
         if self.num_steps <= 1:
             raise ValueError("num_steps must be greater than 1.")
-        elif self.num_steps % 2 != len(self.color_ramp) % 2:
+        elif self.color_ramp is not None and self.num_steps % 2 != len(self.color_ramp) % 2:
             raise ValueError("Both `num_steps` and `color_ramp` must be even or odd.")
 
         if self.bounds is not None and len(self.bounds) < 2:
             raise ValueError("Missing bound.")
         elif self.bounds is not None and len(self.bounds) > 2:
-            raise ValueError("Only 2 values where expected.")
+            raise ValueError("Only 2 values were expected.")
         elif self.bounds is not None:
             min_value, max_value = self.bounds
             if (
@@ -418,7 +418,7 @@ class RangeLegend(Legend):
                 and max_value is not None
                 and min_value > max_value
             ):
-                raise ValueError("Min value cannot be greater than Max Value.")
+                raise ValueError("Min bound cannot be greater than Max bound.")
 
         if self.color_ramp is not None and len(self.color_ramp) < 2:
             raise ValueError("color_ramp must contain at least two colors.")
@@ -500,7 +500,7 @@ class OverlayLayer(Layer):
     In addition to the local validation done by each Legend subclass, this
     layer cross-validates its legends against its own ``layer_type``:
 
-    * ``circle_*`` s tyling is only allowed on ``CIRCLE`` layers.
+    * ``circle_*`` styling is only allowed on ``CIRCLE`` layers.
     * ``icon_*`` styling is only allowed on ``ICON`` layers.
     * ``FixedLegend`` on an ``ICON`` layer must provide ``image``.
     * ``FixedLegend`` on FILL/LINE/CIRCLE must provide ``color``.
