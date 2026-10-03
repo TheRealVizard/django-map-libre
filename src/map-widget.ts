@@ -13,7 +13,7 @@ import {
     type StyleSpecification,
     type SymbolLayerSpecification,
 } from "maplibre-gl";
-import { LayerSelector, LegendControl } from "./map-controls";
+import { DownloadControl, LayerSelector, LegendControl } from "./map-controls";
 import { Overlay, OverlayManager } from "./map-helpers";
 import type {
     MapWidgetDataset,
@@ -279,6 +279,7 @@ const initMap = (mapContainer: HTMLElement) => {
     if (mapConfig.allowFullscreen) {
         map.addControl(new FullscreenControl());
     }
+    map.addControl(new DownloadControl());
 
     // ---- Layer Selector ----
     const overlayManager = new OverlayManager(map);

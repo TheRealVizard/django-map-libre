@@ -14,11 +14,7 @@ class Control implements IControl {
     panelVisible = false;
     panel: HTMLDivElement | null = null;
     btnIcon: HTMLButtonElement | null = null;
-    overlayManager: OverlayManager;
 
-    constructor(overlayManager: OverlayManager) {
-        this.overlayManager = overlayManager;
-    }
     onAdd(_map: MapLibre): HTMLElement {
         return document.createElement("div");
     }
@@ -141,8 +137,15 @@ class Control implements IControl {
         return "top-right";
     }
 }
+class OverlayControl extends Control {
+    overlayManager: OverlayManager;
 
-export class LayerSelector extends Control {
+    constructor(overlayManager: OverlayManager) {
+        super();
+        this.overlayManager = overlayManager;
+    }
+}
+export class LayerSelector extends OverlayControl {
     timeout: ReturnType<typeof setTimeout> | undefined = undefined;
     isPinned = false;
     titleLayers = new Map<string, TrackedLayer>();
@@ -413,7 +416,7 @@ export class LayerSelector extends Control {
         clearTimeout(this.timeout);
     }
 }
-export class LegendControl extends Control {
+export class LegendControl extends OverlayControl {
     loadingOverlay: HTMLDivElement | undefined;
     initialDisplay: Display;
     containers = new Map<string, HTMLElement>();
@@ -685,5 +688,46 @@ export class LegendControl extends Control {
         this.panel = legendWrapper;
 
         return this.container;
+    }
+}
+export class DownloadControl extends Control {
+    onAdd(map: MapLibre): HTMLElement {
+        this.map = map;
+
+        this.container = document.createElement("div");
+        this.container.classList.add(
+            "maplibregl-ctrl",
+            "maplibregl-ctrl-group",
+            "django-map-libre-control"
+        );
+
+        const btnIcon = document.createElement("button");
+        btnIcon.type = "button";
+        btnIcon.title = "Download map as image"; // TODO LANGUAGE
+        btnIcon.classList.add("map-download-button", "map-control-btn");
+        this.btnIcon = btnIcon;
+
+        btnIcon.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this.downloadMap();
+        });
+
+        this.container.appendChild(btnIcon);
+
+        return this.container;
+    }
+
+    private downloadMap(): void {
+        if (!this.map) return;
+        this.map.once("render", () => {
+            const canvas = this.map!.getCanvas();
+            const dataUrl = canvas.toDataURL("image/png");
+
+            const link = document.createElement("a");
+            link.download = `map-${Date.now()}.png`;
+            link.href = dataUrl;
+            link.click();
+        });
+        this.map.triggerRepaint();
     }
 }
