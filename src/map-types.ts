@@ -85,11 +85,13 @@ export interface MapWidgetDataset extends DOMStringMap {
     navigationPosition: ControlPosition;
     layerSelectorPosition: ControlPosition;
     layerLegendPosition: ControlPosition;
+    downloadPosition: ControlPosition;
     legendDisplay: Display;
     showScale: string;
     metricUnit: Unit;
     scalePosition: ControlPosition;
     allowFullscreen: string;
+    allowDownload: string;
     loadingText: string;
     autoInit: string;
 }

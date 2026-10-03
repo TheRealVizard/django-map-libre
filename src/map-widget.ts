@@ -279,7 +279,12 @@ const initMap = (mapContainer: HTMLElement) => {
     if (mapConfig.allowFullscreen) {
         map.addControl(new FullscreenControl());
     }
-    map.addControl(new DownloadControl());
+    if (mapConfig.allowDownload === "True") {
+        map.addControl(
+            new DownloadControl(),
+            mapConfig.downloadPosition
+        );
+    }
 
     // ---- Layer Selector ----
     const overlayManager = new OverlayManager(map);

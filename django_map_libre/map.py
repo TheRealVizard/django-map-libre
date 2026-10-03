@@ -707,11 +707,13 @@ class MapWidget(Widget):
         center: Coordinate | tuple[float, float] | None = None,
         navigation_position: Position = Position.TopLeft,
         allow_fullscreen: bool = True,
+        allow_download: bool = True,
         show_scale: bool = True,
         metric_unit: MetricSystem = MetricSystem.Metric,
         scale_position: Position = Position.BottomRight,
         layer_selector_position: Position = Position.TopRight,
         layer_legend_position: Position = Position.BottomLeft,
+        download_position: Position = Position.TopLeft,
         legend_display: Display = Display.Expanded,
         class_name: str = "map-widget",
         loading_text: str | None = "Loading Map",
@@ -727,11 +729,13 @@ class MapWidget(Widget):
             or a ``(latitude, longitude)`` tuple.
         :param navigation_position: Where to place the navigation controls.
         :param allow_fullscreen: Show the fullscreen toggle.
+        :param allow_download: Show the "download as image" button.
         :param show_scale: Show the scale bar.
         :param metric_unit: Metric system used by the scale bar.
         :param scale_position: Where to place the scale bar.
         :param layer_selector_position: Where to place the layer selector.
         :param layer_legend_position: Where to place the legend selector.
+        :param download_position: Where to place the download button.
         :param legend_display: Initial display of the legend.
         :param class_name: CSS class applied to the map container.
         :param loading_text: Text shown while the map is loading. ``None``
@@ -762,9 +766,11 @@ class MapWidget(Widget):
                 else json.dumps([layer.to_dict() for layer in overlay_layers])
             ),
             "data-allow-fullscreen": allow_fullscreen,
+            "data-allow-download": allow_download,
             "data-show-scale": show_scale,
             "data-metric-unit": metric_unit.value,
             "data-scale-position": scale_position.value,
+            "data-download-position": download_position.value,
             "data-layer-selector-position": layer_selector_position.value,
             "data-layer-legend-position": layer_legend_position.value,
             "data-legend-display": legend_display.value,
