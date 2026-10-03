@@ -9,13 +9,13 @@ from django_map_libre.helpers import (
     AnchorType,
     ColorSchemeType,
     Coordinate,
+    Display,
     ImportMap,
     LayerType,
     MetricSystem,
     OverlapType,
     Position,
 )
-
 
 # ---------------------------------------------------------------------------
 # Legend hierarchy
@@ -192,7 +192,7 @@ class FixedLegend(Legend):
     def __post_init__(self) -> None:
         if self.color is None and self.image is None:
             raise ValueError(
-                "FixedLegend requires 'color' (fill/line/circle) " "or 'image' (icon)."
+                "FixedLegend requires 'color' (fill/line/circle) or 'image' (icon)."
             )
 
     def type_specific_dict(self) -> dict[str, Any]:
@@ -670,8 +670,10 @@ class MapWidget(Widget):
         allow_fullscreen: bool = True,
         show_scale: bool = True,
         metric_unit: MetricSystem = MetricSystem.Metric,
-        scale_position: Position = Position.BottomLeft,
+        scale_position: Position = Position.BottomRight,
         layer_selector_position: Position = Position.TopRight,
+        layer_legend_position: Position = Position.BottomLeft,
+        legend_display: Display = Display.Expanded,
         class_name: str = "map-widget",
         loading_text: str | None = "Loading Map",
     ):
@@ -690,6 +692,8 @@ class MapWidget(Widget):
         :param metric_unit: Metric system used by the scale bar.
         :param scale_position: Where to place the scale bar.
         :param layer_selector_position: Where to place the layer selector.
+        :param layer_legend_position: Where to place the legend selector.
+        :param legend_display: Initial display of the legend.
         :param class_name: CSS class applied to the map container.
         :param loading_text: Text shown while the map is loading. ``None``
             to hide it.
@@ -723,6 +727,8 @@ class MapWidget(Widget):
             "data-metric-unit": metric_unit.value,
             "data-scale-position": scale_position.value,
             "data-layer-selector-position": layer_selector_position.value,
+            "data-layer-legend-position": layer_legend_position.value,
+            "data-legend-display": legend_display.value,
             "data-loading-text": loading_text,
             "class": class_name,
         }

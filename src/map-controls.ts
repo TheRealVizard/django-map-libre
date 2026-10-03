@@ -4,9 +4,9 @@ import type {
     LayerSpecification,
     Map as MapLibre,
 } from "maplibre-gl";
-import type { Overlay, OverlayManager } from "./map-helpers";
-import type { RangeBound, TrackedLayer } from "./map-types";
 import { splitColorRamp, toTitleCase } from "./map-functions";
+import type { Overlay, OverlayManager } from "./map-helpers";
+import type { Display, RangeBound, TrackedLayer } from "./map-types";
 
 class Control implements IControl {
     map: MapLibre | null = null;
@@ -415,9 +415,10 @@ export class LayerSelector extends Control {
 }
 export class LegendControl extends Control {
     loadingOverlay: HTMLDivElement | undefined;
+    initialDisplay: Display;
     containers = new Map<string, HTMLElement>();
 
-    constructor(overlayManager: OverlayManager) {
+    constructor(overlayManager: OverlayManager, initialDisplay: Display) {
         super(overlayManager);
         overlayManager.addOverlayAddListener((layerID) =>
             this.onOverlayAdd(layerID)
@@ -431,6 +432,7 @@ export class LegendControl extends Control {
         overlayManager.addLegendDisplayListener((layerID, legendID) =>
             this.onLegendDisplay(layerID, legendID)
         );
+        this.initialDisplay = initialDisplay;
     }
     onLegendLoad(layerID: string, _legendID: string): void {
         if (!this.containers.has(layerID)) return;
@@ -635,6 +637,10 @@ export class LegendControl extends Control {
                 mainPanel.classList.remove("expanded");
             }
         });
+
+        if (this.initialDisplay == "expanded") {
+            mainPanel.classList.add("expanded");
+        }
 
         const contentPanel = document.createElement("div");
         contentPanel.classList.add("map-legend-expanded-container");

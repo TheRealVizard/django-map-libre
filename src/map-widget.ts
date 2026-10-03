@@ -2,7 +2,9 @@ import {
     FullscreenControl,
     Map as MapLibre,
     NavigationControl,
+    AttributionControl,
     ScaleControl,
+    setWorkerUrl,
     type AllLayoutProperties,
     type CircleLayerSpecification,
     type FillLayerSpecification,
@@ -11,7 +13,6 @@ import {
     type SourceSpecification,
     type StyleSpecification,
     type SymbolLayerSpecification,
-    setWorkerUrl,
 } from "maplibre-gl";
 import { LayerSelector, LegendControl } from "./map-controls";
 import { Overlay, OverlayManager } from "./map-helpers";
@@ -285,14 +286,11 @@ const initMap = (mapContainer: HTMLElement) => {
     const layerSelector = new LayerSelector(overlayManager);
     map.addControl(layerSelector, mapConfig.layerSelectorPosition);
 
-    const legendControl = new LegendControl(overlayManager);
-    map.addControl(legendControl, "top-left");
-    const legendControl2 = new LegendControl(overlayManager);
-    map.addControl(legendControl2, "top-right");
-    const legendControl3 = new LegendControl(overlayManager);
-    map.addControl(legendControl3, "bottom-left");
-    const legendControl4 = new LegendControl(overlayManager);
-    map.addControl(legendControl4, "bottom-right");
+    const legendControl = new LegendControl(
+        overlayManager,
+        mapConfig.legendDisplay
+    );
+    map.addControl(legendControl, mapConfig.layerLegendPosition);
 
     registerTileLayers(layerSelector, tileLayers);
 

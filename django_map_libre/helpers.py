@@ -24,6 +24,11 @@ class Position(Enum):
     BottomRight = "bottom-right"
 
 
+class Display(Enum):
+    Expanded = "expanded"
+    Collapsed = "collapsed"
+
+
 class MetricSystem(Enum):
     Imperial = "imperial"
     Metric = "metric"

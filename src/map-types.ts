@@ -25,6 +25,7 @@ export type Anchor =
     | "bottom-left"
     | "bottom-right";
 export type Overlap = "never" | "always" | "cooperative";
+export type Display = "expanded" | "collapsed";
 export interface LegendConfig {
     id: string;
     label: string;
@@ -76,6 +77,8 @@ export interface MapWidgetDataset extends DOMStringMap {
     overlayLayer: string;
     navigationPosition: ControlPosition;
     layerSelectorPosition: ControlPosition;
+    layerLegendPosition: ControlPosition;
+    legendDisplay: Display;
     showScale: string;
     metricUnit: Unit;
     scalePosition: ControlPosition;
