@@ -35,3 +35,8 @@ LAND_USE_MAPPING: Final[dict[str, dict]] = {
     "mixed-use": {"label": "Mixed Use", "color": "#7BD94A"},
     "unknown": {"label": "Unknown"},
 }
+
+RANGE_LEGEND_DEFAULT_STEPS = 5
+RANGE_LEGEND_DEFAULT_MIN = 2000
+RANGE_LEGEND_DEFAULT_MAX = 8000
+RANGE_LEGEND_DEFAULT_RAMP = ["#0000FF", "#00FF00", "#FF0000"]

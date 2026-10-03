@@ -2,7 +2,6 @@ import {
     FullscreenControl,
     Map as MapLibre,
     NavigationControl,
-    AttributionControl,
     ScaleControl,
     setWorkerUrl,
     type AllLayoutProperties,

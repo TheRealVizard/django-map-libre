@@ -26,6 +26,7 @@ import type {
     Legend,
     LegendConfig,
     RangeBound,
+    RemoteRangeConfig,
 } from "./map-types";
 
 const DefaultMapMarkerID = `marker-django-map-libre-default`;
@@ -106,7 +107,7 @@ class Loaddable {
                 return resolve();
             }
             this.loader = new DataLoader(
-                this.getUrl(),
+                this.getUrl() as string,
                 (data: FetchData) => {
                     this.pendingTasks.add(this.onLoadData(data));
                     this.tryComplete(resolve);
@@ -141,7 +142,7 @@ class Loaddable {
     onLoadData(_data: FetchData): Promise<void> {
         throw new Error("Method not implemented.");
     }
-    getUrl(): string {
+    getUrl(): string | undefined {
         throw new Error("Method not implemented.");
     }
 }
@@ -184,10 +185,20 @@ export class OverlayLegend extends Loaddable {
             this.legendData = legendConfig.categoryMapping as Legend;
             this.cacheColors();
             this.cacheIcons();
+        } else if (legendConfig.type === "range" && !legendConfig.configUrl) {
+            this.isLoaded = true;
         }
     }
-    getUrl(): string {
-        return this.legendConfig.categoryMapping as string;
+    getUrl(): string | undefined {
+        if (this.legendConfig.type === "categorical") {
+            return typeof this.legendConfig.categoryMapping === "string"
+                ? this.legendConfig.categoryMapping
+                : undefined;
+        }
+        if (this.legendConfig.type === "range") {
+            return this.legendConfig.configUrl as string;
+        }
+        return undefined;
     }
     updateMapLayout(): Promise<void> {
         return new Promise((resolve, _reject) => {
@@ -206,7 +217,14 @@ export class OverlayLegend extends Loaddable {
         });
     }
     applyRangeConfig = (resolve: (value: void | PromiseLike<void>) => void) => {
-        if (this.legendConfig.bounds == null) {
+        if (this.legendConfig.configUrl && !this.isLoaded) {
+            this.load()
+                .then(() => {
+                    resolve();
+                })
+                .catch(() => resolve());
+            return;
+        } else if (this.legendConfig.bounds == null) {
             resolve();
             return;
         }
@@ -517,7 +535,14 @@ export class OverlayLegend extends Loaddable {
     }
     onLoadData(data: FetchData): Promise<void> {
         // TODO: ALLOW NDJSON
-        this.legendData = data as Legend;
+        if (this.legendConfig.type === "range") {
+            const cfg = data as RemoteRangeConfig;
+            this.legendConfig.numSteps = cfg.numSteps;
+            this.legendConfig.bounds = cfg.bounds ?? null;
+            this.legendConfig.colorRamp = cfg.colorRamp ?? null;
+        } else {
+            this.legendData = data as Legend;
+        }
         return Promise.resolve();
     }
     onLoadComplete(): void {

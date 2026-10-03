@@ -370,8 +370,27 @@ class RangeLegend(Legend):
     ``[min_value, max_value]`` and mapped to a color taken from
     ``color_ramp``. The ramp is discretized into ``num_steps`` buckets.
 
+    A range can be configured in two mutually exclusive ways:
+
+    * **locally**, by providing ``num_steps`` (required), and optionally
+        `bounds`` and ``color_ramp``;
+    * **remotely**, by providing ``config_url``. The URL must return a
+    JSON object with the same shape produced by the local fields::
+
+        {
+            "numSteps": 5,
+            "bounds": {"min": 0, "max": 100},
+            "colorRamp": ["#0000FF", "#00FF00", "#FF0000"],
+        }
+
+    When ``config_url`` is set, ``num_steps``, ``bounds`` and
+    ``color_ramp`` must NOT be provided.
+
     :param coloring_property: Numeric feature property that drives the
         interpolation. Required.
+    :param config_url: URL returning a JSON object with ``numSteps``,
+        ``bounds`` and ``colorRamp``. Mutually exclusive with the local
+        fields.
     :param num_steps: Number of discrete color steps (buckets). Required.
     :param bounds: Tuple of lower bound of the range and Upper bound of the range.
         Inferred from the data when omitted.
@@ -390,7 +409,10 @@ class RangeLegend(Legend):
     coloring_property: str
     """Numeric feature property that drives the color interpolation."""
 
-    num_steps: int
+    config_url: str | None = None
+    """URL returning a JSON object with ``numSteps``, ``bounds`` and ``colorRamp``."""
+
+    num_steps: int | None = None
     """Number of discrete color steps (buckets) the range is split into."""
 
     bounds: tuple[float, float] | None = None
@@ -402,9 +424,25 @@ class RangeLegend(Legend):
     def __post_init__(self) -> None:
         if not self.coloring_property:
             raise ValueError("RangeLegend requires a non-empty 'coloring_property'.")
+
+        if self.config_url is not None:
+            if not self.config_url.strip():
+                raise ValueError("config_url must be a non-empty string.")
+            if any(
+                v is not None for v in (self.num_steps, self.bounds, self.color_ramp)
+            ):
+                raise ValueError(
+                    "When 'config_url' is set, 'num_steps', 'bounds' and "
+                    "'color_ramp' must not be provided."
+                )
+            return
+
         if self.num_steps <= 1:
             raise ValueError("num_steps must be greater than 1.")
-        elif self.color_ramp is not None and self.num_steps % 2 != len(self.color_ramp) % 2:
+        elif (
+            self.color_ramp is not None
+            and self.num_steps % 2 != len(self.color_ramp) % 2
+        ):
             raise ValueError("Both `num_steps` and `color_ramp` must be even or odd.")
 
         if self.bounds is not None and len(self.bounds) < 2:
@@ -437,6 +475,7 @@ class RangeLegend(Legend):
                 "max": self.bounds[1],
             },
             "colorRamp": self.color_ramp,
+            "configUrl": self.config_url,
         }
 
 

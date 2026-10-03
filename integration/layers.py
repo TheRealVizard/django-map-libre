@@ -151,6 +151,22 @@ def fill_layers() -> list[OverlayLayer]:
             ],
             selected=False,
         ),
+        OverlayLayer(
+            id="parcel-area-fill-api",
+            label="Parcel Area (Range from API)",
+            url=f"{reverse('json_parcels')}?count=300",
+            layer_type=LayerType.FILL,
+            legends=[
+                RangeLegend(
+                    id="parcel-area-fill-api",
+                    label="Area",
+                    coloring_property="area_sqft",
+                    config_url=reverse("range_legend"),
+                    active=True,
+                ),
+            ],
+            selected=False,
+        ),
     ]
 
 

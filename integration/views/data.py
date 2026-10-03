@@ -11,7 +11,7 @@ from django.http import (
 
 from integration.constants import DEFAULT_BATCH_SIZE, DEFAULT_FEATURE_COUNT
 from integration.icons import render_icon_svg
-from integration.legend import build_color_legend, build_icon_legend
+from integration.legend import build_color_legend, build_icon_legend, build_range_legend
 from integration.parcels import build_parcel_feature
 
 
@@ -30,6 +30,11 @@ def random_color_legend(request: HttpRequest) -> JsonResponse:
 def random_icon_legend(request: HttpRequest) -> JsonResponse:
     """Return a random categorical icon legend keyed by parcel id."""
     return JsonResponse(build_icon_legend(request))
+
+
+def random_range_legend(request: HttpRequest) -> JsonResponse:
+    """Return a range legend payload for ``RangeLegend.config_url``."""
+    return JsonResponse(build_range_legend(request))
 
 
 def json_parcels(request: HttpRequest) -> JsonResponse:
