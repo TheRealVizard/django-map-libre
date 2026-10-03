@@ -330,6 +330,8 @@
 .legend-section {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 .legend-section-body {
@@ -340,6 +342,7 @@
     height: 0;
     overflow: hidden;
     padding: 0rem;
+    box-sizing: border-box;
 }
 
 .legend-section-header {
@@ -353,11 +356,18 @@
     font-size: 0.8rem;
     line-height: 0.8rem;
     cursor: pointer;
-    border-radius: 0.3rem;
     user-select: none;
     font-weight: bolder;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 0.3rem;
+    border-top-right-radius: 0.3rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     background: #fafafa;
+    box-sizing: border-box;
+}
+.legend-section.collapsed .legend-section-header {
+    border-bottom: none;
+    border-bottom-left-radius: 0.3rem;
+    border-bottom-right-radius: 0.3rem;
 }
 
 .legend-section-header:hover {
