@@ -441,3 +441,35 @@
         no-repeat center;
     background-size: 22px 22px;
 }
+/* =========================================================
+   Interpolated legend
+   ========================================================= */
+
+.legend-gradient-bar {
+    height: 0.9rem;
+    border-radius: 0.3rem;
+    box-shadow: 0 0 0 2px #0000001a;
+}
+
+.legend-gradient-labels {
+    position: relative;
+    height: 0.9rem;
+    margin-top: 0.3rem;
+}
+
+.legend-gradient-label {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    line-height: 0.9rem;
+    color: #444;
+    white-space: nowrap;
+}
+
+.legend-gradient-label:first-child {
+    transform: translateX(0);
+}
+
+.legend-gradient-label:last-child {
+    transform: translateX(-100%);
+}

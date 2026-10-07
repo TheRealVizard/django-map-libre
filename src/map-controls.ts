@@ -6,7 +6,7 @@ import type {
 } from "maplibre-gl";
 import { splitColorRamp, toTitleCase } from "./map-functions";
 import type { Overlay, OverlayManager } from "./map-helpers";
-import type { Display, RangeBound, TrackedLayer } from "./map-types";
+import type { ColorStop, Display, RangeBound, TrackedLayer } from "./map-types";
 
 class Control implements IControl {
     map: MapLibre | null = null;
@@ -549,7 +549,7 @@ export class LegendControl extends OverlayControl {
                     )
                 );
             }
-        } else {
+        } else if (config.type === "range") {
             if (config.bounds && !overlay.activeLegend.bounds) return;
 
             const bounds = (config.bounds ||
@@ -573,6 +573,56 @@ export class LegendControl extends OverlayControl {
                     )
                 );
             }
+        } else {
+            if (!config.colorStops || config.colorStops.length < 2) return;
+
+            let stops: ColorStop[];
+            if (typeof config.colorStops?.[0] === "object") {
+                stops = config.colorStops as ColorStop[];
+            } else {
+                if (!overlay.activeLegend.bounds) return;
+
+                const colors = config.colorStops as string[];
+                const min = overlay.activeLegend.bounds.min;
+                const max = overlay.activeLegend.bounds.max;
+                const count = colors.length;
+                const step = count > 1 ? (max - min) / (count - 1) : 0;
+
+                stops = colors.map((color, i) => {
+                    return { value: min + i * step, color: color };
+                });
+            }
+
+            const min = (stops[0] as ColorStop).value as number;
+            const max = (stops[stops.length - 1] as ColorStop).value as number;
+            const totalRange = max - min;
+
+            const positioned = stops.map((s, _i) => ({
+                value: ((s.value - min) * 100) / totalRange,
+                color: s.color,
+                label:
+                    s.value > Math.trunc(s.value)
+                        ? s.value.toFixed(2)
+                        : s.value.toFixed(0),
+            }));
+
+            const gradient = document.createElement("div");
+            gradient.classList.add("legend-gradient-bar");
+            gradient.style.background = `linear-gradient(to right, ${positioned
+                .map((s) => `${s.color} ${s.value}%`)
+                .join(", ")})`;
+            body.appendChild(gradient);
+
+            const labels = document.createElement("div");
+            labels.classList.add("legend-gradient-labels");
+            for (const s of positioned) {
+                const stepValueLabel = document.createElement("span");
+                stepValueLabel.classList.add("legend-gradient-label");
+                stepValueLabel.style.left = `${s.value}%`;
+                stepValueLabel.textContent = s.label.toString();
+                labels.appendChild(stepValueLabel);
+            }
+            body.appendChild(labels);
         }
     }
     getLegendRow(overlay: Overlay, title: string, color: string, icon: string) {

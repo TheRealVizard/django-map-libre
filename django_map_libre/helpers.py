@@ -1,11 +1,17 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
+from typing import TypedDict
 
 from django.forms.widgets import MediaAsset
 from django.templatetags.static import static
 from django.utils.html import mark_safe
 from django.utils.safestring import SafeString
+
+
+class ColorStep(TypedDict):
+    value: float
+    color: str
 
 
 @dataclass
@@ -39,6 +45,7 @@ class ColorSchemeType(str, Enum):
     FIXED = "fixed"
     CATEGORICAL = "categorical"
     RANGE = "range"
+    INTERPOLATED = "interpolated"
 
 
 class LayerType(str, Enum):

@@ -280,10 +280,7 @@ const initMap = (mapContainer: HTMLElement) => {
         map.addControl(new FullscreenControl());
     }
     if (mapConfig.allowDownload === "True") {
-        map.addControl(
-            new DownloadControl(),
-            mapConfig.downloadPosition
-        );
+        map.addControl(new DownloadControl(), mapConfig.downloadPosition);
     }
 
     // ---- Layer Selector ----

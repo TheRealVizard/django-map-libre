@@ -17,6 +17,7 @@ import {
     toTitleCase,
 } from "./map-functions";
 import type {
+    ColorStop,
     CompleteCallback,
     DataCallback,
     ErrorCallback,
@@ -26,6 +27,7 @@ import type {
     Legend,
     LegendConfig,
     RangeBound,
+    RemoteInterpolatedConfig,
     RemoteRangeConfig,
 } from "./map-types";
 
@@ -185,7 +187,11 @@ export class OverlayLegend extends Loaddable {
             this.legendData = legendConfig.categoryMapping as Legend;
             this.cacheColors();
             this.cacheIcons();
-        } else if (legendConfig.type === "range" && !legendConfig.configUrl) {
+        } else if (
+            (legendConfig.type === "range" ||
+                legendConfig.type === "interpolated") &&
+            !legendConfig.configUrl
+        ) {
             this.isLoaded = true;
         }
     }
@@ -195,7 +201,10 @@ export class OverlayLegend extends Loaddable {
                 ? this.legendConfig.categoryMapping
                 : undefined;
         }
-        if (this.legendConfig.type === "range") {
+        if (
+            this.legendConfig.type === "range" ||
+            this.legendConfig.type === "interpolated"
+        ) {
             return this.legendConfig.configUrl as string;
         }
         return undefined;
@@ -211,12 +220,13 @@ export class OverlayLegend extends Loaddable {
                     this.applyCategoricalConfig(resolve);
                     break;
                 case "range":
+                case "interpolated":
                     this.applyRangeConfig(resolve);
                     break;
             }
         });
     }
-    applyRangeConfig = (resolve: (value: void | PromiseLike<void>) => void) => {
+    applyRangeConfig(resolve: (value: void | PromiseLike<void>) => void): void {
         if (this.legendConfig.configUrl && !this.isLoaded) {
             this.load()
                 .then(() => {
@@ -224,14 +234,22 @@ export class OverlayLegend extends Loaddable {
                 })
                 .catch(() => resolve());
             return;
-        } else if (this.legendConfig.bounds == null) {
-            resolve();
-            return;
         }
-        this.bounds = this.legendConfig.bounds as RangeBound;
+        if (this.legendConfig.type === "range") {
+            if (this.legendConfig.bounds == null) {
+                resolve();
+                return;
+            }
+            this.bounds = this.legendConfig.bounds as RangeBound;
+        } else if (this.legendConfig.type === "interpolated") {
+            if (typeof this.legendConfig.colorStops?.[0] !== "object") {
+                resolve();
+                return;
+            }
+        }
         this.applyRangeColors();
         resolve();
-    };
+    }
 
     applyCategoricalConfig(resolve: (value: void | PromiseLike<void>) => void) {
         if (
@@ -248,30 +266,61 @@ export class OverlayLegend extends Loaddable {
                 .catch(() => resolve());
         }
     }
-    applyRangeColors = () => {
-        if (!this.bounds) return;
+    applyRangeColors() {
+        let styleExpression: ExpressionSpecification;
 
-        const minValue = this.bounds.min;
-        const maxValue = this.bounds.max;
+        const flat: unknown[] = [];
 
-        const steps = this.legendConfig.numSteps as number;
-        const colors = splitColorRamp(
-            this.legendConfig.colorRamp as string[],
-            steps
-        );
+        if (this.legendConfig.type === "interpolated") {
+            if (this.invalidColorStop()) return;
+            if (typeof this.legendConfig.colorStops?.[0] !== "object") {
+                if (!this.bounds) return;
+                const colors = this.legendConfig.colorStops as string[];
+                const minValue = this.bounds.min;
+                const maxValue = this.bounds.max;
+                const count = colors.length;
+                const stepSize = (maxValue - minValue) / (count - 1);
 
-        const stepSize = (maxValue - minValue) / steps;
+                for (let i = 0; i < count; i++) {
+                    flat.push(minValue + i * stepSize, colors[i]);
+                }
+            } else {
+                for (const stop of this.legendConfig
+                    .colorStops as ColorStop[]) {
+                    flat.push(stop.value, stop.color);
+                }
+            }
+            styleExpression = [
+                "interpolate",
+                ["linear"],
+                ["get", this.legendConfig.coloringProperty],
+                ...flat,
+            ] as unknown as ExpressionSpecification;
+        } else {
+            if (!this.bounds) return;
 
-        const stepsData: unknown[] = [colors[0] as string];
-        for (let i = 1; i < steps; i++) {
-            stepsData.push(minValue + i * stepSize, colors[i]);
+            const minValue = this.bounds.min;
+            const maxValue = this.bounds.max;
+
+            const steps = this.legendConfig.numSteps as number;
+            const colors = splitColorRamp(
+                this.legendConfig.colorRamp as string[],
+                steps
+            );
+
+            const stepSize = (maxValue - minValue) / steps;
+
+            const stepsData: unknown[] = [colors[0] as string];
+            for (let i = 1; i < steps; i++) {
+                stepsData.push(minValue + i * stepSize, colors[i]);
+            }
+
+            styleExpression = [
+                "step",
+                ["get", this.legendConfig.coloringProperty],
+                ...stepsData,
+            ] as unknown as ExpressionSpecification;
         }
-
-        const styleExpression = [
-            "step",
-            ["get", this.legendConfig.coloringProperty],
-            ...stepsData,
-        ] as unknown as ExpressionSpecification;
 
         switch (this.parentOverlay.layerType) {
             case "fill":
@@ -324,7 +373,13 @@ export class OverlayLegend extends Loaddable {
                 break;
         }
         this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
-    };
+    }
+    private invalidColorStop() {
+        return (
+            !this.legendConfig.colorStops ||
+            this.legendConfig.colorStops.length < 2
+        );
+    }
     applyColors() {
         switch (this.parentOverlay.layerType) {
             case "fill":
@@ -404,11 +459,12 @@ export class OverlayLegend extends Loaddable {
         this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
     }
     doExtraStyling() {
+        if (!this.parentOverlay.isLoaded) return;
+
         if (
             this.legendConfig.type === "categorical" &&
             (this.legendConfig.categoryMapping === undefined ||
-                this.legendConfig.categoryMapping === null) &&
-            this.parentOverlay.isLoaded
+                this.legendConfig.categoryMapping === null)
         ) {
             if (this.colors.length != 0) {
                 this.applyColors();
@@ -444,10 +500,12 @@ export class OverlayLegend extends Loaddable {
                 });
             }
         } else if (
-            this.legendConfig.type === "range" &&
-            (this.legendConfig.bounds === null ||
-                this.legendConfig.bounds === undefined) &&
-            this.parentOverlay.isLoaded
+            (this.legendConfig.type === "interpolated" &&
+                !this.invalidColorStop() &&
+                typeof this.legendConfig.colorStops?.[0] !== "object") ||
+            (this.legendConfig.type === "range" &&
+                (this.legendConfig.bounds === null ||
+                    this.legendConfig.bounds === undefined))
         ) {
             if (this.bounds !== undefined && this.bounds !== null) {
                 this.applyRangeColors();
@@ -535,7 +593,11 @@ export class OverlayLegend extends Loaddable {
     }
     onLoadData(data: FetchData): Promise<void> {
         // TODO: ALLOW NDJSON
-        if (this.legendConfig.type === "range") {
+        if (this.legendConfig.type === "interpolated") {
+            this.legendConfig.colorStops = (
+                data as RemoteInterpolatedConfig
+            ).colorStops;
+        } else if (this.legendConfig.type === "range") {
             const cfg = data as RemoteRangeConfig;
             this.legendConfig.numSteps = cfg.numSteps;
             this.legendConfig.bounds = cfg.bounds ?? null;

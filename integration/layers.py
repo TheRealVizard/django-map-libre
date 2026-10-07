@@ -8,6 +8,7 @@ from django_map_libre.map import (
     FixedLegend,
     OverlayLayer,
     RangeLegend,
+    InterpolatedLegend,
     TileLayer,
 )
 
@@ -116,7 +117,7 @@ def fill_layers() -> list[OverlayLayer]:
                     num_steps=5,
                     bounds=(2000, 8000),
                     color_ramp=["#0000FF", "#00FF00", "#FF0000"],
-                    active=True,
+                    active=False,
                 ),
                 FixedLegend(
                     id="id-parcels-default",
@@ -129,6 +130,26 @@ def fill_layers() -> list[OverlayLayer]:
                     label="Auto-generated Palette",
                     coloring_property="parcel_id",
                     category_mapping=None,
+                    active=False,
+                ),
+                InterpolatedLegend(
+                    id="parcel-area-fill-temp",
+                    label="Annual Temp",
+                    coloring_property="annual_temp",
+                    color_stops=[
+                        {"value": -30.0, "color": "#9000FF"},
+                        {"value": -10.0, "color": "#0000FF"},
+                        {"value": 0.0, "color": "#FF0000"},
+                        {"value": 25.0, "color": "#FFFF00"},
+                        {"value": 40.0, "color": "#FFFDD2"},
+                    ],
+                    active=True,
+                ),
+                InterpolatedLegend(
+                    id="parcel-area-generated",
+                    label="Annual Temp (Generated)",
+                    coloring_property="annual_temp",
+                    color_stops=["#9000FF", "#FF0000", "#FFFDD2"],
                     active=False,
                 ),
             ],
@@ -162,6 +183,28 @@ def fill_layers() -> list[OverlayLayer]:
                     label="Area",
                     coloring_property="area_sqft",
                     config_url=reverse("range_legend"),
+                    active=True,
+                ),
+            ],
+            selected=False,
+        ),
+        OverlayLayer(
+            id="parcel-temp-fill-api",
+            label="Parcel Temp (Interpolated)",
+            url=f"{reverse('json_parcels')}?count=4000",
+            layer_type=LayerType.FILL,
+            legends=[
+                InterpolatedLegend(
+                    id="parcel-area-fill",
+                    label="Annual Temp",
+                    coloring_property="annual_temp",
+                    color_stops=[
+                        (-30.0, "#8800FF"),
+                        (-10.0, "#0000FF"),
+                        (0.0, "#FF0000"),
+                        (25.0, "#FFFF00"),
+                        (40.0, "#FFFDD2"),
+                    ],
                     active=True,
                 ),
             ],

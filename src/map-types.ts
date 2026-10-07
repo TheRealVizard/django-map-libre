@@ -19,7 +19,7 @@ export type RemoteRangeConfig = {
 };
 
 export type LayerType = "fill" | "line" | "circle" | "icon" | "symbol";
-export type LegendType = "fixed" | "categorical" | "range";
+export type LegendType = "fixed" | "categorical" | "range" | "interpolated";
 export type Anchor =
     | "center"
     | "left"
@@ -32,6 +32,15 @@ export type Anchor =
     | "bottom-right";
 export type Overlap = "never" | "always" | "cooperative";
 export type Display = "expanded" | "collapsed";
+
+export interface ColorStop {
+    value: number;
+    color: string;
+}
+export type RemoteInterpolatedConfig = {
+    colorStops: ColorStop[];
+};
+
 export interface LegendConfig {
     id: string;
     label: string;
@@ -44,6 +53,7 @@ export interface LegendConfig {
     image?: string | null;
 
     categoryMapping?: Legend | string | null;
+    colorStops?: ColorStop[] | string[] | null;
 
     configUrl?: string | null;
     numSteps?: number | null;

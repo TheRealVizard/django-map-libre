@@ -8,6 +8,7 @@ from django.forms.widgets import Script, Widget
 from django_map_libre.helpers import (
     AnchorType,
     ColorSchemeType,
+    ColorStep,
     Coordinate,
     Display,
     ImportMap,
@@ -479,6 +480,155 @@ class RangeLegend(Legend):
         }
 
 
+@dataclass(kw_only=True)
+class InterpolatedLegend(Legend):
+    """
+    Legend that smoothly interpolates colors across a numeric range.
+
+    Unlike ``RangeLegend``, which discretizes the range into buckets with
+    hard edges, this legend produces a continuous gradient. Useful for
+    temperature, elevation, population density, or anything where smooth
+    transitions read better than bands.
+
+    Colors are placed at explicit values ("stops"). The first stop defines
+    the low end, the last defines the high end, and MapLibre interpolates
+    linearly between consecutive stops. Values below the first stop are
+    clamped to the first color; values above the last to the last color.
+
+    Alternatively, ``color_stops`` may be a simple list of colors (strings).
+    In that case the map infers evenly spaced values across the range of the
+    ``coloring_property``, just like ``RangeLegend`` does for its buckets.
+
+    Example: a temperature ramp that is blue for cold, red at freezing,
+    yellow at 25°C, and white at 40°C::
+
+        InterpolatedLegend(
+            id="temp",
+            label="Temperature",
+            coloring_property="temp_c",
+            color_stops=[
+                (-10.0, "#0000FF"),
+                (0.0,   "#FF0000"),
+                (25.0,  "#FFFF00"),
+                (40.0,  "#FFFFFF"),
+            ],
+        )
+
+    Or, equivalently, letting the map infer the values::
+
+        InterpolatedLegend(
+            id="temp",
+            label="Temperature",
+            coloring_property="temp_c",
+            color_stops=["#0000FF", "#FF0000", "#FFFF00", "#FFFFFF"],
+        )
+
+    Configuration is mutually exclusive:
+    Configuration is mutually exclusive:
+
+    * **locally**: provide ``color_stops``;
+    * **remotely**: provide ``config_url`` returning a JSON object with a
+      ``colorStops`` array::
+
+        [
+            {"value": -10, "color": "#0000FF"},
+            {"value": 0,   "color": "#FF0000"},
+            {"value": 25,  "color": "#FFFF00"},
+            {"value": 40,  "color": "#FFFFFF"}
+        ]
+
+    When ``config_url`` is set, ``color_stops`` must NOT be provided.
+
+    :param coloring_property: Numeric feature property driving the
+        interpolation. Required.
+    :param color_stops: Either an ordered list of ``(value, color)`` pairs
+        (values must be in strictly ascending order; at least two stops
+        required) or a list of colors (strings). If a list of colors is
+        given, the map infers evenly spaced values across the range of the
+        ``coloring_property``. Mutually exclusive with ``config_url``.
+    :param config_url: URL returning a JSON object with ``colorStops``.
+        Mutually exclusive with ``color_stops``.
+    :raises ValueError: If ``coloring_property`` is empty, if neither
+        ``color_stops`` nor ``config_url`` is provided, if both are, if
+        ``color_stops`` has fewer than two entries, if its values are not
+        in ascending order, or if any color is not a non-empty string.
+    """
+
+    type: ClassVar[ColorSchemeType] = ColorSchemeType.INTERPOLATED
+
+    coloring_property: str
+    """Numeric feature property that drives the color interpolation."""
+
+    color_stops: list[ColorStep] | list[str] | None = None
+    """Ordered list of value, color stops."""
+
+    config_url: str | None = None
+    """URL returning a JSON object with ``colorStops``."""
+
+    def __post_init__(self) -> None:
+        if not self.coloring_property:
+            raise ValueError(
+                "InterpolatedLegend requires a non-empty 'coloring_property'."
+            )
+
+        if self.config_url is not None:
+            if not self.config_url.strip():
+                raise ValueError("config_url must be a non-empty string.")
+            if self.color_stops is not None:
+                raise ValueError(
+                    "When 'config_url' is set, 'color_stops' must not be provided."
+                )
+            return
+
+        if self.color_stops is None:
+            raise ValueError(
+                "InterpolatedLegend requires 'color_stops' or 'config_url'."
+            )
+        if len(self.color_stops) < 2:
+            raise ValueError(
+                "color_stops must contain at least two (value, color) pairs."
+            )
+
+        first = self.color_stops[0]
+
+        if isinstance(first, str):
+            for color in self.color_stops:
+                if not isinstance(color, str) or not color.strip():
+                    raise ValueError(
+                        "color_stops must contain non-empty color strings."
+                    )
+            return
+
+        if isinstance(first, dict):
+            for item in self.color_stops:
+                if not isinstance(item, dict):
+                    raise ValueError("color_stops must be a homogeneous list.")
+                if "value" not in item or "color" not in item:
+                    raise ValueError(
+                        "Each ColorStep must have 'value' and 'color' keys."
+                    )
+                if not isinstance(item["color"], str) or not item["color"].strip():
+                    raise ValueError("ColorStep 'color' must be a non-empty string.")
+                if not isinstance(item["value"], (int, float)):
+                    raise ValueError("ColorStep 'value' must be a number.")
+            values = [item["value"] for item in self.color_stops]
+            if values != sorted(values) or len(set(values)) != len(values):
+                raise ValueError(
+                    "ColorStep 'value's must be in strictly ascending order."
+                )
+            return
+
+    def type_specific_dict(self) -> dict[str, Any]:
+        """
+        :return: Dictionary with the fields specific to InterpolatedLegend.
+        """
+        return {
+            "coloringProperty": self.coloring_property,
+            "colorStops": None if self.color_stops is None else self.color_stops,
+            "configUrl": self.config_url,
+        }
+
+
 # ---------------------------------------------------------------------------
 # Layers
 # ---------------------------------------------------------------------------
@@ -647,6 +797,14 @@ class OverlayLayer(Layer):
                     f"'{self.id}' requires 'category_mapping' (dict or URL). "
                     "It cannot be None because icons are never auto-generated."
                 )
+
+        if self.layer_type == LayerType.ICON and (
+            isinstance(legend, RangeLegend) or isinstance(legend, InterpolatedLegend)
+        ):
+            raise ValueError(
+                f"RangeLegend or InterpolatedLegend '{legend.id}' on ICON layer. "
+                "Is not allowed"
+            )
 
     def to_dict(self) -> dict[str, Any]:
         """
