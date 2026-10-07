@@ -23,7 +23,7 @@ esbuild
 
 esbuild
     .build({
-        entryPoints: ["src/map-worker.ts"],
+        entryPoints: ["src/data/worker.ts"],
         bundle: true,
         format: "esm",
         platform: "browser",

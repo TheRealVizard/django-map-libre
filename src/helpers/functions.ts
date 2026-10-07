@@ -3,7 +3,7 @@ import {
     type AllPaintProperties,
     type Map as MapLibre,
 } from "maplibre-gl";
-import type { LegendConfig } from "./map-types";
+import type { LegendConfig } from "../types/map-types";
 
 const COLOR_PALETTE = [
     "#8dd3c7",

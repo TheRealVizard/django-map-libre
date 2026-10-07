@@ -13,13 +13,15 @@ import {
     type StyleSpecification,
     type SymbolLayerSpecification,
 } from "maplibre-gl";
-import { DownloadControl, LayerSelector, LegendControl } from "./map-controls";
-import { Overlay, OverlayManager } from "./map-helpers";
+import { Overlay, OverlayManager } from "./helpers/overlay-helpers";
 import type {
     MapWidgetDataset,
     OverlayLayerConfig,
     TileLayerConfig,
-} from "./map-types";
+} from "./types/map-types";
+import { LayerSelector } from "./controls/layer-selector";
+import { DownloadControl } from "./controls/download-control";
+import { LegendControl } from "./controls/legend-selector";
 
 setWorkerUrl(import.meta.resolve("maplibre-gl-worker"));
 
