@@ -19,7 +19,7 @@ import type {
     OverlayLayerConfig,
     TileLayerConfig,
 } from "./types/map-types";
-import { LayerSelector } from "./controls/layer-selector";
+import { LayerSelector } from "./controls/overlay-selector";
 import { DownloadControl } from "./controls/download-control";
 import { LegendControl } from "./controls/legend-selector";
 
