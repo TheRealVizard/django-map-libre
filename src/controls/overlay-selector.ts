@@ -14,65 +14,72 @@ export class LayerSelector extends OverlayControl {
         this.container.classList.add(
             "maplibregl-ctrl",
             "maplibregl-ctrl-group",
-            "django-map-libre-control"
+            "django-map-libre-control",
+            "map-overlay-container"
         );
 
+        const mainPanel = document.createElement("div");
+        mainPanel.classList.add("map-panel");
+
         const btnIcon = document.createElement("button");
-        btnIcon.classList.add("map-layer-selector", "map-control-btn");
+        btnIcon.classList.add(
+            "map-layer-selector",
+            "map-panel-button",
+            "map-control-btn"
+        );
         this.btnIcon = btnIcon;
 
-        const panel = document.createElement("div");
-        panel.classList.add("maplibregl-ctrl-layers-panel");
-        this.panel = panel;
+        mainPanel.append(btnIcon);
 
-        this.container.addEventListener("mouseenter", () => {
-            clearTimeout(this.timeout);
-            if (!this.isPinned) this._openPanel();
-        });
-
-        this.container.addEventListener("mouseleave", (e) => {
-            if (this.isPinned) return;
-            const relatedTarget = e.relatedTarget as Node;
-            if (this.container?.contains(relatedTarget)) return;
-            this.timeout = setTimeout(() => this._closePanel(), 150);
-        });
-
-        btnIcon.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.isPinned = !this.isPinned;
-            if (this.isPinned) {
-                this._openPanel();
-                btnIcon.classList.add("pinned");
+        btnIcon.addEventListener("click", () => {
+            this.panelVisible = !this.panelVisible;
+            if (this.panelVisible) {
+                mainPanel.classList.add("expanded");
             } else {
-                this._closePanel();
-                btnIcon.classList.remove("pinned");
+                mainPanel.classList.remove("expanded");
             }
         });
 
-        document.addEventListener("click", (e) => {
-            if (this.isPinned) return;
-            if (this.container && !this.container.contains(e.target as Node)) {
-                this._closePanel();
+        const contentPanel = document.createElement("div");
+        contentPanel.classList.add("map-expanded-container");
+
+        const header = document.createElement("div");
+        header.classList.add("map-panel-header");
+
+        header.addEventListener("click", () => {
+            this.isPinned = !this.isPinned;
+            this.panelVisible = !this.panelVisible;
+            if (this.panelVisible) {
+                mainPanel.classList.add("expanded");
+            } else {
+                mainPanel.classList.remove("expanded");
             }
         });
+
+        const hideBtn = document.createElement("button");
+        hideBtn.classList.add("map-hide-panel-btn");
+
+        const textHeader = document.createElement("span");
+        textHeader.textContent = "Layers"; // TODO: LANGUAGE
+        header.appendChild(textHeader);
+        header.append(hideBtn);
+
+        contentPanel.appendChild(header);
+
+        mainPanel.appendChild(contentPanel);
+
+        this.container.appendChild(mainPanel);
+
+        const legendWrapper = document.createElement("div");
+        legendWrapper.classList.add("map-panel-wrapper");
+        contentPanel.appendChild(legendWrapper);
+        this.panel = legendWrapper;
 
         map.on("styledata", () => {
-            this._populateLayerList();
-            if (this.panelVisible) {
-                requestAnimationFrame(() => {
-                    this._adjustVerticalPosition();
-                    this._adjustHorizontalPosition();
-                });
-            }
+            this.populateLayerList();
         });
 
-        this.container.appendChild(btnIcon);
-        this.container.appendChild(panel);
-
         return this.container;
-    }
-    _openPanel(): void {
-        super._openPanel();
     }
     _addLayer(layerId: string, label: string, visible: boolean) {
         if (this.titleLayers.has(layerId)) return;
@@ -81,12 +88,6 @@ export class LayerSelector extends OverlayControl {
             label: label || layerId,
             visible: visible,
         });
-        if (this.panelVisible) {
-            requestAnimationFrame(() => {
-                this._adjustVerticalPosition();
-                this._adjustHorizontalPosition();
-            });
-        }
     }
 
     addTileLayer(layerId: string, label: string, visible: boolean) {
@@ -117,26 +118,13 @@ export class LayerSelector extends OverlayControl {
                 );
             }
         }
-
-        if (this.panelVisible) {
-            requestAnimationFrame(() => {
-                this._adjustVerticalPosition();
-                this._adjustHorizontalPosition();
-            });
-        }
     }
 
     clearLayers() {
         this.titleLayers.clear();
-        if (this.panelVisible) {
-            requestAnimationFrame(() => {
-                this._adjustVerticalPosition();
-                this._adjustHorizontalPosition();
-            });
-        }
     }
 
-    _populateLayerList() {
+    populateLayerList() {
         const panel = this.panel;
 
         if (!panel) return;
@@ -175,7 +163,7 @@ export class LayerSelector extends OverlayControl {
             panel.appendChild(tileGroupLabel);
 
             tileLayers.forEach((layer) => {
-                const item = this._createLayerItem(layer, true);
+                const item = this.createLayerItem(layer, true);
                 panel.appendChild(item);
             });
         }
@@ -192,13 +180,13 @@ export class LayerSelector extends OverlayControl {
             panel.appendChild(overlayGroupLabel);
 
             overlayLayers.forEach((layer) => {
-                const item = this._createLayerItem(layer, false);
+                const item = this.createLayerItem(layer, false);
                 panel.appendChild(item);
             });
         }
     }
 
-    _createLayerItem(
+    createLayerItem(
         layer: LayerSpecification,
         isTile: boolean
     ): HTMLDivElement {

@@ -123,35 +123,13 @@
         background-size: 25px 25px;
     }
 
-    .maplibregl-ctrl-group button.map-layer-selector.pinned {
-        box-shadow: 0 0 2px 2px #0096ff;
-    }
-
-    .maplibregl-ctrl-layers-panel {
-        display: none;
-        position: absolute;
-        background: white;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        padding: 6px;
-        min-width: 150px;
-        max-width: 300px;
-        max-height: 300px;
-        overflow: auto;
-        z-index: 1000;
-    }
-
-    .maplibregl-ctrl-layers-panel.panel-open {
-        display: block;
-    }
-
-    .maplibregl-ctrl-layers-panel .empty-layers {
+    .empty-layers {
         padding: 4px 8px;
         color: #888;
         font-size: 12px;
     }
 
-    .maplibregl-ctrl-layers-panel .layer-group-title {
+    .layer-group-title {
         font-weight: bold;
         font-size: 12px;
         margin-top: 4px;
@@ -159,11 +137,11 @@
         color: #555;
     }
 
-    .maplibregl-ctrl-layers-panel .layer-group-separator {
+    .layer-group-separator {
         margin: 6px 0;
     }
 
-    .maplibregl-ctrl-layers-panel .layer-item {
+    .layer-item {
         padding: 4px 8px;
         cursor: pointer;
         border-bottom: 1px solid #eee;
@@ -175,16 +153,16 @@
         background: transparent;
     }
 
-    .maplibregl-ctrl-layers-panel .layer-item:hover {
+    .layer-item:hover {
         background: #f0f0f0;
     }
 
-    .maplibregl-ctrl-layers-panel .layer-input-control {
+    .layer-input-control {
         margin: 0;
         flex-shrink: 0;
     }
 
-    .maplibregl-ctrl-layers-panel .layer-input-span {
+    .layer-input-span {
         flex: 1;
     }
 
@@ -199,7 +177,7 @@
         background-size: 25px 25px;
     }
 
-    .map-legend-panel {
+    .map-panel {
         position: relative;
         background-color: white;
         border-radius: 4px;
@@ -208,7 +186,7 @@
         height: 29px;
     }
 
-    .map-legend-panel.expanded {
+    .map-panel.expanded {
         width: 230px;
         min-width: 230px;
         max-width: 230px;
@@ -216,22 +194,22 @@
         height: auto;
     }
 
-    .map-legend-panel > .map-legend-expanded-container {
+    .map-panel > .map-expanded-container {
         display: none;
     }
 
-    .map-legend-panel.expanded > .map-legend-expanded-container {
+    .map-panel.expanded > .map-expanded-container {
         display: flex;
         height: auto;
     }
 
-    .map-legend-expanded-container {
+    .map-expanded-container {
         display: flex;
         flex-direction: inherit;
         padding: 0.5rem;
     }
 
-    .map-legend-wrapper {
+    .map-panel-wrapper {
         display: flex;
         flex-direction: inherit;
         row-gap: 0.3rem;
@@ -240,7 +218,7 @@
         padding: 0.2rem;
     }
 
-    .map-legend-panel.expanded button.map-legend-button {
+    .map-panel.expanded button.map-panel-button {
         display: none;
     }
 
@@ -263,18 +241,18 @@
         transform: rotate(-90deg);
     }
 
-    .maplibregl-ctrl-bottom-right .map-legend-panel,
-    .maplibregl-ctrl-top-right .map-legend-panel {
+    .maplibregl-ctrl-bottom-right .map-panel,
+    .maplibregl-ctrl-top-right .map-panel {
         float: right;
     }
 
-    .maplibregl-ctrl-bottom-left .map-legend-panel,
-    .maplibregl-ctrl-top-left .map-legend-panel {
+    .maplibregl-ctrl-bottom-left .map-panel,
+    .maplibregl-ctrl-top-left .map-panel {
         float: left;
     }
 
-    .maplibregl-ctrl-bottom-right .map-legend-panel button.map-legend-button,
-    .maplibregl-ctrl-top-right .map-legend-panel button.map-legend-button {
+    .maplibregl-ctrl-bottom-right .map-panel button.map-panel-button,
+    .maplibregl-ctrl-top-right .map-panel button.map-panel-button {
         margin-left: auto;
     }
 
@@ -282,7 +260,7 @@
    Legend header
    ========================================================= */
 
-    .map-legend-header {
+    .map-panel-header {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -294,7 +272,7 @@
         cursor: pointer;
     }
 
-    .map-legend-header > span {
+    .map-panel-header > span {
         font-weight: bolder;
         font-size: 1rem;
         line-height: 1rem;
@@ -302,15 +280,15 @@
         padding: 0.2rem;
     }
 
-    .map-legend-header > button.map-hide-panel-btn {
+    .map-panel-header > button.map-hide-panel-btn {
         margin-left: auto;
     }
 
-    .map-legend-header > button.map-hide-panel-btn:hover {
+    .map-panel-header > button.map-hide-panel-btn:hover {
         background-color: transparent;
     }
 
-    .map-legend-header:hover {
+    .map-panel-header:hover {
         background: #f0f0f0;
         border-radius: 0.3rem;
     }

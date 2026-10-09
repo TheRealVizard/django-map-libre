@@ -321,10 +321,14 @@ export class LegendControl extends OverlayControl {
         );
 
         const mainPanel = document.createElement("div");
-        mainPanel.classList.add("map-legend-panel");
+        mainPanel.classList.add("map-panel");
 
         const btnIcon = document.createElement("button");
-        btnIcon.classList.add("map-legend-button", "map-control-btn");
+        btnIcon.classList.add(
+            "map-legend-button",
+            "map-panel-button",
+            "map-control-btn"
+        );
         this.btnIcon = btnIcon;
 
         mainPanel.append(btnIcon);
@@ -343,10 +347,10 @@ export class LegendControl extends OverlayControl {
         }
 
         const contentPanel = document.createElement("div");
-        contentPanel.classList.add("map-legend-expanded-container");
+        contentPanel.classList.add("map-expanded-container");
 
         const header = document.createElement("div");
-        header.classList.add("map-legend-header");
+        header.classList.add("map-panel-header");
         header.addEventListener("click", () => {
             this.panelVisible = !this.panelVisible;
             if (this.panelVisible) {
@@ -380,7 +384,7 @@ export class LegendControl extends OverlayControl {
         this.container.appendChild(mainPanel);
 
         const legendWrapper = document.createElement("div");
-        legendWrapper.classList.add("map-legend-wrapper");
+        legendWrapper.classList.add("map-panel-wrapper");
         contentPanel.appendChild(legendWrapper);
         this.panel = legendWrapper;
 
