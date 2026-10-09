@@ -155,7 +155,8 @@ const loadSvgImage = async (url: string): Promise<HTMLImageElement> => {
 };
 
 export const getRandomColor = (index: number = 0): string => {
-    return COLOR_PALETTE[index % COLOR_PALETTE.length] as string;
+    const idx = index >= 0 ? index : Math.round(Math.random() * 100);
+    return COLOR_PALETTE[idx % COLOR_PALETTE.length] as string;
 };
 
 export const getPaintForFillOverlay = (

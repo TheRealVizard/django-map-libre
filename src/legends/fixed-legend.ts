@@ -19,7 +19,10 @@ export class FixedLegend extends BaseLegend {
 
     doExtraStyling(): void {}
 
-    applyFixedLegendConfig(resolve: (value: void | PromiseLike<void>) => void) {
+    applyFixedLegendConfig(
+        resolve: (value: void | PromiseLike<void>) => void,
+        notify: boolean = true
+    ) {
         switch (this.parentOverlay.layerType) {
             case "fill":
                 for (const [prop, value] of Object.entries(
@@ -70,7 +73,17 @@ export class FixedLegend extends BaseLegend {
                 }
                 break;
         }
-        this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+        if (notify) {
+            this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+        }
         resolve();
+    }
+    /**
+     * Updates the fixed color and reapplies the style without triggering the
+     * load-complete listener. Used for live editing from the legend control.
+     */
+    setColor(color: string): void {
+        this.legendConfig.color = color;
+        this.applyFixedLegendConfig(() => {}, false);
     }
 }

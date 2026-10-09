@@ -2,10 +2,16 @@ import { splitColorRamp, toTitleCase } from "@/helpers/functions";
 import type { Overlay, OverlayManager } from "@/helpers/overlay-helpers";
 import type {
     CategoricalLegend,
+    FixedLegend,
     InterpolatedLegend,
     RangeLegend,
 } from "@/legends";
-import type { ColorStop, Display, RangeBound } from "@/types/map-types";
+import type {
+    ColorStop,
+    Display,
+    LegendType,
+    RangeBound,
+} from "@/types/map-types";
 import type { Map as MapLibre } from "maplibre-gl";
 import { OverlayControl } from "./base-controls";
 
@@ -121,6 +127,7 @@ export class LegendControl extends OverlayControl {
             body.appendChild(
                 this.getLegendRow(
                     overlay,
+                    overlay.activeLegend.legendConfig.type,
                     overlay.activeLegend.legendConfig.label ||
                         toTitleCase(overlay.activeLegend.legendConfig.id),
                     overlay.activeLegend.legendConfig.color as string,
@@ -134,9 +141,11 @@ export class LegendControl extends OverlayControl {
                 body.appendChild(
                     this.getLegendRow(
                         overlay,
+                        overlay.activeLegend.legendConfig.type,
                         data.label || toTitleCase(key),
                         data.color as string,
-                        data.icon as string
+                        data.icon as string,
+                        key
                     )
                 );
             }
@@ -162,9 +171,11 @@ export class LegendControl extends OverlayControl {
                 body.appendChild(
                     this.getLegendRow(
                         overlay,
+                        overlay.activeLegend.legendConfig.type,
                         `${low.toFixed(0)} - ${high.toFixed(0)}`,
                         colors[i] as string,
-                        ""
+                        "",
+                        i
                     )
                 );
             }
@@ -226,7 +237,14 @@ export class LegendControl extends OverlayControl {
             body.appendChild(labels);
         }
     }
-    getLegendRow(overlay: Overlay, title: string, color: string, icon: string) {
+    getLegendRow(
+        overlay: Overlay,
+        legendType: LegendType,
+        title: string,
+        color: string,
+        icon: string,
+        key?: string | number
+    ) {
         const row = document.createElement("div");
         row.classList.add("legend-section-row");
         const text = document.createElement("span");
@@ -237,9 +255,37 @@ export class LegendControl extends OverlayControl {
             preview.src = icon;
             row.appendChild(preview);
         } else {
-            const preview = document.createElement("span");
+            const tagType =
+                overlay.layerType === "symbol" || legendType === "interpolated"
+                    ? "span"
+                    : "input";
+            const preview = document.createElement(tagType);
             preview.classList.add(`legend-preview-${overlay.layerType}`);
-            preview.style.background = color;
+            if (tagType === "input") {
+                preview.setAttribute("type", "color");
+                const input = preview as HTMLInputElement;
+                input.value = color;
+                input.addEventListener("input", (e) => {
+                    const newColor = (e.target as HTMLInputElement).value;
+                    if (legendType === "fixed") {
+                        (overlay.activeLegend as FixedLegend).setColor(
+                            newColor
+                        );
+                    } else if (legendType === "categorical") {
+                        (overlay.activeLegend as CategoricalLegend).setColor(
+                            key as string,
+                            newColor
+                        );
+                    } else if (legendType === "range") {
+                        (overlay.activeLegend as RangeLegend).setColor(
+                            key as number,
+                            newColor
+                        );
+                    }
+                });
+            } else {
+                preview.style.background = color;
+            }
             row.appendChild(preview);
         }
         row.appendChild(text);

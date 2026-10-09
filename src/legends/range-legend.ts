@@ -9,6 +9,7 @@ import {
     getPaintForCircleOverlay,
     getPaintForFillOverlay,
     getPaintForLineOverlay,
+    getRandomColor,
     splitColorRamp,
 } from "../helpers/functions";
 import type { Overlay } from "../helpers/overlay-helpers";
@@ -36,6 +37,10 @@ export class RangeLegend extends BaseLegend {
         super(layerId, legendConfig, overlay, map, onLoadCompleteListener);
         if (!legendConfig.configUrl) {
             this.isLoaded = true;
+            this.legendConfig.colorRamp = this.legendConfig.colorRamp ?? [
+                getRandomColor(-1),
+                getRandomColor(-1),
+            ];
         }
     }
 
@@ -65,13 +70,45 @@ export class RangeLegend extends BaseLegend {
         resolve();
     }
 
-    applyRangeColors() {
+    /**
+     * Updates the color of a single bin and reapplies the step expression
+     * without triggering the load-complete listener.
+     *
+     * On the first edit, `colorRamp` is expanded via `splitColorRamp` into
+     * an explicit per-bin list (length === `numSteps`). Subsequent edits
+     * mutate a single index without affecting the other bins.
+     *
+     * @param index - Bin index, in `[0, numSteps)`.
+     * @param color - New color for that bin.
+     */
+    setColor(index: number, color: string): void {
+        const steps = this.legendConfig.numSteps as number;
+        const ramp = this.legendConfig.colorRamp as string[];
+        if (!ramp) return;
+
+        const resolved =
+            ramp.length === steps ? ramp : splitColorRamp(ramp, steps);
+
+        if (index < 0 || index >= resolved.length) return;
+        resolved[index] = color;
+        this.legendConfig.colorRamp = resolved;
+        this.applyRangeColors(false);
+    }
+
+    /**
+     * Applies the step expression to the layer.
+     *
+     * @param notify - When `true` (default), fires the load-complete
+     *   listener. Live edits from the control pass `false`.
+     */
+    applyRangeColors(notify: boolean = true) {
         if (!this.bounds) return;
 
         const minValue = this.bounds.min;
         const maxValue = this.bounds.max;
 
         const steps = this.legendConfig.numSteps as number;
+        console.log(this.legendConfig.colorRamp, "here");
         const colors = splitColorRamp(
             this.legendConfig.colorRamp as string[],
             steps
@@ -140,7 +177,9 @@ export class RangeLegend extends BaseLegend {
                 );
                 break;
         }
-        this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+        if (notify) {
+            this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+        }
     }
 
     doExtraStyling() {
@@ -184,7 +223,10 @@ export class RangeLegend extends BaseLegend {
         const cfg = data as RemoteRangeConfig;
         this.legendConfig.numSteps = cfg.numSteps;
         this.legendConfig.bounds = cfg.bounds ?? null;
-        this.legendConfig.colorRamp = cfg.colorRamp ?? null;
+        this.legendConfig.colorRamp = cfg.colorRamp ?? [
+            getRandomColor(-1),
+            getRandomColor(-1),
+        ];
         return Promise.resolve();
     }
 }

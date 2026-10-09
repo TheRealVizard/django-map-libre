@@ -58,7 +58,7 @@ export abstract class BaseLegend extends Loaddable {
      * the event with the overlay and legend that produced it.
      */
     onLoadCompleteListener: (layerID: string, legendID: string) => void =
-        () => { };
+        () => {};
 
     /**
      * @param layerId - Id of the MapLibre layer this legend styles.
@@ -123,7 +123,7 @@ export abstract class BaseLegend extends Loaddable {
      * Called by {@link onLoadComplete} before `updateMapLayout`. Subclasses
      * that do not use colors may leave the default empty implementation.
      */
-    cacheColors(): void { }
+    cacheColors(): void {}
 
     /**
      * Populates the icon cache for the legend.
@@ -131,7 +131,7 @@ export abstract class BaseLegend extends Loaddable {
      * Called by {@link onLoadComplete} before `updateMapLayout`. Subclasses
      * that do not use icons may leave the default empty implementation.
      */
-    cacheIcons(): void { }
+    cacheIcons(): void {}
 
     /**
      * Parses a chunk received from the worker while loading a remote

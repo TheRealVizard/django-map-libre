@@ -77,7 +77,15 @@ export class CategoricalLegend extends BaseLegend {
         }
     }
 
-    applyColors() {
+    /**
+     * Applies the match expression to the layer.
+     *
+     * @param notify - When `true` (default), fires the load-complete
+     *   listener so the legend control rebuilds its section. Live edits
+     *   from the control pass `false` to avoid tearing down the color
+     *   picker mid-drag.
+     */
+    applyColors(notify: boolean = true) {
         switch (this.parentOverlay.layerType) {
             case "fill":
                 for (const [prop, value] of Object.entries(
@@ -153,7 +161,9 @@ export class CategoricalLegend extends BaseLegend {
                 ] as unknown as ExpressionSpecification);
                 break;
         }
-        this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+        if (notify) {
+            this.onLoadCompleteListener(this.layerId, this.legendConfig.id);
+        }
     }
 
     doExtraStyling() {
@@ -223,5 +233,25 @@ export class CategoricalLegend extends BaseLegend {
             this.markers.push(key, markerID);
             loadImageOnMap(data.icon, this.map, markerID);
         }
+    }
+    /**
+     * Updates the color of a single category and reapplies the match
+     * expression without triggering the load-complete listener.
+     *
+     * The `colors` array is the flat `[key1, color1, key2, color2, ...]`
+     * list consumed by the `match` expression, so the new color is written
+     * next to its key instead of rebuilding the whole array.
+     *
+     * @param key - Category key as stored in `legendData`.
+     * @param color - New color for the category.
+     */
+    setColor(key: string, color: string): void {
+        if (!this.legendData || !this.legendData[key]) return;
+        this.legendData[key].color = color;
+        const idx = this.colors.indexOf(key);
+        if (idx >= 0 && idx + 1 < this.colors.length) {
+            this.colors[idx + 1] = color;
+        }
+        this.applyColors(false);
     }
 }
