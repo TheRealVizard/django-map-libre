@@ -1,6 +1,7 @@
 import type { TrackedLayer } from "@/types/map-types";
-import type { LayerSpecification, Map as MapLibre } from "maplibre-gl";
+import type { LayerSpecification } from "maplibre-gl";
 import { OverlayControl } from "./base-controls";
+import type { MapLibre } from "@/helpers/map-wrapper";
 
 export class LayerSelector extends OverlayControl {
     timeout: ReturnType<typeof setTimeout> | undefined = undefined;

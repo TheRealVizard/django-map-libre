@@ -1,9 +1,6 @@
-import {
-    type AllLayoutProperties,
-    type AllPaintProperties,
-    type Map as MapLibre,
-} from "maplibre-gl";
+import { type AllLayoutProperties, type AllPaintProperties } from "maplibre-gl";
 import type { LegendConfig } from "../types/map-types";
+import type { MapLibre } from "./map-wrapper";
 
 const COLOR_PALETTE = [
     "#8dd3c7",

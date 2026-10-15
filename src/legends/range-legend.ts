@@ -1,5 +1,4 @@
 import type { FeatureCollection } from "geojson";
-import type { Map as MapLibre } from "maplibre-gl";
 import {
     GeoJSONSource,
     type AllPaintProperties,
@@ -20,6 +19,7 @@ import type {
     RemoteRangeConfig,
 } from "../types/map-types";
 import { BaseLegend } from "./base-legend";
+import type { MapLibre } from "@/helpers/map-wrapper";
 
 /**
  * Legend that discretizes a numeric range into hard-edged buckets.

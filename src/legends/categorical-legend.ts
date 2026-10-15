@@ -1,5 +1,4 @@
 import type { FeatureCollection } from "geojson";
-import type { Map as MapLibre } from "maplibre-gl";
 import {
     GeoJSONSource,
     type AllLayoutProperties,
@@ -18,6 +17,7 @@ import {
 import type { Overlay } from "../helpers/overlay-helpers";
 import type { FetchData, Legend, LegendConfig } from "../types/map-types";
 import { BaseLegend } from "./base-legend";
+import type { MapLibre } from "@/helpers/map-wrapper";
 
 const DefaultMapMarkerID = `marker-django-map-libre-default`;
 const FallBackColor = "#c0c0c0";

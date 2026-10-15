@@ -120,3 +120,10 @@ export type FetchData =
 export type DataCallback = (data: FetchData) => void;
 export type CompleteCallback = () => void;
 export type ErrorCallback = (error: string) => void;
+
+export type GoToKind = "bbox" | "coord" | "feature";
+
+export interface GoToFeature {
+    id: string | number;
+    layerID: string;
+}

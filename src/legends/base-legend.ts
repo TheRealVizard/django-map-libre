@@ -1,7 +1,7 @@
 import { Loaddable } from "@/data/loader";
-import type { Map as MapLibre } from "maplibre-gl";
 import type { Overlay } from "../helpers/overlay-helpers";
 import type { FetchData, LegendConfig } from "../types/map-types";
+import type { MapLibre } from "@/helpers/map-wrapper";
 
 /**
  * Shared base for every legend implementation.

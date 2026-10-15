@@ -1,4 +1,4 @@
-import type { Map as MapLibre } from "maplibre-gl";
+import type { MapLibre } from "@/helpers/map-wrapper";
 import { Control } from "../controls/base-controls";
 
 export class DownloadControl extends Control {

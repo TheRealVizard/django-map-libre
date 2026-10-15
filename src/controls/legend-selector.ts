@@ -12,8 +12,8 @@ import type {
     LegendType,
     RangeBound,
 } from "@/types/map-types";
-import type { Map as MapLibre } from "maplibre-gl";
 import { OverlayControl } from "./base-controls";
+import type { MapLibre } from "@/helpers/map-wrapper";
 
 export class LegendControl extends OverlayControl {
     loadingOverlay: HTMLDivElement | undefined;

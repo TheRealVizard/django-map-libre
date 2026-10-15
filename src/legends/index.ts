@@ -3,7 +3,7 @@ export { CategoricalLegend } from "./categorical-legend";
 export { FixedLegend } from "./fixed-legend";
 export { InterpolatedLegend } from "./interpolated-legend";
 export { RangeLegend } from "./range-legend";
-import type { Map as MapLibre } from "maplibre-gl";
+import type { MapLibre } from "@/helpers/map-wrapper";
 import type { Overlay } from "../helpers/overlay-helpers";
 import type { LegendConfig } from "../types/map-types";
 import { BaseLegend } from "./base-legend";

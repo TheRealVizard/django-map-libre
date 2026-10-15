@@ -1,5 +1,6 @@
-import type { ControlPosition, IControl, Map as MapLibre } from "maplibre-gl";
+import type { ControlPosition, IControl } from "maplibre-gl";
 import type { OverlayManager } from "../helpers/overlay-helpers";
+import type { MapLibre } from "@/helpers/map-wrapper";
 
 export class Control implements IControl {
     map: MapLibre | null = null;

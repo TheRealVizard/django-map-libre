@@ -1,5 +1,5 @@
 import type { Feature } from "geojson";
-import { GeoJSONSource, Map as MapLibre } from "maplibre-gl";
+import { GeoJSONSource } from "maplibre-gl";
 import { Loaddable } from "../data/loader";
 import { createLegend, type BaseLegend } from "../legends";
 import type {
@@ -8,6 +8,7 @@ import type {
     LayerType,
     LegendConfig,
 } from "../types/map-types";
+import type { MapLibre } from "./map-wrapper";
 
 export class Overlay extends Loaddable {
     layerConfig: LayerConfig;

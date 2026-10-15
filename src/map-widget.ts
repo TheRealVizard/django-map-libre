@@ -1,6 +1,5 @@
 import {
     FullscreenControl,
-    Map as MapLibre,
     NavigationControl,
     ScaleControl,
     setWorkerUrl,
@@ -22,6 +21,7 @@ import type {
 import { LayerSelector } from "./controls/overlay-selector";
 import { DownloadControl } from "./controls/download-control";
 import { LegendControl } from "./controls/legend-selector";
+import { MapLibre } from "./helpers/map-wrapper";
 
 setWorkerUrl(import.meta.resolve("maplibre-gl-worker"));
 
