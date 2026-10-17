@@ -286,7 +286,7 @@ const initMap = (mapContainer: HTMLElement) => {
     }
 
     // ---- Layer Selector ----
-    const overlayManager = new OverlayManager(map);
+    const overlayManager = map.getOverlayManager();
     const layerSelector = new LayerSelector(overlayManager);
     map.addControl(layerSelector, mapConfig.layerSelectorPosition);
 

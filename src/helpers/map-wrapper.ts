@@ -1,5 +1,6 @@
 import { Map as BaseMap, GeoJSONSource, type MapOptions } from "maplibre-gl";
 import type { GoToEvent } from "./map-events";
+import { OverlayManager } from "./overlay-helpers";
 
 const DEFAULT_MAP_ZOOM_LEVEL = 17;
 
@@ -8,12 +9,14 @@ export class MapLibre extends BaseMap {
     layers: string[] = [];
     sources: string[] = [];
     container: HTMLElement;
+    overlayManager: OverlayManager;
 
     constructor(options: MapOptions) {
         super(options);
         this.container = options.container as HTMLElement;
         this.container.addEventListener("goTo", this.goTo);
         this.container.addEventListener("highlight", this.highlight);
+        this.overlayManager = new OverlayManager(this);
     }
     goTo = async (ev: Event) => {
         const event = ev as GoToEvent;
@@ -98,5 +101,8 @@ export class MapLibre extends BaseMap {
         if (!feature) return null;
 
         return this.geometryBbox(feature.geometry);
+    }
+    getOverlayManager(): OverlayManager {
+        return this.overlayManager;
     }
 }
