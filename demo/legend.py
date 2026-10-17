@@ -3,14 +3,14 @@
 from django.http import HttpRequest
 from django.urls import reverse
 
-from integration.constants import (
+from demo.constants import (
     DEFAULT_FEATURE_COUNT,
     RANGE_LEGEND_DEFAULT_STEPS,
     RANGE_LEGEND_DEFAULT_MIN,
     RANGE_LEGEND_DEFAULT_MAX,
     RANGE_LEGEND_DEFAULT_RAMP,
 )
-from integration.icons import ICONS, random_hex_color
+from demo.icons import ICONS, random_hex_color
 
 
 def build_color_legend_entry(index: int) -> tuple[str, dict]:

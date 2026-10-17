@@ -4,8 +4,8 @@ from django.forms import CharField, Form
 
 from django_map_libre.map import MapWidget
 
-from integration.constants import MAP_CENTER
-from integration.layers import overlay_layers, tile_layers
+from demo.constants import MAP_CENTER
+from demo.layers import overlay_layers, tile_layers
 
 
 class MapForm(Form):

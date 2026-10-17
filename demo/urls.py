@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from integration.views.data import (
+from demo.views.data import (
     icon,
     json_parcels,
     ndjson_parcels,
@@ -10,7 +10,7 @@ from integration.views.data import (
     random_icon_legend,
     random_range_legend,
 )
-from integration.views.pages import map_view
+from demo.views.pages import map_view
 
 
 urlpatterns = [

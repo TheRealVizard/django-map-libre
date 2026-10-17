@@ -9,10 +9,10 @@ from django.http import (
     StreamingHttpResponse,
 )
 
-from integration.constants import DEFAULT_BATCH_SIZE, DEFAULT_FEATURE_COUNT
-from integration.icons import render_icon_svg
-from integration.legend import build_color_legend, build_icon_legend, build_range_legend
-from integration.parcels import build_parcel_feature
+from demo.constants import DEFAULT_BATCH_SIZE, DEFAULT_FEATURE_COUNT
+from demo.icons import render_icon_svg
+from demo.legend import build_color_legend, build_icon_legend, build_range_legend
+from demo.parcels import build_parcel_feature
 
 
 def icon(request: HttpRequest, name: str) -> HttpResponse:

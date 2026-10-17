@@ -12,7 +12,7 @@ from django_map_libre.map import (
     TileLayer,
 )
 
-from integration.constants import LAND_USE_MAPPING
+from demo.constants import LAND_USE_MAPPING
 
 
 def tile_layers() -> list[TileLayer]:

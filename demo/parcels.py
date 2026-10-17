@@ -2,7 +2,7 @@
 
 import random
 
-from integration.constants import (
+from demo.constants import (
     LAND_USES,
     PARCEL_HALF_SIZE,
     PARCEL_LATITUDE_RANGE,

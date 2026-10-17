@@ -3,7 +3,7 @@
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
 
-from integration.forms import MapForm
+from demo.forms import MapForm
 
 
 def map_view(request: HttpRequest) -> TemplateResponse:
