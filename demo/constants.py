@@ -1,4 +1,4 @@
-"""Shared constants for the integration test project."""
+"""Shared constants for the demo test project."""
 
 from typing import Final
 

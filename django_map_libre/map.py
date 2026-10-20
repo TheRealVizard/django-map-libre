@@ -708,6 +708,7 @@ class OverlayLayer(Layer):
     url: str
     legends: list[Legend]
     layer_type: LayerType = LayerType.FILL
+    highlight_color: str | None = None
 
     def __post_init__(self) -> None:
         if not self.legends:
@@ -818,6 +819,9 @@ class OverlayLayer(Layer):
             "url": self.url,
             "layerType": self.layer_type.value,
             "legends": [legend.to_dict() for legend in self.legends],
+            "highlightColor": (
+                None if self.highlight_color is None else self.highlight_color
+            ),
         }
 
 

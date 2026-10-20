@@ -1,4 +1,4 @@
-"""HTML page views for the integration test project."""
+"""HTML page views for the demo test project."""
 
 from django.http import HttpRequest
 from django.template.response import TemplateResponse

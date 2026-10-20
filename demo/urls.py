@@ -1,4 +1,4 @@
-"""URL patterns for the integration test project."""
+"""URL patterns for the demo test project."""
 
 from django.urls import path
 
