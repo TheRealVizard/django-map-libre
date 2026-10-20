@@ -82,6 +82,7 @@ export interface LayerConfig {
 export interface OverlayLayerConfig extends LayerConfig {
     layerType: LayerType;
     legends: LegendConfig[];
+    highlightColor: string | null;
 }
 
 export interface TileLayerConfig extends LayerConfig {
@@ -123,7 +124,21 @@ export type ErrorCallback = (error: string) => void;
 
 export type GoToKind = "bbox" | "coord" | "feature";
 
-export interface GoToFeature {
+export interface MapFeature {
     id: string | number;
     layerID: string;
 }
+
+export interface FeatureList {
+    ids: string[] | number[];
+    layerID: string;
+}
+
+export interface FeatureListHighlight extends FeatureList {
+    highlightColor?: string;
+}
+export interface FeatureHighlight extends MapFeature {
+    highlightColor?: string;
+}
+
+export interface GoToFeature extends MapFeature {}

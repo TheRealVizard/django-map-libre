@@ -1,4 +1,9 @@
-import type { GoToFeature, GoToKind } from "@/types/map-types";
+import type {
+    FeatureHighlight,
+    FeatureListHighlight,
+    GoToFeature,
+    GoToKind,
+} from "@/types/map-types";
 import type { LngLatLike } from "maplibre-gl";
 
 interface GoToDetail {
@@ -11,4 +16,8 @@ interface GoToDetail {
 
 export interface GoToEvent extends CustomEvent {
     detail: GoToDetail;
+}
+
+export interface HighlightEvent extends CustomEvent {
+    detail: FeatureHighlight | FeatureListHighlight | FeatureListHighlight[];
 }

@@ -7,6 +7,7 @@ import type {
     LayerConfig,
     LayerType,
     LegendConfig,
+    OverlayLayerConfig,
 } from "../types/map-types";
 import type { MapLibre } from "./map-wrapper";
 
@@ -18,6 +19,7 @@ export class Overlay extends Loaddable {
     map: MapLibre;
     activeLegend: BaseLegend | undefined;
     legends: BaseLegend[];
+    highlightColor: string | null;
     overlayLoadCompleteListener?: (layerID: string) => void;
     legendLoadCompleteListener?: (layerID: string, legendID: string) => void;
 
@@ -36,13 +38,15 @@ export class Overlay extends Loaddable {
         layerType: LayerType,
         map: MapLibre,
         activeLegend: LegendConfig,
-        legends: LegendConfig[]
+        legends: LegendConfig[],
+        highlightColor: string | null
     ) {
         super();
         this.layerConfig = layerConfig;
         this.layerType = layerType;
         this.map = map;
         this.isDisplayed = layerConfig.selected;
+        this.highlightColor = highlightColor;
         this.legends = legends.map((l) => {
             const legendOverlay = createLegend(
                 layerConfig.id,

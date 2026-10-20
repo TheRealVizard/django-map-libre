@@ -1,13 +1,20 @@
-import { Map as BaseMap, GeoJSONSource, type MapOptions } from "maplibre-gl";
-import type { GoToEvent } from "./map-events";
+import type { Feature, GeoJsonProperties, Geometry } from "geojson";
+import {
+    Map as BaseMap,
+    GeoJSONSource,
+    type LineLayerSpecification,
+    type MapOptions,
+} from "maplibre-gl";
+import type { GoToEvent, HighlightEvent } from "./map-events";
 import { OverlayManager } from "./overlay-helpers";
+import { getMapPaintForLineOverlay } from "./functions";
 
 const DEFAULT_MAP_ZOOM_LEVEL = 17;
 
 export class MapLibre extends BaseMap {
     highlighted: boolean = false;
-    layers: string[] = [];
-    sources: string[] = [];
+    highlightLayers: string[] = [];
+    highlightSources: string[] = [];
     container: HTMLElement;
     overlayManager: OverlayManager;
 
@@ -57,7 +64,40 @@ export class MapLibre extends BaseMap {
             });
         }
     };
-    highlight = (_ev: Event) => {};
+    highlight = async (ev: Event) => {
+        if (this.highlighted) {
+            this.highlighted = false;
+            this.removeHighlight();
+        }
+        const event = ev as HighlightEvent;
+        if (Array.isArray(event.detail)) {
+        } else if ("id" in event.detail) {
+            if (this.overlayManager.hasOverlay(event.detail.layerID)) {
+                const overlay = this.overlayManager.getOverlay(
+                    event.detail.layerID
+                );
+                if (overlay.layerType !== "icon") {
+                    const feature = await this.getFeature(
+                        event.detail.layerID,
+                        event.detail.id
+                    );
+                    if (feature) {
+                        const source = this.addHighlight(
+                            event.detail.layerID,
+                            event.detail.highlightColor ||
+                                overlay.highlightColor ||
+                                "#ff4500"
+                        );
+                        (this.getSource(source) as GeoJSONSource).updateData({
+                            add: [feature],
+                        });
+                        this.highlighted = true;
+                    }
+                }
+            }
+        } else if ("ids" in event.detail) {
+        }
+    };
     geometryBbox(
         geom: GeoJSON.Geometry
     ): [number, number, number, number] | null {
@@ -87,6 +127,14 @@ export class MapLibre extends BaseMap {
         layerID: string,
         featureID: string | number
     ): Promise<[number, number, number, number] | null> {
+        const feature = await this.getFeature(layerID, featureID);
+        if (!feature) return null;
+        return this.geometryBbox(feature.geometry);
+    }
+    async getFeature(
+        layerID: string,
+        featureID: string | number
+    ): Promise<Feature<Geometry, GeoJsonProperties> | null> {
         const layer = this.getLayer(layerID);
         if (!layer) return null;
 
@@ -99,10 +147,49 @@ export class MapLibre extends BaseMap {
             (f) => f.id === featureID
         );
         if (!feature) return null;
-
-        return this.geometryBbox(feature.geometry);
+        return feature;
     }
     getOverlayManager(): OverlayManager {
         return this.overlayManager;
+    }
+    removeHighlight = () => {
+        this.highlightLayers.forEach((id) => {
+            this.removeLayer(id);
+        });
+        this.highlightSources.forEach((id) => {
+            this.removeSource(id);
+        });
+        this.highlightLayers = [];
+        this.highlightSources = [];
+    };
+    addHighlight(layerId: string, highlightColor: string): string {
+        const layer = this.getLayer(layerId);
+        const id = `highlight-layer-${layerId}`;
+        const source = `${id}-source`;
+        if (layer?.type === "circle") {
+        } else {
+            this.addSource(source, {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: [],
+                },
+            });
+            this.addLayer({
+                type: "line",
+                id: id,
+                source: source,
+                layout: {
+                    visibility: "visible",
+                },
+                paint: {
+                    ...getMapPaintForLineOverlay(highlightColor),
+                    "line-width": 6,
+                },
+            } as LineLayerSpecification);
+        }
+        this.highlightLayers.push(id);
+        this.highlightSources.push(source);
+        return source;
     }
 }

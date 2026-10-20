@@ -173,8 +173,8 @@ export const getPaintForFillOverlay = (
     };
 };
 
-export const getPaintForLineOverlay = (
-    activeLegend: LegendConfig,
+export const getMapPaintForLineOverlay = (
+    color: string,
     basic = false
 ): AllPaintProperties => {
     return {
@@ -183,9 +183,16 @@ export const getPaintForLineOverlay = (
         ...(basic
             ? {}
             : {
-                  "line-color": activeLegend.color || "red",
+                  "line-color": color,
               }),
     };
+};
+
+export const getPaintForLineOverlay = (
+    activeLegend: LegendConfig,
+    basic = false
+): AllPaintProperties => {
+    return getMapPaintForLineOverlay(activeLegend.color || "red", basic);
 };
 
 export const getPaintForCircleOverlay = (
