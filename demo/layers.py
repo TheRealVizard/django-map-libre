@@ -2,17 +2,16 @@
 
 from django.urls import reverse
 
-from django_map_libre.helpers import LayerType
+from demo.constants import LAND_USE_MAPPING
+from django_map_libre.helpers import ColorStep, LayerType
 from django_map_libre.map import (
     CategoricalLegend,
     FixedLegend,
+    InterpolatedLegend,
     OverlayLayer,
     RangeLegend,
-    InterpolatedLegend,
     TileLayer,
 )
-
-from demo.constants import LAND_USE_MAPPING
 
 
 def tile_layers() -> list[TileLayer]:
@@ -137,11 +136,11 @@ def fill_layers() -> list[OverlayLayer]:
                     label="Annual Temp",
                     coloring_property="annual_temp",
                     color_stops=[
-                        {"value": -30.0, "color": "#9000FF"},
-                        {"value": -10.0, "color": "#0000FF"},
-                        {"value": 0.0, "color": "#FF0000"},
-                        {"value": 25.0, "color": "#FFFF00"},
-                        {"value": 40.0, "color": "#FFFDD2"},
+                        ColorStep(value=-30.0, color="#9000FF"),
+                        ColorStep(value=-10.0, color="#0000FF"),
+                        ColorStep(value=0.0, color="#FF0000"),
+                        ColorStep(value=25.0, color="#FFFF00"),
+                        ColorStep(value=40.0, color="#FFFDD2"),
                     ],
                     active=True,
                 ),
@@ -199,11 +198,11 @@ def fill_layers() -> list[OverlayLayer]:
                     label="Annual Temp",
                     coloring_property="annual_temp",
                     color_stops=[
-                        (-30.0, "#8800FF"),
-                        (-10.0, "#0000FF"),
-                        (0.0, "#FF0000"),
-                        (25.0, "#FFFF00"),
-                        (40.0, "#FFFDD2"),
+                        ColorStep(value=-30.0, color="#8800FF"),
+                        ColorStep(value=-10.0, color="#0000FF"),
+                        ColorStep(value=0.0,   color="#FF0000"),
+                        ColorStep(value=25.0,  color="#FFFF00"),
+                        ColorStep(value=40.0,  color="#FFFDD2"),
                     ],
                     active=True,
                 ),

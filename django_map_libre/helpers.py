@@ -1,7 +1,6 @@
 import json
 from dataclasses import dataclass
 from enum import Enum
-from typing import TypedDict
 
 from django.forms.widgets import MediaAsset
 from django.templatetags.static import static
@@ -9,9 +8,21 @@ from django.utils.html import mark_safe
 from django.utils.safestring import SafeString
 
 
-class ColorStep(TypedDict):
+@dataclass(kw_only=True)
+class ColorStep:
+    """A single value/color pair used by InterpolatedLegend."""
+
     value: float
+    """Numeric position of the color in the interpolation range."""
+
     color: str
+    """Hex color at this value."""
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.value, (int, float)):
+            raise TypeError("ColorStep 'value' must be a number.")
+        if not isinstance(self.color, str) or not self.color.strip():
+            raise ValueError("ColorStep 'color' must be a non-empty string.")
 
 
 @dataclass

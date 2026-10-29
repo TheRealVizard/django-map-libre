@@ -325,7 +325,7 @@ class CategoricalLegend(Legend):
             return
 
         if not isinstance(self.category_mapping, dict):
-            raise ValueError(
+            raise TypeError(
                 "category_mapping must be a dict, a non-empty URL string, "
                 f"or None. Got {type(self.category_mapping).__name__}."
             )
@@ -333,7 +333,7 @@ class CategoricalLegend(Legend):
         allowed_keys = {"label", "color", "icon"}
         for key, entry in self.category_mapping.items():
             if not isinstance(entry, dict):
-                raise ValueError(
+                raise TypeError(
                     f"category_mapping['{key}'] must be a dict, "
                     f"got {type(entry).__name__}."
                 )
@@ -599,19 +599,8 @@ class InterpolatedLegend(Legend):
                     )
             return
 
-        if isinstance(first, dict):
-            for item in self.color_stops:
-                if not isinstance(item, dict):
-                    raise ValueError("color_stops must be a homogeneous list.")
-                if "value" not in item or "color" not in item:
-                    raise ValueError(
-                        "Each ColorStep must have 'value' and 'color' keys."
-                    )
-                if not isinstance(item["color"], str) or not item["color"].strip():
-                    raise ValueError("ColorStep 'color' must be a non-empty string.")
-                if not isinstance(item["value"], (int, float)):
-                    raise ValueError("ColorStep 'value' must be a number.")
-            values = [item["value"] for item in self.color_stops]
+        if isinstance(first, ColorStep):
+            values = [s.value for s in self.color_stops]
             if values != sorted(values) or len(set(values)) != len(values):
                 raise ValueError(
                     "ColorStep 'value's must be in strictly ascending order."
@@ -622,9 +611,12 @@ class InterpolatedLegend(Legend):
         """
         :return: Dictionary with the fields specific to InterpolatedLegend.
         """
+        stops = self.color_stops
+        if stops is not None and stops and isinstance(stops[0], ColorStep):
+            stops = [{"value": s.value, "color": s.color} for s in stops]
         return {
             "coloringProperty": self.coloring_property,
-            "colorStops": None if self.color_stops is None else self.color_stops,
+            "colorStops": stops,
             "configUrl": self.config_url,
         }
 
@@ -791,16 +783,19 @@ class OverlayLayer(Layer):
                         "'color'."
                     )
 
-        if isinstance(legend, CategoricalLegend):
-            if self.layer_type == LayerType.ICON and legend.category_mapping is None:
-                raise ValueError(
-                    f"CategoricalLegend '{legend.id}' on ICON layer "
-                    f"'{self.id}' requires 'category_mapping' (dict or URL). "
-                    "It cannot be None because icons are never auto-generated."
-                )
+        if (
+            isinstance(legend, CategoricalLegend)
+            and self.layer_type == LayerType.ICON
+            and legend.category_mapping is None
+        ):
+            raise ValueError(
+                f"CategoricalLegend '{legend.id}' on ICON layer "
+                f"'{self.id}' requires 'category_mapping' (dict or URL). "
+                "It cannot be None because icons are never auto-generated."
+            )
 
         if self.layer_type == LayerType.ICON and (
-            isinstance(legend, RangeLegend) or isinstance(legend, InterpolatedLegend)
+            isinstance(legend, (RangeLegend, InterpolatedLegend))
         ):
             raise ValueError(
                 f"RangeLegend or InterpolatedLegend '{legend.id}' on ICON layer. "
