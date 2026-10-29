@@ -16,7 +16,7 @@
 
 - Python 3.14+
 - Django 5.0+
-- Node.js 20+ (for frontend tooling)
+- Node.js 24 LTS (managed via [nvm](https://github.com/nvm-sh/nvm))
 - Corepack (for Yarn package management)
 
 ---
