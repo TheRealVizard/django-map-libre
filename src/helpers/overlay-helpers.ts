@@ -77,6 +77,9 @@ export class Overlay extends Loaddable {
             "visibility",
             this.isDisplayed ? "visible" : "none"
         );
+        if (!this.isDisplayed) {
+            this.map.removeHighlightForLayer(this.layerConfig.id);
+        }
     }
     getUrl(): string {
         return this.layerConfig.url;

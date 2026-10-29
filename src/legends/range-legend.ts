@@ -108,7 +108,6 @@ export class RangeLegend extends BaseLegend {
         const maxValue = this.bounds.max;
 
         const steps = this.legendConfig.numSteps as number;
-        console.log(this.legendConfig.colorRamp, "here");
         const colors = splitColorRamp(
             this.legendConfig.colorRamp as string[],
             steps

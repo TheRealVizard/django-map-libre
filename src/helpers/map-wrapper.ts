@@ -209,6 +209,15 @@ export class MapLibre extends BaseMap {
         this.highlightSources = [];
         this.highlighted = false;
     };
+    removeHighlightForLayer = (layerId: string): void => {
+        const id = `highlight-layer-${layerId}`;
+        const source = `${id}-source`;
+        if (this.getLayer(id)) this.removeLayer(id);
+        if (this.getSource(source)) this.removeSource(source);
+        this.highlightLayers = this.highlightLayers.filter((l) => l !== id);
+        this.highlightSources = this.highlightSources.filter((s) => s !== source);
+        if (this.highlightLayers.length === 0) this.highlighted = false;
+    };
     addHighlight(layerId: string, highlightColor: string): string {
         const layer = this.getLayer(layerId);
         const id = `highlight-layer-${layerId}`;
