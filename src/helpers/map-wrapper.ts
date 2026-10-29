@@ -2,6 +2,7 @@ import type { Feature, GeoJsonProperties, Geometry } from "geojson";
 import {
     Map as BaseMap,
     GeoJSONSource,
+    type CircleLayerSpecification,
     type LineLayerSpecification,
     type MapOptions,
 } from "maplibre-gl";
@@ -167,6 +168,28 @@ export class MapLibre extends BaseMap {
         const id = `highlight-layer-${layerId}`;
         const source = `${id}-source`;
         if (layer?.type === "circle") {
+            const baseRadius = this.getPaintProperty(layerId, "circle-radius");
+            const extra = 3; // how much bigger than the base circle
+
+            const radius = typeof baseRadius === "number"
+                ? baseRadius + extra
+                : ["+", baseRadius ?? 6, extra];
+
+            this.addSource(source, {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] },
+            });
+            this.addLayer(
+                {
+                    type: "circle",
+                    id,
+                    source,
+                    paint: {
+                        "circle-color": highlightColor,
+                        "circle-radius": radius,
+                    },
+                } as CircleLayerSpecification
+            );
         } else {
             this.addSource(source, {
                 type: "geojson",
