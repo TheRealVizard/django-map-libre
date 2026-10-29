@@ -134,11 +134,15 @@ export interface FeatureList {
     layerID: string;
 }
 
-export interface FeatureListHighlight extends FeatureList {
-    highlightColor?: string;
-}
 export interface FeatureHighlight extends MapFeature {
     highlightColor?: string;
+    /** When true, also navigates to the feature. */
+    goTo?: boolean;
+}
+
+export interface FeatureListHighlight extends FeatureList {
+    highlightColor?: string;
+    goTo?: boolean;
 }
 
 export interface GoToFeature extends MapFeature {}

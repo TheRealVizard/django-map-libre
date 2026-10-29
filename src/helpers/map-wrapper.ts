@@ -6,9 +6,9 @@ import {
     type LineLayerSpecification,
     type MapOptions,
 } from "maplibre-gl";
+import { getMapPaintForLineOverlay } from "./functions";
 import type { GoToEvent, HighlightEvent } from "./map-events";
 import { OverlayManager } from "./overlay-helpers";
-import { getMapPaintForLineOverlay } from "./functions";
 
 const DEFAULT_MAP_ZOOM_LEVEL = 17;
 
@@ -43,7 +43,7 @@ export class MapLibre extends BaseMap {
             await this.getFeatureBbox(
                 event.detail.feature.layerID,
                 event.detail.feature.id
-            ).then((bbox) => {
+            ).then(async (bbox) => {
                 if (!bbox) return;
 
                 let [minLng, minLat, maxLng, maxLat] = bbox;
@@ -62,6 +62,17 @@ export class MapLibre extends BaseMap {
                     ],
                     { padding: 40 }
                 );
+
+                if (event.detail.highlight) {
+                    if (this.highlighted) {
+                        this.highlighted = false;
+                        this.removeHighlight();
+                    }
+                    await this.applyHighlight(
+                        event.detail.feature.layerID,
+                        [event.detail.feature.id]
+                    );
+                }
             });
         }
     };
@@ -72,78 +83,69 @@ export class MapLibre extends BaseMap {
         }
         const event = ev as HighlightEvent;
         if (Array.isArray(event.detail)) {
+            let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+            let anyGoTo = false;
+
             for (const target of event.detail) {
-                if (!this.overlayManager.hasOverlay(target.layerID)) continue;
-                const overlay = this.overlayManager.getOverlay(target.layerID);
-                if (overlay.layerType === "icon") continue;
-
-                const features: Feature<Geometry, GeoJsonProperties>[] = [];
+                await this.applyHighlight(target.layerID, target.ids, target.highlightColor);
+                if (!target.goTo) continue;
+                anyGoTo = true;
                 for (const id of target.ids) {
-                    const f = await this.getFeature(target.layerID, id);
-                    if (f) features.push(f);
+                    const bbox = await this.getFeatureBbox(target.layerID, id);
+                    if (!bbox) continue;
+                    if (bbox[0] < minLng) minLng = bbox[0];
+                    if (bbox[1] < minLat) minLat = bbox[1];
+                    if (bbox[2] > maxLng) maxLng = bbox[2];
+                    if (bbox[3] > maxLat) maxLat = bbox[3];
                 }
-                if (features.length === 0) continue;
+            }
 
-                const source = this.addHighlight(
-                    target.layerID,
-                    target.highlightColor ||
-                        overlay.highlightColor ||
-                        "#ff4500"
-                );
-                (this.getSource(source) as GeoJSONSource).updateData({
-                    add: features,
-                });
-                this.highlighted = true;
+            if (anyGoTo && Number.isFinite(minLng)) {
+                if (minLng === maxLng && minLat === maxLat) {
+                    const pad = 0.001;
+                    minLng -= pad; minLat -= pad; maxLng += pad; maxLat += pad;
+                }
+                this.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 40 });
             }
         } else if ("id" in event.detail) {
-            if (this.overlayManager.hasOverlay(event.detail.layerID)) {
-                const overlay = this.overlayManager.getOverlay(
-                    event.detail.layerID
-                );
-                if (overlay.layerType !== "icon") {
-                    const feature = await this.getFeature(
-                        event.detail.layerID,
-                        event.detail.id
-                    );
-                    if (feature) {
-                        const source = this.addHighlight(
-                            event.detail.layerID,
-                            event.detail.highlightColor ||
-                                overlay.highlightColor ||
-                                "#ff4500"
-                        );
-                        (this.getSource(source) as GeoJSONSource).updateData({
-                            add: [feature],
-                        });
-                        this.highlighted = true;
-                    }
-                }
-            }
+            await this.applyHighlight(
+                event.detail.layerID,
+                [event.detail.id],
+                event.detail.highlightColor
+            );
+            if (event.detail.goTo) await this.fitToIds(event.detail.layerID, [event.detail.id]);
         } else if ("ids" in event.detail) {
-            if (this.overlayManager.hasOverlay(event.detail.layerID)) {
-                const overlay = this.overlayManager.getOverlay(event.detail.layerID);
-                if (overlay.layerType !== "icon") {
-                    const features: Feature<Geometry, GeoJsonProperties>[] = [];
-                    for (const id of event.detail.ids) {
-                        const f = await this.getFeature(event.detail.layerID, id);
-                        if (f) features.push(f);
-                    }
-                    if (features.length > 0) {
-                        const source = this.addHighlight(
-                            event.detail.layerID,
-                            event.detail.highlightColor ||
-                                overlay.highlightColor ||
-                                "#ff4500"
-                        );
-                        (this.getSource(source) as GeoJSONSource).updateData({
-                            add: features,
-                        });
-                        this.highlighted = true;
-                    }
-                }
-            }
+            await this.applyHighlight(
+                event.detail.layerID,
+                event.detail.ids,
+                event.detail.highlightColor
+            );
+            if (event.detail.goTo) await this.fitToIds(event.detail.layerID, event.detail.ids);
         }
-    };
+    }
+    private async applyHighlight(
+        layerID: string,
+        ids: (string | number)[],
+        highlightColor?: string
+    ): Promise<void> {
+        if (!this.overlayManager.hasOverlay(layerID)) return;
+        const overlay = this.overlayManager.getOverlay(layerID);
+        if (overlay.layerType === "icon") return;
+
+        const features: Feature[] = [];
+        for (const id of ids) {
+            const f = await this.getFeature(layerID, id);
+            if (f) features.push(f);
+        }
+        if (features.length === 0) return;
+
+        const source = this.addHighlight(
+            layerID,
+            highlightColor || overlay.highlightColor || "#ff4500"
+        );
+        (this.getSource(source) as GeoJSONSource).updateData({ add: features });
+        this.highlighted = true;
+    }
     geometryBbox(
         geom: GeoJSON.Geometry
     ): [number, number, number, number] | null {
@@ -209,6 +211,26 @@ export class MapLibre extends BaseMap {
         this.highlightSources = [];
         this.highlighted = false;
     };
+    private async fitToIds(
+        layerID: string,
+        ids: (string | number)[]
+    ): Promise<void> {
+        let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+        for (const id of ids) {
+            const bbox = await this.getFeatureBbox(layerID, id);
+            if (!bbox) continue;
+            if (bbox[0] < minLng) minLng = bbox[0];
+            if (bbox[1] < minLat) minLat = bbox[1];
+            if (bbox[2] > maxLng) maxLng = bbox[2];
+            if (bbox[3] > maxLat) maxLat = bbox[3];
+        }
+        if (!Number.isFinite(minLng)) return;
+        if (minLng === maxLng && minLat === maxLat) {
+            const pad = 0.001;
+            minLng -= pad; minLat -= pad; maxLng += pad; maxLat += pad;
+        }
+        this.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 40 });
+    }
     removeHighlightForLayer = (layerId: string): void => {
         const id = `highlight-layer-${layerId}`;
         const source = `${id}-source`;
@@ -224,7 +246,7 @@ export class MapLibre extends BaseMap {
         const source = `${id}-source`;
         if (layer?.type === "circle") {
             const baseRadius = this.getPaintProperty(layerId, "circle-radius");
-            const extra = 3; // how much bigger than the base circle
+            const extra = 6; // how much bigger than the base circle
 
             const radius = typeof baseRadius === "number"
                 ? baseRadius + extra
@@ -243,7 +265,7 @@ export class MapLibre extends BaseMap {
                         "circle-color": highlightColor,
                         "circle-radius": radius,
                     },
-                } as CircleLayerSpecification
+                } as CircleLayerSpecification, layerId
             );
         } else {
             this.addSource(source, {
@@ -262,9 +284,9 @@ export class MapLibre extends BaseMap {
                 },
                 paint: {
                     ...getMapPaintForLineOverlay(highlightColor),
-                    "line-width": 6,
+                    "line-width": 9,
                 },
-            } as LineLayerSpecification);
+            } as LineLayerSpecification, layerId);
         }
         this.highlightLayers.push(id);
         this.highlightSources.push(source);
