@@ -1,4 +1,5 @@
 import { splitColorRamp, toTitleCase } from "@/helpers/functions";
+import type { MapLibre } from "@/helpers/map-wrapper";
 import type { Overlay, OverlayManager } from "@/helpers/overlay-helpers";
 import type {
     CategoricalLegend,
@@ -13,7 +14,6 @@ import type {
     RangeBound,
 } from "@/types/map-types";
 import { OverlayControl } from "./base-controls";
-import type { MapLibre } from "@/helpers/map-wrapper";
 
 export class LegendControl extends OverlayControl {
     loadingOverlay: HTMLDivElement | undefined;
@@ -129,7 +129,7 @@ export class LegendControl extends OverlayControl {
                     overlay,
                     overlay.activeLegend.legendConfig.type,
                     overlay.activeLegend.legendConfig.label ||
-                        toTitleCase(overlay.activeLegend.legendConfig.id),
+                    toTitleCase(overlay.activeLegend.legendConfig.id),
                     overlay.activeLegend.legendConfig.color as string,
                     overlay.activeLegend.legendConfig.image as string
                 )
@@ -151,10 +151,10 @@ export class LegendControl extends OverlayControl {
             }
         } else if (overlay.activeLegend.legendConfig.type === "range") {
             const config = overlay.activeLegend as RangeLegend;
-            if (config.legendConfig.bounds && !config.bounds) return;
-
             const bounds = (config.legendConfig.bounds ||
                 config.bounds) as RangeBound;
+
+            if (!bounds) return;
 
             const min = bounds.min;
             const max = bounds.max;
