@@ -72,6 +72,29 @@ export class MapLibre extends BaseMap {
         }
         const event = ev as HighlightEvent;
         if (Array.isArray(event.detail)) {
+            for (const target of event.detail) {
+                if (!this.overlayManager.hasOverlay(target.layerID)) continue;
+                const overlay = this.overlayManager.getOverlay(target.layerID);
+                if (overlay.layerType === "icon") continue;
+
+                const features: Feature<Geometry, GeoJsonProperties>[] = [];
+                for (const id of target.ids) {
+                    const f = await this.getFeature(target.layerID, id);
+                    if (f) features.push(f);
+                }
+                if (features.length === 0) continue;
+
+                const source = this.addHighlight(
+                    target.layerID,
+                    target.highlightColor ||
+                        overlay.highlightColor ||
+                        "#ff4500"
+                );
+                (this.getSource(source) as GeoJSONSource).updateData({
+                    add: features,
+                });
+                this.highlighted = true;
+            }
         } else if ("id" in event.detail) {
             if (this.overlayManager.hasOverlay(event.detail.layerID)) {
                 const overlay = this.overlayManager.getOverlay(
@@ -97,6 +120,28 @@ export class MapLibre extends BaseMap {
                 }
             }
         } else if ("ids" in event.detail) {
+            if (this.overlayManager.hasOverlay(event.detail.layerID)) {
+                const overlay = this.overlayManager.getOverlay(event.detail.layerID);
+                if (overlay.layerType !== "icon") {
+                    const features: Feature<Geometry, GeoJsonProperties>[] = [];
+                    for (const id of event.detail.ids) {
+                        const f = await this.getFeature(event.detail.layerID, id);
+                        if (f) features.push(f);
+                    }
+                    if (features.length > 0) {
+                        const source = this.addHighlight(
+                            event.detail.layerID,
+                            event.detail.highlightColor ||
+                                overlay.highlightColor ||
+                                "#ff4500"
+                        );
+                        (this.getSource(source) as GeoJSONSource).updateData({
+                            add: features,
+                        });
+                        this.highlighted = true;
+                    }
+                }
+            }
         }
     };
     geometryBbox(
@@ -162,6 +207,7 @@ export class MapLibre extends BaseMap {
         });
         this.highlightLayers = [];
         this.highlightSources = [];
+        this.highlighted = false;
     };
     addHighlight(layerId: string, highlightColor: string): string {
         const layer = this.getLayer(layerId);
